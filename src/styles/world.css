@@ -1,0 +1,332 @@
+/*
+  Modo "mundo": escritorio con WebGL. Cada capítulo es una capa fija a pantalla completa;
+  sus tarjetas (data-o) se proyectan en 3D con la misma cámara que el canvas y sus textos
+  (hud) viven en pantalla. El scroll real lo da .track.
+*/
+
+html {
+  --hud-ink: var(--black);
+  --hud-ink-2: var(--g-500);
+  --hud-ink-3: var(--g-400);
+  --hud-line: rgb(10 10 10 / 0.14);
+}
+
+html[data-tone="dark"] {
+  --hud-ink: var(--paper);
+  --hud-ink-2: var(--g-300);
+  --hud-ink-3: var(--g-500);
+  --hud-line: rgb(255 255 255 / 0.18);
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.has-stage .stage {
+  display: block;
+}
+
+.is-world,
+.is-world body {
+  background: var(--black);
+}
+
+.track {
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.is-world .is-world-ch {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+}
+
+.is-world .is-world-ch.is-dormant {
+  visibility: hidden;
+}
+
+.is-world .is-world-ch .sec,
+.is-world .is-world-ch [data-wrap] {
+  position: static;
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.is-world .chapter:not(.is-world-ch),
+.is-world .footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Objetos proyectados en 3D ────────────────────────────────────────── */
+
+.is-world .is-world-ch [data-o] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  opacity: 0;
+  transform: translate(-400vw, 0);
+  transform-origin: 0 0;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.is-world .is-world-ch [data-o].is-on {
+  pointer-events: auto;
+}
+
+.is-world .is-world-ch .card {
+  width: 340px;
+}
+
+.is-world .is-world-ch .card--panel {
+  width: 420px;
+}
+
+.is-world .is-world-ch .card--accent {
+  width: 380px;
+}
+
+.is-world .is-world-ch .card--tem {
+  width: 420px;
+}
+
+.is-world .is-world-ch .card--deliver {
+  width: 360px;
+}
+
+.is-world .is-world-ch .card--step {
+  width: 250px;
+  min-height: 210px;
+}
+
+.is-world .is-world-ch .card--plan {
+  width: 320px;
+}
+
+.is-world .is-world-ch .card--product {
+  width: 290px;
+  min-height: 250px;
+}
+
+.is-world .is-world-ch .card--wa {
+  width: 400px;
+}
+
+.is-world .is-world-ch .card--focus {
+  width: 380px;
+}
+
+.is-world .is-world-ch .card--package {
+  width: 250px;
+  min-height: 300px;
+}
+
+.is-world .is-world-ch .card--summary {
+  width: 320px;
+}
+
+.is-world .is-world-ch .card--course {
+  width: 230px;
+  min-height: 150px;
+}
+
+.is-world .is-world-ch .map__item {
+  width: 270px;
+}
+
+.is-world .is-world-ch .soc--screen {
+  width: 560px;
+  height: 350px;
+  align-content: start;
+  padding: 22px;
+  border: 0;
+  border-radius: 4px;
+}
+
+.is-world .is-world-ch .phone-chat {
+  width: 350px;
+  height: 740px;
+  border-radius: 40px;
+}
+
+.is-world .is-world-ch .cluster__title {
+  width: max-content;
+}
+
+/* ── Textos en pantalla (HUD) ─────────────────────────────────────────── */
+
+.is-world .is-world-ch .hud {
+  --ink: var(--hud-ink);
+  --ink-2: var(--hud-ink-2);
+  --ink-3: var(--hud-ink-3);
+  --line: var(--hud-line);
+  position: absolute;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.is-world .is-world-ch .hud.is-on {
+  pointer-events: auto;
+}
+
+.is-world .hud--hero {
+  left: var(--gutter);
+  top: 50%;
+  width: min(44vw, 640px);
+  translate: 0 -44%;
+}
+
+.is-world .hud--chapter {
+  left: var(--gutter);
+  top: 14vh;
+  gap: 16px;
+}
+
+.is-world .hud--left {
+  left: var(--gutter);
+  top: 52%;
+  width: min(32vw, 460px);
+  translate: 0 -50%;
+}
+
+.is-world .hud--narrow {
+  width: min(30vw, 420px);
+}
+
+.is-world .hud--caption {
+  display: block;
+  left: 50%;
+  top: 13vh;
+  width: min(620px, 84vw);
+  translate: -50% 0;
+  font-size: 18px;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.is-world .hud--kicker,
+.is-world .hud--top {
+  left: var(--gutter);
+  top: 14vh;
+  width: min(40vw, 560px);
+}
+
+.is-world .hud--statement {
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 15vh;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.is-world .hud--final {
+  inset: 0;
+  place-content: center;
+}
+
+/* Líneas enmascaradas para el revelado por scroll */
+.is-world .line-mask {
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+@media (max-height: 760px) {
+  .is-world .hud--chapter {
+    top: 11vh;
+  }
+
+  .is-world .h-chapter {
+    font-size: clamp(56px, 7vw, 104px);
+  }
+}
+
+.is-world .hud--center {
+  top: 50%;
+  bottom: auto;
+  translate: 0 -50%;
+}
+
+.is-world .is-world-ch .hud--on-dark {
+  --ink: var(--paper);
+  --ink-2: var(--g-300);
+  color: var(--paper);
+}
+
+/* Burbujas del chat: aparecen una a una con el scroll. */
+.is-world .bubble {
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+  transform-origin: 0 0;
+  transition:
+    opacity 0.45s var(--ease-out),
+    transform 0.55s var(--ease-out);
+}
+
+.is-world .bubble.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.is-world .chip--orbit {
+  padding: 11px 18px;
+  font-size: 17px;
+}
+
+.is-world .orbit__title {
+  font-size: 46px;
+  white-space: nowrap;
+}
+
+/* Halo de legibilidad detrás de las frases que pasan sobre objetos 3D. */
+html {
+  --hud-bg: var(--paper);
+}
+
+html[data-tone="dark"] {
+  --hud-bg: var(--black);
+}
+
+.is-world .hud--risk::before {
+  content: "";
+  position: absolute;
+  inset: -60px -120px;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--hud-bg) 88%, transparent), color-mix(in srgb, var(--hud-bg) 55%, transparent) 60%, transparent);
+  filter: blur(8px);
+  transition: background 0.6s;
+}
+
+.is-world .hud--risk {
+  isolation: isolate;
+  left: 50%;
+  right: auto;
+  width: min(1100px, 90vw);
+  translate: -50% 0;
+}

@@ -1,0 +1,52 @@
+:root {
+  /* Naranja exacto del fill del SVG del logo (assets/logo-lockup-dark.svg → #FF6B00). */
+  --dogui-orange: #ff6b00;
+  --orange-12: rgb(255 107 0 / 0.12);
+  --orange-24: rgb(255 107 0 / 0.24);
+  --orange-45: rgb(255 107 0 / 0.45);
+
+  --black: #0a0a0a;
+  --paper: #f7f7f5;
+  --white: #ffffff;
+  --g-950: #101010;
+  --g-900: #161616;
+  --g-850: #1c1c1c;
+  --g-800: #232323;
+  --g-700: #333333;
+  --g-600: #4d4d4d;
+  --g-500: #5f5f5c; /* texto secundario sobre claro: 6.3:1 */
+  --g-400: #8c8c88;
+  --g-300: #a8a8a4; /* texto secundario sobre oscuro: 8.4:1 */
+  --g-200: #d9d9d5;
+  --g-150: #e6e6e2;
+  --g-100: #efefec;
+
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --gutter: clamp(16px, 5vw, 80px);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Tono activo (claro por defecto). JS cambia data-tone en <html> según el capítulo. */
+  --ink: var(--black);
+  --ink-2: var(--g-500);
+  --ink-3: var(--g-400);
+  --line: rgb(10 10 10 / 0.1);
+  --surface: rgb(255 255 255 / 0.92);
+  --surface-2: var(--white);
+  --shadow: 0 1px 1px rgb(10 10 10 / 0.04), 0 12px 32px -12px rgb(10 10 10 / 0.18);
+}
+
+[data-tone="dark"] {
+  --ink: var(--paper);
+  --ink-2: var(--g-300);
+  --ink-3: var(--g-400);
+  --line: rgb(255 255 255 / 0.1);
+  --surface: rgb(22 22 22 / 0.88);
+  --surface-2: var(--g-900);
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 20px 50px -20px rgb(0 0 0 / 0.8);
+}
