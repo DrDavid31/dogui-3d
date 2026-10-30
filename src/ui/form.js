@@ -7,30 +7,64 @@ export function initLeadForm() {
   const note = document.querySelector("[data-form-note]");
   if (!form) return;
   const T = contacto.form;
+  const field = (name) => form.elements.namedItem(name);
 
   const payload = (fd) => ({
     name: String(fd.get("name") || "").trim(),
     company: String(fd.get("company") || "").trim(),
     email: String(fd.get("email") || "").trim(),
+    phone: String(fd.get("phone") || "").trim(),
+    size: String(fd.get("size") || "").trim(),
+    urgency: String(fd.get("urgency") || "").trim(),
     service: String(fd.get("service") || "").trim(),
     message: String(fd.get("message") || "").trim(),
+    // Consentimiento (aviso de privacidad) y permiso opcional para comunicaciones.
+    consent: fd.get("consent") === "on",
+    marketing: fd.get("marketing") === "on",
     website: String(fd.get("website") || "").trim(),
     source: "doguiweb",
   });
 
   const mailFallback = (lead) => {
-    const subject = `Solicitud DOGUI - ${lead.service || "Ciberseguridad"}`;
-    const body = [
-      `Nombre: ${lead.name}`,
-      `Empresa: ${lead.company}`,
-      `Correo: ${lead.email}`,
+    const subject = `${lead.urgency === T.urgencies.at(-1) ? "[INCIDENTE] " : ""}Solicitud DOGUI - ${lead.service || "Ciberseguridad"}`;
+    const lines = [`Nombre: ${lead.name}`, `Empresa: ${lead.company}`, `Correo: ${lead.email}`];
+    if (lead.phone) lines.push(`Teléfono/WhatsApp: ${lead.phone}`);
+    if (lead.size) lines.push(`Tamaño: ${lead.size}`);
+    lines.push(
+      `Urgencia: ${lead.urgency}`,
       `Servicio: ${lead.service}`,
+      `Acepta comunicaciones: ${lead.marketing ? "sí" : "no"}`,
       "",
       "Mensaje:",
       lead.message || "Quiero que DOGUI me contacte para definir alcance.",
-    ].join("\n");
+    );
+    const body = lines.join("\n");
     window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
+
+  // Botones de otras secciones (incidente, herramientas) que llenan el formulario.
+  const prefill = ({ service, message, urgency }) => {
+    if (service) {
+      const opt = [...field("service").options].find((o) => o.value === service || o.text === service);
+      if (opt) field("service").value = opt.value;
+    }
+    if (urgency) field("urgency").value = urgency;
+    if (message) field("message").value = message;
+    // Tras el desplazamiento hasta el formulario, el foco va al primer campo vacío.
+    setTimeout(() => {
+      const first = ["name", "company", "email"].map(field).find((el) => !el.value) || field("message");
+      first?.focus({ preventScroll: true });
+    }, 900);
+  };
+  document.addEventListener("click", (e) => {
+    const el = e.target instanceof Element ? e.target.closest("[data-incident], [data-prefill]") : null;
+    if (!el) return;
+    if (el.hasAttribute("data-incident")) {
+      prefill({ urgency: T.urgencies.at(-1), service: "Respuesta a incidentes" });
+    } else {
+      prefill({ service: el.dataset.service, message: el.dataset.message });
+    }
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -147,3 +147,32 @@ scripts/
 
 Todo el copy está en `src/content/content.js`. En `dev`, guardar ese archivo reinicia
 el servidor y recarga el HTML.
+
+### Datos de contacto y legales (pendientes de llenar)
+
+| Dato | Dónde | Qué aparece al llenarlo |
+| --- | --- | --- |
+| Teléfono | `site.phone` en `src/content/content.js` | Contacto, botón «Llamar ahora» del incidente, aviso de privacidad y JSON-LD |
+| WhatsApp | `site.whatsapp` (solo dígitos, con lada: `52…`) | Botón flotante, contacto y botón de WhatsApp del incidente |
+| Agenda en línea | `site.bookingUrl` | Botón «Agendar llamada de 30 min» en contacto |
+| Razón social y domicilio | `legal.owner` y `legal.address` en `src/content/legal.js` | Responsable en el aviso de privacidad (art. 15, fr. I LFPDPPP), aviso corto del formulario, términos y pie |
+| Correo de privacidad | `legal.privacyEmail` | Derechos ARCO, revocación y reporte de vulnerabilidades |
+
+Mientras un dato esté vacío no se muestra (no hay números de ejemplo en el sitio).
+
+## Páginas legales y herramientas
+
+- `privacidad/`: aviso de privacidad integral conforme a la LFPDPPP vigente (DOF 20-03-2025,
+  última reforma 14-11-2025; autoridad: Secretaría Anticorrupción y Buen Gobierno), con
+  secciones para RGPD, CCPA/CPRA y leyes de Latinoamérica. El formulario muestra el aviso
+  simplificado (art. 16) y pide consentimiento; las comunicaciones son opcionales.
+- `terminos/`: términos de uso del sitio y de las herramientas gratuitas.
+- `checklist/`: checklist imprimible para PyMEs.
+- En la página principal, después del contacto: autodiagnóstico, selector «¿Por dónde
+  empiezo?» y revisión de SPF/DMARC (DNS público de Cloudflare, con Google de respaldo),
+  reporte de ejemplo, preguntas frecuentes y glosario. Se calculan en el navegador.
+- El build genera `robots.txt`, `sitemap.xml` (con las 4 páginas) y `.well-known/security.txt`.
+- La medición propia (`client-integrations.js`) se puede desactivar desde el aviso y respeta
+  Global Privacy Control y Do Not Track.
+
+Al actualizar el aviso, cambia `legal.updated` / `legal.updatedISO`.

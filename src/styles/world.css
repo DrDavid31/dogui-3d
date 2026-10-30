@@ -532,9 +532,34 @@ html[data-tone="dark"] {
   gap: 12px;
 }
 
-.is-world .is-world-ch .contact-panel .lead-form input,
+.is-world .is-world-ch .contact-panel .lead-form input:not([type="checkbox"]),
 .is-world .is-world-ch .contact-panel .lead-form select {
-  min-height: 44px;
+  min-height: 42px;
+  padding-block: 9px;
+}
+
+/* El formulario (con consentimiento y aviso simplificado) cabe siempre en pantalla:
+   si no alcanza la altura, se desplaza por dentro (data-lenis-prevent). */
+.is-world .is-world-ch .contact-panel .lead-form {
+  max-height: calc(100svh - 168px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.is-world .is-world-ch .contact-panel .lead-form label:not(.check) {
+  gap: 6px;
+  font-size: 11px;
+}
+
+.is-world .is-world-ch .contact-panel .lead-form textarea {
+  min-height: 72px;
+  height: 72px;
+}
+
+.is-world .is-world-ch .contact-panel .incident {
+  margin-top: 16px;
+  padding: 14px 16px;
 }
 
 @media (max-height: 760px) {

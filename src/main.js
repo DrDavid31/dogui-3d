@@ -10,6 +10,7 @@ import "./styles/base.css";
 import "./styles/flow.css";
 import "./styles/world.css";
 import "./styles/ui.css";
+import "./styles/extras.css";
 
 import { initMenu } from "./ui/menu.js";
 import { initLeadForm } from "./ui/form.js";
@@ -17,6 +18,7 @@ import { initPointer } from "./ui/pointer.js";
 import { collectWindows } from "./mobile-windows.js";
 import { initTopbar } from "./ui/topbar.js";
 import { initCarousels } from "./ui/carousels.js";
+import { initTools } from "./ui/tools.js";
 
 const html = document.documentElement;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -43,6 +45,7 @@ window.matchMedia("(max-width: 900px), (pointer: coarse)").addEventListener("cha
 });
 
 initLeadForm();
+initTools();
 const pointer = initPointer({ motion: !reduceMotion });
 
 if (worldMode) {

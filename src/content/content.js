@@ -13,8 +13,11 @@ export const site = {
   twitterDescription:
     "SOC/MDR, Threat Exposure Monitoring, vCISO, Awareness, SGSI CIDSI y consultoría SPEI/SPID para empresas.",
   email: "ventas@dogui.mx",
-  phone: "+52 55 0000 0000",
-  phoneHref: "tel:+525500000000",
+  // Teléfono, WhatsApp y agenda: al llenarlos aparecen solos en contacto, el botón flotante
+  // de WhatsApp, la línea de incidentes y los datos para buscadores. Vacíos no se muestran.
+  phone: "", // Como se muestra, p. ej. "+52 55 1234 5678"
+  whatsapp: "", // Solo dígitos con lada internacional, p. ej. "525512345678"
+  bookingUrl: "", // Agenda en línea para la llamada de 30 min (Calendly, Cal.com…)
 };
 
 export const nav = [
@@ -29,6 +32,8 @@ export const nav = [
   { href: "#spei-spid", label: "SPEI/SPID" },
   { href: "#metodo", label: "Método" },
   { href: "#paquetes", label: "Paquetes" },
+  { href: "#herramientas", label: "Diagnóstico gratis" },
+  { href: "#preguntas", label: "Preguntas" },
   { href: "#contacto", label: "Contacto" },
 ];
 
@@ -789,19 +794,270 @@ export const contacto = {
       },
       { label: "Sector financiero", options: ["SPEI / SPID"] },
     ],
+    phone: "Teléfono o WhatsApp (opcional)",
+    size: "Tamaño de la empresa",
+    sizePlaceholder: "Selecciona",
+    sizes: ["1 a 10 personas", "11 a 50 personas", "51 a 250 personas", "Más de 250 personas"],
+    urgency: "¿Qué tan urgente es?",
+    urgencies: ["Quiero información", "En las próximas semanas", "Esta semana", "Tengo un incidente ahora"],
     message: "Mensaje",
     messagePlaceholder: "Cuéntanos tu necesidad, urgencia o contexto",
+    consentBefore: "He leído el ",
+    consentLink: "Aviso de privacidad",
+    consentAfter: " y acepto que DOGUI use mis datos para atender mi solicitud.",
+    marketing: "Quiero recibir alertas de amenazas, novedades e invitaciones de DOGUI (opcional).",
+    privacyMore: "Aviso de privacidad integral",
     submit: "Enviar solicitud",
-    note: "El formulario puede guardar la solicitud en el backend o abrir correo como respaldo.",
+    note: "Te contactamos para entender tu caso y preparar tu cotización: cada propuesta se arma según el alcance de tu empresa.",
     sending: "Enviando solicitud...",
     success: "Listo: recibimos tu solicitud y DOGUI te contactará.",
-    fallback: "No se encontró el backend; abrimos correo como respaldo.",
+    fallback: "No pudimos enviar el formulario desde el sitio; abrimos tu correo con los datos listos para que nos escribas.",
+    booking: "Agendar llamada de 30 min",
   },
 };
 
 export const footer = {
   text: "Servicios de ciberseguridad, automatización y consultoría financiera especializada.",
   link: { label: "Agenda tu diagnóstico", href: "#contacto" },
+  legal: [
+    { label: "Aviso de privacidad", path: "privacidad/" },
+    { label: "Términos de uso", path: "terminos/" },
+    { label: "Checklist para PyMEs", path: "checklist/" },
+  ],
+};
+
+// ── Incidente en curso ───────────────────────────────────────────────────
+export const incident = {
+  title: "¿Te están atacando ahora?",
+  text: "Ransomware, una cuenta tomada o un fraude en curso: márcalo como incidente y lo atendemos con prioridad. Mientras tanto, desconecta de la red los equipos afectados sin apagarlos ni borrar nada, para conservar la evidencia.",
+  cta: "Reportar incidente",
+  call: "Llamar ahora",
+  whatsapp: "WhatsApp",
+};
+
+export const whatsapp = {
+  label: "Escríbenos por WhatsApp",
+  message: "Hola DOGUI, quiero información sobre ciberseguridad para mi empresa.",
+  incidentMessage: "Hola DOGUI, tengo un incidente de seguridad en curso y necesito ayuda.",
+};
+
+// ── Herramientas gratuitas (se calculan en el navegador) ─────────────────
+export const recursos = {
+  id: "herramientas",
+  kicker: "Gratis para tu empresa",
+  title: "Revisa hoy cómo está tu empresa.",
+  text: "Herramientas rápidas y sin registro. Tus respuestas se calculan en tu navegador: no se envían a DOGUI.",
+  tabs: ["Autodiagnóstico", "¿Por dónde empiezo?", "Revisión de correo"],
+  quiz: {
+    title: "Autodiagnóstico en 2 minutos",
+    text: "10 preguntas sobre las prácticas que más evitan incidentes en una PyME.",
+    answers: [
+      { label: "Sí", points: 10 },
+      { label: "En parte", points: 5 },
+      { label: "No / no sé", points: 0 },
+    ],
+    questions: [
+      { q: "¿Todas las cuentas de correo y nube piden un segundo factor (MFA) además de la contraseña?", fix: "Activa MFA en correo, nube y banca: es la medida que más ataques de cuentas detiene.", service: "DOGUI Resilience" },
+      { q: "¿Tienes respaldos automáticos fuera de tu red y probaste restaurarlos en los últimos 3 meses?", fix: "Ten respaldos fuera de la red y prueba restaurarlos: es lo que te salva de un ransomware.", service: "DOGUI Resilience" },
+      { q: "¿Las computadoras y sistemas se actualizan de forma automática?", fix: "Automatiza las actualizaciones de sistema operativo, navegador y programas críticos.", service: "DOGUI Essential" },
+      { q: "¿Tu equipo recibió capacitación contra phishing y fraudes en el último año?", fix: "Capacita a tu equipo con simulaciones cortas: el factor humano es la entrada más común.", service: "DOGUI Awareness" },
+      { q: "¿Sabes quién tiene acceso a qué sistemas y quitas los accesos cuando alguien se va?", fix: "Haz un inventario de accesos y un proceso de alta y baja de personal.", service: "DOGUI Compliance Lite" },
+      { q: "¿Tu dominio tiene SPF y DMARC para evitar que suplanten tus correos?", fix: "Configura SPF, DKIM y DMARC para que nadie envíe correos haciéndose pasar por ti.", service: "DOGUI Exposure" },
+      { q: "¿Revisas si correos o contraseñas de tu empresa aparecen en filtraciones?", fix: "Monitorea filtraciones de correos y contraseñas para cambiarlas antes de que las usen.", service: "DOGUI Leak Monitor" },
+      { q: "¿Todas las computadoras tienen antivirus o EDR administrado y alguien revisa sus alertas?", fix: "Protege cada equipo con un EDR administrado y que alguien atienda sus alertas.", service: "Operación protegida" },
+      { q: "¿Tienes un plan escrito de qué hacer y a quién llamar ante un incidente?", fix: "Escribe un plan de respuesta de una página: quién decide, a quién llamar y qué aislar.", service: "DOGUI Resilience" },
+      { q: "¿Alguien vigila la seguridad de forma continua y te reporta riesgos a dirección?", fix: "Asigna un responsable de seguridad, interno o externo, que reporte riesgos a dirección.", service: "DOGUI vCISO Starter" },
+    ],
+    levels: [
+      { min: 70, label: "Buena base", text: "Tienes prácticas sólidas. El siguiente paso es vigilar de forma continua y medir." },
+      { min: 40, label: "En desarrollo", text: "Hay avances, pero quedan huecos que un atacante aprovecharía. Prioriza los de abajo." },
+      { min: 0, label: "Riesgo alto", text: "Tu empresa está expuesta a los ataques más comunes. Empieza por los tres puntos de abajo." },
+    ],
+    result: "Tu resultado",
+    gaps: "Lo primero que conviene resolver",
+    cta: "Quiero mi diagnóstico completo",
+    restart: "Volver a empezar",
+    note: "Resultado orientativo; no sustituye una evaluación profesional.",
+  },
+  selector: {
+    title: "¿Por dónde empiezo?",
+    text: "Tres preguntas y te decimos qué paquete conviene activar primero.",
+    steps: [
+      { id: "size", q: "¿Cuántas personas trabajan en tu empresa?", options: ["1 a 10", "11 a 50", "51 a 250", "Más de 250"] },
+      {
+        id: "worry",
+        q: "¿Qué te preocupa más hoy?",
+        options: [
+          "Que mi equipo caiga en fraudes o phishing",
+          "Que se filtren correos, contraseñas o datos",
+          "Cumplir con clientes, auditorías o ISO 27001",
+          "Detectar y responder ataques todo el tiempo",
+          "Proteger operaciones financieras (SPEI/SPID)",
+        ],
+      },
+      { id: "team", q: "¿Quién ve la seguridad hoy?", options: ["Nadie, o el dueño", "Alguien de TI, sin ser especialista", "Un equipo de seguridad"] },
+    ],
+    result: "Te recomendamos empezar con",
+    plus: "Y para dar dirección",
+    cta: "Cotizar esta recomendación",
+    restart: "Cambiar respuestas",
+  },
+  email: {
+    title: "Revisión de correo",
+    text: "Escribe el dominio de tu empresa y revisamos si tiene SPF y DMARC, las configuraciones que evitan que alguien envíe correos haciéndose pasar por ti.",
+    label: "Dominio de tu empresa",
+    placeholder: "tuempresa.com",
+    submit: "Revisar",
+    checking: "Revisando registros públicos…",
+    invalid: "Escribe un dominio válido, por ejemplo tuempresa.com",
+    failed: "No pudimos consultar el DNS en este momento. Intenta de nuevo en unos minutos.",
+    note: "Solo consulta registros DNS públicos, a través del DNS de Cloudflare. DKIM requiere conocer el selector de tu proveedor: lo revisamos en el diagnóstico completo.",
+    cta: "Quiero que lo revisen a fondo",
+  },
+  report: {
+    title: "Así se ve tu reporte mensual",
+    text: "Cada mes recibes hallazgos con evidencia, su nivel de riesgo y qué hacer, en lenguaje claro para dirección.",
+    badge: "Ejemplo con datos ficticios",
+    company: "Empresa Ejemplo, S.A. de C.V.",
+    period: "Reporte ejecutivo · Monitoreo de exposición",
+    risk: "Riesgo general",
+    riskValue: "Medio",
+    head: ["Hallazgo", "Riesgo", "Qué hacer"],
+    rows: [
+      ["Contraseña de un correo corporativo en una filtración pública", "Alto", "Cambiarla, cerrar sesiones abiertas y activar MFA"],
+      ["Dominio parecido al de la empresa registrado este mes", "Medio", "Vigilarlo y preparar la solicitud de baja"],
+      ["DMARC solo en modo de monitoreo", "Bajo", "Pasar a cuarentena después de revisar remitentes"],
+    ],
+  },
+  checklist: {
+    title: "Checklist de ciberseguridad para PyMEs",
+    text: "20 puntos para revisar con tu equipo. Imprímelo o guárdalo en PDF.",
+    cta: "Abrir checklist",
+  },
+};
+
+// Checklist imprimible (página /checklist/).
+export const checklist = {
+  title: "Checklist de ciberseguridad para PyMEs",
+  lede: "Prácticas básicas que evitan la mayoría de los incidentes en empresas pequeñas y medianas. Marca lo que ya tienes y empieza por lo que falta.",
+  print: "Imprimir o guardar en PDF",
+  groups: [
+    {
+      title: "Cuentas y accesos",
+      items: [
+        "MFA activo en correo, nube, banca y redes sociales de la empresa.",
+        "Contraseñas únicas y un gestor de contraseñas para el equipo.",
+        "Cuentas personales para cada empleado (nada de usuarios compartidos).",
+        "Accesos que se quitan el mismo día que alguien deja la empresa.",
+      ],
+    },
+    {
+      title: "Correo y dominio",
+      items: [
+        "SPF, DKIM y DMARC configurados en el dominio.",
+        "Filtro de correo con protección contra phishing y adjuntos peligrosos.",
+        "Un canal claro para reportar correos o mensajes sospechosos.",
+      ],
+    },
+    {
+      title: "Equipos y sistemas",
+      items: [
+        "Actualizaciones automáticas en computadoras, celulares y servidores.",
+        "Antivirus o EDR en todos los equipos, con alguien que atienda sus alertas.",
+        "Discos cifrados en laptops y bloqueo automático de pantalla.",
+        "Inventario de equipos, sistemas y servicios en la nube.",
+      ],
+    },
+    {
+      title: "Respaldos y continuidad",
+      items: [
+        "Respaldos automáticos con una copia fuera de la red.",
+        "Prueba de restauración al menos cada tres meses.",
+        "Lista de sistemas críticos y cuánto tiempo puede operar la empresa sin ellos.",
+      ],
+    },
+    {
+      title: "Personas",
+      items: [
+        "Capacitación corta contra phishing y fraudes al menos una vez al año.",
+        "Regla de doble verificación para pagos, cambios de cuenta bancaria y transferencias.",
+        "Política simple de uso de equipos, WhatsApp y herramientas de IA.",
+      ],
+    },
+    {
+      title: "Monitoreo y respuesta",
+      items: [
+        "Revisión periódica de correos y contraseñas de la empresa en filtraciones.",
+        "Plan de una página: quién decide, a quién llamar y qué aislar ante un incidente.",
+        "Un responsable de seguridad, interno o externo, que reporte riesgos a dirección.",
+      ],
+    },
+  ],
+  cta: "¿Quieres que lo revisemos contigo?",
+  ctaLink: "Agendar diagnóstico",
+};
+
+// ── Preguntas frecuentes y glosario ──────────────────────────────────────
+export const faq = {
+  id: "preguntas",
+  kicker: "Preguntas frecuentes",
+  title: "Lo que nos preguntan antes de empezar.",
+  items: [
+    {
+      q: "¿Necesito tener un área de TI o de seguridad?",
+      a: "No. Muchos servicios de DOGUI están pensados para PyMEs sin SOC ni mesa de ayuda: monitoreamos, te alertamos y te decimos qué hacer en lenguaje claro. Si tienes equipo de TI, trabajamos con él.",
+    },
+    {
+      q: "Ya tengo antivirus, ¿no es suficiente?",
+      a: "El antivirus protege las computadoras, pero no te avisa si tus correos o contraseñas aparecen en una filtración, si alguien registra un dominio parecido al tuyo para engañar a tus clientes o si un empleado cae en un fraude por WhatsApp. Por eso combinamos monitoreo, capacitación y respuesta.",
+    },
+    {
+      q: "¿Cuánto cuesta?",
+      a: "Depende del alcance: número de personas, dominios, equipos y servicios que necesitas. Después de una llamada para entender tu caso te enviamos una cotización a la medida.",
+    },
+    {
+      q: "¿Cómo empezamos?",
+      a: "Con una llamada para revisar tu situación y tus prioridades. Después recibes una propuesta con alcance y entregables. Puedes iniciar con un diagnóstico, un proyecto puntual u operación continua.",
+    },
+    {
+      q: "¿Qué recibo cada mes?",
+      a: "Depende del servicio. En el monitoreo de exposición, por ejemplo, recibes alertas de hallazgos críticos con evidencia, nivel de riesgo por hallazgo, recomendaciones y un reporte ejecutivo mensual.",
+    },
+    {
+      q: "¿Qué hacen si nos atacan?",
+      a: "Atendemos el incidente: contención, análisis de causa raíz y un plan de mejora para que no se repita. Si te está pasando ahora, marca «Tengo un incidente ahora» en el formulario.",
+    },
+    {
+      q: "¿Funciona por WhatsApp?",
+      a: "Sí. Con DOGUI WhatsApp Security Assistant tus empleados reportan links, correos, archivos y fraudes desde el canal que ya usan, y DOGUI Awareness envía capacitaciones y evaluaciones por ahí.",
+    },
+    {
+      q: "¿Qué hacen con la información de mi empresa?",
+      a: "La tratamos con confidencialidad y conforme a nuestro Aviso de privacidad. El alcance y las reglas de confidencialidad de cada servicio quedan por escrito en la propuesta y el contrato.",
+    },
+    {
+      q: "¿Trabajan con empresas reguladas o del sector financiero?",
+      a: "Sí: acompañamos cumplimiento de ISO 27001 y PCI DSS, y damos consultoría especializada para participantes de SPEI y SPID.",
+    },
+  ],
+  glossaryTitle: "Glosario rápido",
+  glossary: [
+    ["SOC", "Centro de operaciones de seguridad: un equipo que vigila alertas todo el día."],
+    ["MDR", "Detección y respuesta administradas: el SOC no solo avisa, también contiene el ataque."],
+    ["EDR", "Protección avanzada para computadoras que detecta comportamientos sospechosos, no solo virus conocidos."],
+    ["TEM", "Monitoreo de exposición: buscar si tus datos, correos o marca aparecen en filtraciones o en la dark web."],
+    ["SIEM", "Sistema que junta los registros de tus equipos y servicios para detectar ataques."],
+    ["SOAR", "Automatización de respuesta: acciones automáticas ante una alerta (bloquear, abrir ticket, avisar)."],
+    ["vCISO", "Director de seguridad externo: dirección y plan de seguridad sin contratar a alguien de tiempo completo."],
+    ["SGSI", "Sistema de gestión de seguridad de la información: el método ordenado que pide ISO 27001."],
+    ["CIDSI", "Software propio de DOGUI para operar el SGSI: controles, evidencias, riesgos e indicadores."],
+    ["MFA", "Segundo factor de autenticación: un código o app además de la contraseña."],
+    ["SPF · DKIM · DMARC", "Registros del dominio que evitan que alguien envíe correos haciéndose pasar por tu empresa."],
+    ["Phishing", "Engaño por correo, WhatsApp o SMS para robar contraseñas, datos o dinero."],
+    ["Ransomware", "Ataque que cifra tu información y pide un rescate para devolverla."],
+    ["ISO 27001 · PCI DSS", "Normas de seguridad: la primera para la información en general, la segunda para datos de tarjetas."],
+    ["SPEI · SPID", "Sistemas de pagos electrónicos de Banxico en pesos y en dólares."],
+  ],
 };
 
 // Imágenes fijas de la experiencia 3D, una por capítulo. Se ven en el modo estático

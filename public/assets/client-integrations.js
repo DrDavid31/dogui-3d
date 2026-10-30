@@ -41,8 +41,19 @@
     }
   };
 
+  // Sin medición si la persona la desactivó (aviso de privacidad, sección 9) o si su
+  // navegador envía Global Privacy Control / Do Not Track.
+  const measurementOff = () => {
+    if (navigator.globalPrivacyControl === true || navigator.doNotTrack === "1") return true;
+    try {
+      return window.localStorage.getItem("dogui_measure_off") === "1";
+    } catch {
+      return true;
+    }
+  };
+
   const sendEvent = (event, properties = {}) => {
-    if (!window.DOGUIApiAvailable) return;
+    if (!window.DOGUIApiAvailable || measurementOff()) return;
 
     const payload = JSON.stringify({
       event,

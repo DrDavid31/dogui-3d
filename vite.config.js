@@ -1,5 +1,10 @@
 import { defineConfig } from "vite";
-import { renderApp, renderChrome } from "./src/content/render.js";
+import { resolve } from "node:path";
+import { renderApp, renderChrome, renderLegal, renderChecklist } from "./src/content/render.js";
+import { site } from "./src/content/content.js";
+
+// Páginas además del inicio (cada una con su index.html).
+const PAGES = { privacidad: "privacy", terminos: "terms", checklist: "checklist" };
 
 // GitHub Pages sirve el sitio bajo /doguiweb/. Para otra ruta: BASE=/otra/ npm run build
 const base = process.env.BASE || "/doguiweb/";
@@ -13,18 +18,27 @@ function contentHtml() {
   return {
     name: "dogui-content-html",
     enforce: "pre",
-    transformIndexHtml(html) {
+    transformIndexHtml(html, ctx) {
+      // Teléfono en los datos para buscadores solo cuando está configurado.
+      html = html.replaceAll("__SITE_URL__", siteUrl).replace("__TELEPHONE__", site.phone ? `"telephone": ${JSON.stringify(site.phone)},` : "");
+      const page = Object.keys(PAGES).find((p) => ctx.filename.replace(/\\/g, "/").includes(`/${p}/`));
+      if (page) {
+        const kind = PAGES[page];
+        const chrome = renderChrome({ base, home: base });
+        const main = kind === "checklist" ? renderChecklist({ base }) : renderLegal({ base, kind });
+        return html.replace("<!--app-chrome-->", chrome.header).replace("<!--legal-main-->", main).replace("<!--app-footer-->", chrome.footer);
+      }
       const app = renderApp({ base });
       const chrome = renderChrome({ base });
       return html
-        .replaceAll("__SITE_URL__", siteUrl)
         .replace("<!--app-chrome-->", chrome.header + chrome.chapters)
-        .replace("<!--app-main-->", app.hero + app.detectar + app.responder + app.automatizar + app.contacto)
+        .replace("<!--app-main-->", app.hero + app.detectar + app.responder + app.automatizar + app.contacto + app.recursos)
         .replace("<!--app-footer-->", chrome.footer);
     },
-    // robots.txt y sitemap.xml con la URL de este despliegue.
+    // robots.txt, sitemap.xml y security.txt con la URL de este despliegue.
     generateBundle() {
       const today = new Date().toISOString().slice(0, 10);
+      const nextYear = new Date(Date.now() + 365 * 864e5).toISOString().replace(/\.\d+Z$/, ".000Z");
       this.emitFile({
         type: "asset",
         fileName: "robots.txt",
@@ -34,18 +48,25 @@ Allow: /
 Sitemap: ${siteUrl}sitemap.xml
 `,
       });
+      const urls = ["", ...Object.keys(PAGES).map((p) => `${p}/`)];
       this.emitFile({
         type: "asset",
         fileName: "sitemap.xml",
         source: `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${siteUrl}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+${urls.map((u) => `  <url>\n    <loc>${siteUrl}${u}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${u ? "0.5" : "1.0"}</priority>\n  </url>`).join("\n")}
 </urlset>
+`,
+      });
+      // Contacto para reportar vulnerabilidades (RFC 9116).
+      this.emitFile({
+        type: "asset",
+        fileName: ".well-known/security.txt",
+        source: `Contact: mailto:${site.email}
+Expires: ${nextYear}
+Preferred-Languages: es, en
+Canonical: ${siteUrl}.well-known/security.txt
+Policy: ${siteUrl}terminos/#uso
 `,
       });
     },
@@ -86,6 +107,12 @@ export default defineConfig({
   plugins: [contentHtml(), fontPreload()],
   build: {
     target: "es2020",
+    rollupOptions: {
+      input: {
+        main: resolve(import.meta.dirname, "index.html"),
+        ...Object.fromEntries(Object.keys(PAGES).map((p) => [p, resolve(import.meta.dirname, `${p}/index.html`)])),
+      },
+    },
     // Mapas de fuente publicados (el repositorio es público): depuración en producción.
     sourcemap: true,
     assetsInlineLimit: 0,

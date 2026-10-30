@@ -4,9 +4,15 @@
 // En modo 3D, el JS toma los elementos marcados con data-o (objetos en el mundo)
 // y data-hud (textos en pantalla) y los coloca sin duplicar contenido.
 import * as C from "./content.js";
+import { legal, privacyShort, privacy, terms } from "./legal.js";
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+// Teléfono y WhatsApp: solo se muestran cuando están configurados en content.js.
+const tel = () => (C.site.phone ? `tel:${C.site.phone.replace(/[^\d+]/g, "")}` : "");
+const wa = (text) => (C.site.whatsapp ? `https://wa.me/${C.site.whatsapp}?text=${encodeURIComponent(text)}` : "");
+const ARROW = `<span class="btn__arrow" aria-hidden="true">→</span>`;
 
 export function renderApp({ base = "/" } = {}) {
   const A = (p) => `${base}assets/${p}`;
@@ -576,61 +582,269 @@ export function renderApp({ base = "/" } = {}) {
         <p class="lede">${esc(CT.text)}</p>
         <div class="contact__details">
           <a href="mailto:${esc(C.site.email)}">${esc(C.site.email)}</a>
-          <a href="${esc(C.site.phoneHref)}">${esc(C.site.phone)}</a>
+          ${C.site.phone ? `<a href="${esc(tel())}">${esc(C.site.phone)}</a>` : ""}
+          ${C.site.whatsapp ? `<a href="${esc(wa(C.whatsapp.message))}" target="_blank" rel="noopener noreferrer">${esc(C.whatsapp.label)}</a>` : ""}
         </div>
+        ${C.site.bookingUrl ? `<a class="btn btn--ghost contact__booking" href="${esc(C.site.bookingUrl)}" target="_blank" rel="noopener noreferrer">${esc(FM.booking)}${arrow}</a>` : ""}
+        <aside class="incident" aria-labelledby="incident-title">
+          <h4 class="incident__title" id="incident-title"><span class="incident__dot" aria-hidden="true"></span>${esc(C.incident.title)}</h4>
+          <p>${esc(C.incident.text)}</p>
+          <div class="incident__actions">
+            <a class="btn btn--primary btn--sm" href="#contacto" data-incident>${esc(C.incident.cta)}${arrow}</a>
+            ${C.site.phone ? `<a class="btn btn--ghost btn--sm" href="${esc(tel())}">${esc(C.incident.call)}</a>` : ""}
+            ${C.site.whatsapp ? `<a class="btn btn--ghost btn--sm" href="${esc(wa(C.whatsapp.incidentMessage))}" target="_blank" rel="noopener noreferrer">${esc(C.incident.whatsapp)}</a>` : ""}
+          </div>
+        </aside>
       </div>
-      <form class="lead-form" data-lead-form novalidate>
+      <form class="lead-form" data-lead-form data-lenis-prevent novalidate>
         <label class="hp-field" aria-hidden="true">${esc(FM.honeypot)}<input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
         <label>${esc(FM.name)}<input name="name" type="text" autocomplete="name" maxlength="80" required /></label>
         <label>${esc(FM.company)}<input name="company" type="text" autocomplete="organization" maxlength="100" required /></label>
         <label>${esc(FM.email)}<input name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required /></label>
-        <label>${esc(FM.service)}
+        <label>${esc(FM.phone)}<input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" /></label>
+        <label>${esc(FM.size)}
+          <select name="size">
+            <option value="">${esc(FM.sizePlaceholder)}</option>
+            ${FM.sizes.map((o) => `<option>${esc(o)}</option>`).join("")}
+          </select>
+        </label>
+        <label>${esc(FM.urgency)}
+          <select name="urgency">
+            ${FM.urgencies.map((o) => `<option>${esc(o)}</option>`).join("")}
+          </select>
+        </label>
+        <label class="full">${esc(FM.service)}
           <select name="service" required>
             <option value="">${esc(FM.servicePlaceholder)}</option>
             ${FM.groups.map((g) => `<optgroup label="${esc(g.label)}">${g.options.map((o) => `<option>${esc(o)}</option>`).join("")}</optgroup>`).join("")}
           </select>
         </label>
-        <label class="full">${esc(FM.message)}<textarea name="message" rows="5" maxlength="1200" placeholder="${esc(FM.messagePlaceholder)}"></textarea></label>
+        <label class="full">${esc(FM.message)}<textarea name="message" rows="3" maxlength="1200" placeholder="${esc(FM.messagePlaceholder)}"></textarea></label>
+        <label class="check full"><input name="consent" type="checkbox" required /><span>${esc(FM.consentBefore)}<a href="${base}privacidad/">${esc(FM.consentLink)}</a>${esc(FM.consentAfter)}</span></label>
+        <label class="check full"><input name="marketing" type="checkbox" /><span>${esc(FM.marketing)}</span></label>
         <button class="btn btn--primary full" type="submit" data-magnetic>${esc(FM.submit)}${arrow}</button>
         <p class="form-note full" data-form-note role="status" aria-live="polite">${esc(FM.note)}</p>
+        <p class="form-privacy full">${esc(privacyShort(legal))} <a href="${base}privacidad/">${esc(FM.privacyMore)}</a>.</p>
       </form>
       </div>
     </section>
   </div>`;
 
-  return { hero, detectar, responder, automatizar, contacto };
+  // ── Herramientas gratuitas y preguntas (flujo normal, también después del mundo 3D) ──
+  const R = C.recursos;
+  const Q = R.quiz;
+  const SL = R.selector;
+  const EM = R.email;
+  const RP = R.report;
+  const FQ = C.faq;
+  const radios = (name, options, values = options) =>
+    options
+      .map((o, i) => `<label class="pick"><input type="radio" name="${name}" value="${esc(values[i])}" /><span>${esc(o)}</span></label>`)
+      .join("");
+  const recursos = `
+  <div class="chapter chapter--tools" id="recursos" data-ch="contacto" data-tone="light">
+    <section class="sec sec--tools" id="${R.id}" aria-labelledby="${R.id}-title">
+      <header class="tools__head">
+        ${label("05", R.kicker)}
+        <h2 class="h-section" id="${R.id}-title">${esc(R.title)}</h2>
+        <p class="lede">${esc(R.text)}</p>
+      </header>
+
+      <div class="tools" data-tools>
+        <div class="tools__tabs" role="tablist" aria-label="${esc(R.kicker)}">
+          ${R.tabs.map((t, i) => `<button class="tools__tab" type="button" role="tab" id="tool-tab-${i}" aria-controls="tool-${i}" aria-selected="${i === 0}">${esc(t)}</button>`).join("")}
+        </div>
+
+        <div class="tools__panel" role="tabpanel" id="tool-0" aria-labelledby="tool-tab-0">
+          <h3 class="h-sub">${esc(Q.title)}</h3>
+          <p class="tools__text">${esc(Q.text)}</p>
+          <form class="quiz" data-quiz>
+            ${Q.questions
+              .map(
+                (it, i) => `
+            <fieldset class="quiz__q">
+              <legend><span class="quiz__n">${String(i + 1).padStart(2, "0")}</span>${esc(it.q)}</legend>
+              <div class="quiz__a">${radios(`q${i}`, Q.answers.map((a) => a.label), Q.answers.map((a) => a.points))}</div>
+            </fieldset>`,
+              )
+              .join("")}
+            <button class="btn btn--primary" type="submit">Ver mi resultado${arrow}</button>
+          </form>
+          <div class="tool-result" data-quiz-result hidden></div>
+        </div>
+
+        <div class="tools__panel" role="tabpanel" id="tool-1" aria-labelledby="tool-tab-1">
+          <h3 class="h-sub">${esc(SL.title)}</h3>
+          <p class="tools__text">${esc(SL.text)}</p>
+          <form class="selector" data-selector>
+            ${SL.steps
+              .map(
+                (s, i) => `
+            <fieldset class="quiz__q">
+              <legend><span class="quiz__n">${String(i + 1).padStart(2, "0")}</span>${esc(s.q)}</legend>
+              <div class="quiz__a quiz__a--stack">${radios(s.id, s.options, s.options.map((_, k) => k))}</div>
+            </fieldset>`,
+              )
+              .join("")}
+            <button class="btn btn--primary" type="submit">Ver recomendación${arrow}</button>
+          </form>
+          <div class="tool-result" data-selector-result hidden></div>
+        </div>
+
+        <div class="tools__panel" role="tabpanel" id="tool-2" aria-labelledby="tool-tab-2">
+          <h3 class="h-sub">${esc(EM.title)}</h3>
+          <p class="tools__text">${esc(EM.text)}</p>
+          <form class="mailcheck" data-mailcheck novalidate>
+            <label>${esc(EM.label)}<input name="domain" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(EM.placeholder)}" maxlength="253" required /></label>
+            <button class="btn btn--primary" type="submit">${esc(EM.submit)}${arrow}</button>
+          </form>
+          <div class="tool-result" data-mailcheck-result role="status" aria-live="polite"></div>
+          <p class="tools__note">${esc(EM.note)}</p>
+        </div>
+      </div>
+
+      <div class="tools__extras">
+        <figure class="report" aria-labelledby="report-title">
+          <figcaption>
+            <h3 class="h-sub" id="report-title">${esc(RP.title)}</h3>
+            <p class="tools__text">${esc(RP.text)}</p>
+          </figcaption>
+          <div class="report__doc">
+            <div class="report__top">
+              <span class="report__brand">${mark()}<span>${esc(RP.period)}</span></span>
+              <span class="pill">${esc(RP.badge)}</span>
+            </div>
+            <p class="report__company">${esc(RP.company)}</p>
+            <p class="report__risk">${esc(RP.risk)}: <strong class="risk risk--mid">${esc(RP.riskValue)}</strong></p>
+            <table class="report__table">
+              <thead><tr>${RP.head.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead>
+              <tbody>
+                ${RP.rows
+                  .map(
+                    ([f, r, a]) =>
+                      `<tr><td>${esc(f)}</td><td><span class="risk risk--${r === "Alto" ? "high" : r === "Medio" ? "mid" : "low"}">${esc(r)}</span></td><td>${esc(a)}</td></tr>`,
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+        </figure>
+        <article class="card card--checklist">
+          <div class="card__icon">${icon("file-lock")}</div>
+          <h3 class="card__title">${esc(R.checklist.title)}</h3>
+          <p class="card__text">${esc(R.checklist.text)}</p>
+          <a class="card__cta" href="${base}checklist/">${esc(R.checklist.cta)}${arrow}</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="sec sec--faq" id="${FQ.id}" aria-labelledby="${FQ.id}-title">
+      <header class="tools__head">
+        ${label("05", FQ.kicker)}
+        <h2 class="h-section" id="${FQ.id}-title">${esc(FQ.title)}</h2>
+      </header>
+      <div class="faq">
+        ${FQ.items.map((f) => `<details class="faq__item"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}
+      </div>
+      <div class="glossary">
+        <h3 class="h-sub">${esc(FQ.glossaryTitle)}</h3>
+        <dl>${FQ.glossary.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join("")}</dl>
+      </div>
+    </section>
+  </div>`;
+
+  return { hero, detectar, responder, automatizar, contacto, recursos };
 }
 
-export function renderChrome({ base = "/" } = {}) {
+/** Página legal (aviso de privacidad o términos de uso). */
+export function renderLegal({ base = "/", kind = "privacy" } = {}) {
+  const doc = kind === "terms" ? terms(legal) : privacy(legal, { phone: C.site.phone });
+  const block = (b) => {
+    if (typeof b === "string") return `<p>${esc(b)}</p>`;
+    if (b.h) return `<h3>${esc(b.h)}</h3>`;
+    if (b.list) return `<ul>${b.list.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
+    if (b.measure)
+      return `<div class="measure" data-measure><p>Medición del sitio en este navegador: <strong data-measure-state>activa</strong></p><button class="btn btn--ghost btn--sm" type="button" data-measure-toggle>Desactivar medición</button></div>`;
+    return "";
+  };
+  const other = kind === "terms" ? { href: `${base}privacidad/`, label: "Aviso de privacidad" } : { href: `${base}terminos/`, label: "Términos de uso" };
+  return `
+  <article class="legal-doc">
+    <p class="label"><span class="label__t">Legal</span></p>
+    <h1 class="h-section">${esc(doc.title)}</h1>
+    <p class="lede">${esc(doc.lede)}</p>
+    <p class="legal-doc__meta">Última actualización: <time datetime="${legal.updatedISO}">${esc(legal.updated)}</time></p>
+    <nav class="legal-doc__toc" aria-label="Contenido">
+      <ol>${doc.sections.map((s) => `<li><a href="#${s.id}">${esc(s.h.replace(/^\d+\.\s*/, ""))}</a></li>`).join("")}</ol>
+    </nav>
+    ${doc.sections.map((s) => `<section id="${s.id}" aria-labelledby="${s.id}-h"><h2 id="${s.id}-h">${esc(s.h)}</h2>${s.body.map(block).join("")}</section>`).join("")}
+    <p class="legal-doc__more"><a href="${other.href}">${esc(other.label)}${ARROW}</a></p>
+  </article>`;
+}
+
+/** Checklist imprimible para PyMEs. */
+export function renderChecklist({ base = "/" } = {}) {
+  const K = C.checklist;
+  let n = 0;
+  return `
+  <article class="legal-doc checklist">
+    <p class="label"><span class="label__t">Recurso gratuito</span></p>
+    <h1 class="h-section">${esc(K.title)}</h1>
+    <p class="lede">${esc(K.lede)}</p>
+    <button class="btn btn--primary btn--sm checklist__print" type="button" data-print>${esc(K.print)}</button>
+    ${K.groups
+      .map(
+        (g) => `
+    <section class="checklist__group">
+      <h2>${esc(g.title)}</h2>
+      <ul>${g.items.map((i) => `<li><label class="check"><input type="checkbox" /><span><b>${String(++n).padStart(2, "0")}</b> ${esc(i)}</span></label></li>`).join("")}</ul>
+    </section>`,
+      )
+      .join("")}
+    <p class="checklist__cta">${esc(K.cta)} <a class="btn btn--primary btn--sm" href="${base}#contacto">${esc(K.ctaLink)}${ARROW}</a></p>
+  </article>`;
+}
+
+/**
+ * Barra superior, indicador de capítulos y pie. `home` antepone la ruta del inicio a las
+ * anclas (páginas legales: los enlaces vuelven a la página principal).
+ */
+export function renderChrome({ base = "/", home = "" } = {}) {
   const A = (p) => `${base}assets/${p}`;
+  const waHref = wa(C.whatsapp.message);
   return {
     header: `
-  <a class="skip-link" href="#contacto">Saltar a contacto</a>
+  <a class="skip-link" href="${home ? "#contenido" : "#contacto"}">${home ? "Saltar al contenido" : "Saltar a contacto"}</a>
   <header class="topbar" data-topbar>
-    <a class="topbar__logo" href="#inicio" aria-label="DOGUI inicio">
+    <a class="topbar__logo" href="${home || "#inicio"}" aria-label="DOGUI inicio">
       <img src="${A("logo-lockup-dark.svg")}" alt="DOGUI" width="92" height="30" />
     </a>
     <div class="topbar__right">
       <button class="topbar__menu" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
         <span class="topbar__menu-icon" aria-hidden="true"><i></i><i></i></span><span>Menú</span>
       </button>
-      <a class="btn btn--primary btn--sm" href="${esc(C.cta.href)}" data-magnetic>${esc(C.cta.label)}<span class="btn__arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--primary btn--sm" href="${esc(home + C.cta.href)}" data-magnetic>${esc(C.cta.label)}<span class="btn__arrow" aria-hidden="true">→</span></a>
     </div>
     <nav class="menu" id="site-menu" aria-label="Secciones" data-menu hidden>
       <ol>
-        ${C.nav.map((n, i) => `<li><a href="${n.href}"><span class="menu__n">${String(i + 1).padStart(2, "0")}</span>${esc(n.label)}</a></li>`).join("")}
+        ${C.nav.map((n, i) => `<li><a href="${home}${n.href}"><span class="menu__n">${String(i + 1).padStart(2, "0")}</span>${esc(n.label)}</a></li>`).join("")}
       </ol>
     </nav>
-  </header>`,
+  </header>
+  ${waHref ? `<a class="wa-float" href="${esc(waHref)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(C.whatsapp.label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg><span>${esc(C.whatsapp.label)}</span></a>` : ""}`,
     chapters: `
   <nav class="chapters" aria-label="Capítulos" data-chapters>
     ${C.chapters.map((c) => `<a href="#${c.id === "contacto" ? "cierre" : c.id}" data-chapter-link="${c.id}">${esc(c.label)}</a>`).join('<span aria-hidden="true">·</span>')}
   </nav>`,
     footer: `
   <footer class="footer">
-    <a class="footer__logo" href="#inicio" aria-label="DOGUI inicio"><img src="${A("logo-lockup-dark.svg")}" alt="DOGUI" width="154" height="50" loading="lazy" /></a>
+    <a class="footer__logo" href="${home || "#inicio"}" aria-label="DOGUI inicio"><img src="${A("logo-lockup-dark.svg")}" alt="DOGUI" width="154" height="50" loading="lazy" /></a>
     <p>${esc(C.footer.text)}</p>
-    <a class="footer__link" href="${esc(C.footer.link.href)}">${esc(C.footer.link.label)}<span class="btn__arrow" aria-hidden="true">→</span></a>
+    <a class="footer__link" href="${esc(home + C.footer.link.href)}">${esc(C.footer.link.label)}<span class="btn__arrow" aria-hidden="true">→</span></a>
+    <nav class="footer__legal" aria-label="Legal">
+      ${C.footer.legal.map((l) => `<a href="${base}${l.path}">${esc(l.label)}</a>`).join("")}
+    </nav>
+    <p class="footer__copy">© ${legal.updatedISO.slice(0, 4)} ${esc(legal.owner)}. Todos los derechos reservados.</p>
   </footer>`,
   };
 }
