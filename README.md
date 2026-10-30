@@ -8,7 +8,12 @@ versión sin WebGL).
 **Estado:** recorrido 3D completo: loader, Hero, 01 Detectar, 02 Responder,
 03 Automatizar, transición del logo y 04 Contacto. En móvil el contenido va en flujo
 vertical con "ventanas" 3D por capítulo; con `prefers-reduced-motion`, sin WebGL o sin
-JS se muestra la versión estática completa.
+JS se muestra la versión estática completa, con una imagen fija de la escena 3D de cada
+capítulo (`public/renders/`).
+
+Lighthouse (build local, 2026-10-30): accesibilidad 100, SEO 100, buenas prácticas 96
+(el único aviso es el 404 de `/api/health` en localhost; en github.io no se consulta),
+CLS 0. Rendimiento ≈ 70 en escritorio y ≈ 67 en móvil, con variación entre corridas.
 
 Modelos 3D (todos de ciberseguridad, en `src/scenes/shared/`): radar de detección,
 globo de amenazas con arcos, escudo hexagonal, evidencias (correo, documento filtrado,
@@ -42,6 +47,11 @@ Parámetros útiles en desarrollo:
 
 Capturas de estaciones (con `npm run dev` corriendo):
 `node scripts/capture.mjs <carpeta> @c1-intro "@c2-soc|+20"` (`VIEWPORT=1536x864` opcional).
+
+Imágenes fijas del modo estático: `node scripts/renders.mjs` las regenera en
+`public/renders/` (WebP 1600 y 800 px) desde la escena 3D real; con
+`node scripts/renders.mjs <carpeta> @c1-intro "@h1!"` solo prueba tomas (`!` deja las
+tarjetas HTML visibles). Regenéralas si cambia el modelado o la iluminación.
 
 En `dev`, `window.__dogui` expone el escenario, el director de cámara y el scroll
 (p. ej. `__dogui.scroll.jumpToTime(585)`).
@@ -83,22 +93,25 @@ src/
     loader.js              Logo 3D (extruido del SVG oficial) que se ensambla.
     assets.js              SVG → ExtrudeGeometry, fuente 3D, sombras de contacto.
     timeline.js            Rampas, ventanas e interpolación monótona.
-  mobile.js                Móvil: ventanas 3D por capítulo sobre el contenido en flujo.
+  mobile-windows.js        Móvil: reserva las ventanas 3D en el DOM (sin three.js).
+  mobile.js                Móvil: llena las ventanas con los modelos (carga diferida).
   scenes/
     hero/                  Mesa + laptop + consola SOC + portal/túnel neón.
     detectar/              Capítulo 01 (index = guion y contenido, build = geometría).
     responder/             Capítulo 02: letras cromadas, racks, SOC, 24/7·360·90, vCISO, SPEI.
     automatizar/           Capítulo 03: hiperespacio, SOAR, catálogo, CIDSI, software, logo.
     contacto/              Capítulo 04: paquetes, cierre con logo y formulario.
-    shared/                Materiales y librería de modelos (cyber.js, ops.js).
+    shared/                Materiales, luces por capítulo y modelos (cyber.js, ops.js).
   ui/                      Menú, formulario (API + mailto), cursor, magnéticos, tilt.
   styles/                  tokens, base, flow (estático), world (3D), ui.
 public/
   assets/                  Logos oficiales, favicons, og-dogui.png, icons.svg.
   fonts/jakarta-800.typeface.json   Plus Jakarta Sans ExtraBold para TextGeometry.
+  renders/                 Imágenes fijas por capítulo para el modo estático.
 scripts/
   make-typeface.mjs        Regenera la fuente 3D (npm run fonts).
   capture.mjs              Captura cuadros de la experiencia (requiere npm run dev).
+  renders.mjs              Genera public/renders/ desde la escena 3D (requiere npm run dev).
 ```
 
 ## Cómo funciona
@@ -115,8 +128,16 @@ scripts/
   El logo 2D usa `logo-lockup-dark.svg` y `logo-mark-small-dark.svg` sin cambios; el logo
   3D se genera de ese mismo SVG (cada trazo con su color original, solo profundidad y
   bisel).
-- **Modos.** Escritorio con WebGL2 → mundo 3D. Móvil (≤ 900 px o puntero táctil),
-  `prefers-reduced-motion`, sin WebGL o sin JS → versión estática completa (flujo).
+- **Modos.** Escritorio con WebGL2 → mundo 3D. Móvil (≤ 900 px o puntero táctil) →
+  flujo con ventanas 3D. `prefers-reduced-motion`, sin WebGL o sin JS → versión
+  estática completa con imágenes fijas.
+- **Sin tirones de shaders.** Todos los capítulos comparten un solo juego de luces
+  (`Stage.lights`; cada capítulo aporta un preset en `shared/lights.js` y se mezclan en
+  el cambio): si cambiara el número de luces, three.js recompilaría todos los shaders
+  visibles. Cada capítulo se construye oculto y se precompila con
+  `KHR_parallel_shader_compile` (`Stage.precompile`) antes de mostrarse; el entorno PMREM
+  y el posproceso también. Al agregar un objeto: no cambies `transparent`, `fog` ni los
+  colores por instancia después de construirlo (es otra variante del shader).
 
 ## Editar textos
 

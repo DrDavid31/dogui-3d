@@ -304,3 +304,8 @@ main,
 .is-loading:not(.is-revealing) .chapters {
   opacity: 0;
 }
+
+.is-arranging main,
+.is-arranging .footer {
+  visibility: hidden;
+}

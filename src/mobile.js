@@ -3,17 +3,9 @@ import { Stage, LightSpec } from "./core/renderer.js";
 import { radar, threatGlobe } from "./scenes/shared/cyber.js";
 import { rackRow, beacon, gear, shieldCheck, logoTile } from "./scenes/shared/ops.js";
 
-// Móvil: el contenido sigue en flujo vertical (legible), y cada capítulo abre una
-// "ventana" donde se ve su modelo 3D de ciberseguridad, que gira con el scroll.
-// Un solo canvas fijo; la cámara se desplaza para seguir a la ventana en pantalla.
-const WINDOWS = [
-  { after: ".sec--hero .hud--hero", model: "globe", tone: "light" },
-  { after: '[data-hud="c1-title"]', model: "radar", tone: "light" },
-  { after: '[data-hud="c2-title"]', model: "racks", tone: "dark" },
-  { after: '[data-hud="c3-title"]', model: "soar", tone: "dark" },
-  { before: '[data-hud="final"]', model: "logo", tone: "light" },
-];
-
+// Móvil: el contenido sigue en flujo vertical (legible) y cada ventana insertada por
+// mobile-windows.js muestra el modelo 3D de ciberseguridad de su capítulo, que gira
+// con el scroll. Un solo canvas fijo; la cámara se desplaza para seguir a la ventana.
 const BG = { light: new THREE.Color("#F7F7F5"), dark: new THREE.Color("#0A0A0A") };
 
 async function makeModel(kind) {
@@ -75,7 +67,7 @@ async function makeModel(kind) {
   return { group: g, update, dist, size };
 }
 
-export async function startMobile() {
+export async function startMobile(wins) {
   const html = document.documentElement;
   const canvas = document.querySelector("[data-stage]");
   const stage = new Stage(canvas, { mobile: true });
@@ -88,19 +80,7 @@ export async function startMobile() {
   L.keyPos.set(-800, 1600, 1600);
   stage.applyLights(L);
 
-  // Inserta las ventanas (decorativas) en el DOM.
-  const wins = [];
-  for (const w of WINDOWS) {
-    const ref = document.querySelector(w.after || w.before);
-    if (!ref) continue;
-    const el = document.createElement("div");
-    el.className = "m3d";
-    el.setAttribute("aria-hidden", "true");
-    if (w.after) ref.after(el);
-    else ref.before(el);
-    wins.push({ ...w, el, model: null, kind: w.model });
-  }
-  html.classList.add("has-stage", "has-m3d");
+  html.classList.add("has-stage");
 
   const load = (w) => {
     if (!w.loading) {

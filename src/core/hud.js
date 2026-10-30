@@ -20,28 +20,46 @@ export class Hud {
     const item = { el, show, tl: null, on: false, lastO: -1, lastY: null, lastP: -1 };
     const targets = el.matches(SPLIT) ? [el] : [...el.querySelectorAll(SPLIT)];
     const others = [...el.querySelectorAll(".label, .actions, .contact__details")];
+    // Dividir en líneas fuerza un reflow por elemento (~0.5 s para todo el sitio): se
+    // hace en tiempo libre (splitWhenIdle) o, a más tardar, justo antes de mostrarlo.
     if (!instant && targets.length) {
-      item.split = SplitText.create(targets, {
-        type: "lines",
-        mask: "lines",
-        linesClass: "line",
-        // El texto sigue en el DOM dentro de las líneas: sin aria-label (prohibido en <p>)
-        // ni aria-hidden. <span> mantiene el HTML válido dentro de párrafos y títulos.
-        aria: "none",
-        tag: "span",
-        autoSplit: true,
-        onSplit: (self) => {
-          const tl = gsap.timeline({ paused: true });
-          tl.from(self.lines, { yPercent: 105, duration: 0.7, stagger: 0.06, ease: "power3.out" }, 0);
-          if (others.length) tl.from(others, { autoAlpha: 0, y: 14, duration: 0.5, stagger: 0.1, ease: "power2.out" }, 0);
-          if (item.tl) tl.progress(item.tl.progress());
-          item.tl = tl;
-          return tl;
-        },
-      });
+      item.pendingSplit = () => {
+        item.pendingSplit = null;
+        item.split = SplitText.create(targets, {
+          type: "lines",
+          mask: "lines",
+          linesClass: "line",
+          // El texto sigue en el DOM dentro de las líneas: sin aria-label (prohibido en <p>)
+          // ni aria-hidden. <span> mantiene el HTML válido dentro de párrafos y títulos.
+          aria: "none",
+          tag: "span",
+          autoSplit: true,
+          onSplit: (self) => {
+            const tl = gsap.timeline({ paused: true });
+            tl.from(self.lines, { yPercent: 105, duration: 0.7, stagger: 0.06, ease: "power3.out" }, 0);
+            if (others.length) tl.from(others, { autoAlpha: 0, y: 14, duration: 0.5, stagger: 0.1, ease: "power2.out" }, 0);
+            if (item.tl) tl.progress(item.tl.progress());
+            item.tl = tl;
+            return tl;
+          },
+        });
+      };
     }
     this.items.push(item);
     return item;
+  }
+
+  /** Divide en líneas los bloques pendientes en el tiempo libre del navegador. */
+  splitWhenIdle() {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(() => fn({ timeRemaining: () => 8 }), 60));
+    const run = (deadline) => {
+      for (const it of this.items) {
+        if (!it.pendingSplit) continue;
+        if (deadline.timeRemaining() < 6) return idle(run);
+        it.pendingSplit();
+      }
+    };
+    idle(run);
   }
 
   update(t) {
@@ -51,6 +69,7 @@ export class Hud {
       const enter = Math.min(invLerp(a, b, t), it.gate ?? 1);
       const exit = c == null ? 0 : invLerp(c, d, t);
       const visible = enter > 0 && exit < 1;
+      if (visible && it.pendingSplit) it.pendingSplit();
       const o = visible ? Math.min(1, enter * 3) * (1 - smooth(exit)) : 0;
       const oq = Math.round(o * 1000) / 1000;
       if (oq !== it.lastO) {

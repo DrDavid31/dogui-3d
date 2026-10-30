@@ -22,15 +22,22 @@ const TAIL = 30;
 // Al entrar a un capítulo, su luz se mezcla con la del anterior durante este tramo (vh).
 const LIGHT_BLEND = 50;
 
+// Cede el hilo principal entre los pasos pesados del arranque: varias tareas cortas en
+// vez de una larga (la página sigue respondiendo mientras corre el loader).
+const yieldTask = () => (globalThis.scheduler?.yield ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
+
 export async function startWorld({ pointer, skipIntro = false }) {
   const html = document.documentElement;
-  html.classList.add("is-world", "has-stage", "is-loading");
+  // is-arranging: oculto mientras se acomoda en varias tareas (sin cuadros a medio
+  // acomodar ni desplazamientos de diseño).
+  html.classList.add("is-world", "has-stage", "is-loading", "is-arranging");
   html.dataset.tone = "light";
 
   const stage = new Stage(document.querySelector("[data-stage]"));
   const dir = new Director(stage.camera);
   for (const s of SCENES) s.stations(dir);
   dir.finalize();
+  await yieldTask();
 
   // Capítulos que viven en el mundo 3D: capas fijas. El resto sigue en flujo normal.
   const worldEls = SCENES.map((s) => document.querySelector(s.selector));
@@ -46,7 +53,11 @@ export async function startWorld({ pointer, skipIntro = false }) {
   const anchors = new Map([["inicio", 0]]);
   let clock = 0;
   const ctx = { stage, dir, dom, hud, env: envKeys, anchors, root: document, clock: () => clock };
-  for (const s of SCENES) s.layout(ctx);
+  for (const s of SCENES) {
+    s.layout(ctx);
+    await yieldTask();
+  }
+  html.classList.remove("is-arranging");
   const env = new Env(stage);
   env.set(envKeys);
 
@@ -191,6 +202,8 @@ export async function startWorld({ pointer, skipIntro = false }) {
 
   gsap.ticker.add(tick);
   if (import.meta.env.DEV) window.__dogui = { stage, dir, scroll, dom, hud, env, built };
+
+  hud.splitWhenIdle();
 
   // Pre-construye el siguiente capítulo mientras el usuario está en el hero.
   const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
