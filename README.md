@@ -11,9 +11,9 @@ vertical con "ventanas" 3D por capítulo; con `prefers-reduced-motion`, sin WebG
 JS se muestra la versión estática completa, con una imagen fija de la escena 3D de cada
 capítulo (`public/renders/`).
 
-Lighthouse (build local, 2026-10-30): accesibilidad 100, SEO 100, buenas prácticas 96
-(el único aviso es el 404 de `/api/health` en localhost; en github.io no se consulta),
-CLS 0. Rendimiento ≈ 70 en escritorio y ≈ 67 en móvil, con variación entre corridas.
+Lighthouse sobre el sitio publicado (2026-10-30): rendimiento 95 en móvil y 95 en
+escritorio; accesibilidad, buenas prácticas y SEO 100; CLS 0. (En `vite preview` local
+buenas prácticas marca 96 por el 404 de `/api/health`, que en github.io no se consulta.)
 
 Modelos 3D (todos de ciberseguridad, en `src/scenes/shared/`): radar de detección,
 globo de amenazas con arcos, escudo hexagonal, evidencias (correo, documento filtrado,
