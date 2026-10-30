@@ -14,7 +14,7 @@ import "./styles/ui.css";
 import { initMenu } from "./ui/menu.js";
 import { initLeadForm } from "./ui/form.js";
 import { initPointer } from "./ui/pointer.js";
-import { insertWindows } from "./mobile-windows.js";
+import { collectWindows } from "./mobile-windows.js";
 
 const html = document.documentElement;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -51,9 +51,9 @@ if (worldMode) {
   // Sin ventanas 3D (reducir movimiento, sin WebGL, ?static): se muestran las imágenes fijas.
   if (!mobile3d) html.classList.add("is-static");
   if (mobile3d) {
-    // Las ventanas se reservan ya; el 3D (three.js y modelos) llega cuando la página
-    // terminó de cargar y está libre, sin competir con el primer pantallazo.
-    const wins = insertWindows();
+    // Las ventanas ya ocupan su lugar (HTML + CSS); el 3D (three.js y modelos) llega
+    // cuando la página terminó de cargar y está libre, sin competir con el primer pantallazo.
+    const wins = collectWindows();
     const start = () => import("./mobile.js").then(({ startMobile }) => startMobile(wins));
     const idle = () => (window.requestIdleCallback ? requestIdleCallback(start, { timeout: 1500 }) : setTimeout(start, 200));
     if (document.readyState === "complete") idle();

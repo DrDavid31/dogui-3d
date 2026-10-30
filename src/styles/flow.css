@@ -308,11 +308,22 @@
 }
 
 /* ── Móvil con 3D ligero: ventanas al modelo de cada capítulo ──────────── */
+/* Están en el HTML y se muestran por media query (mismas condiciones que main.js usa
+   para el modo móvil 3D): el espacio existe desde el primer pintado, sin saltos. */
 .m3d {
+  display: none;
   height: 62vh;
   min-height: 300px;
   max-height: 560px;
   pointer-events: none;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  @media (prefers-reduced-motion: no-preference) {
+    .js:not(.is-static) .m3d {
+      display: block;
+    }
+  }
 }
 
 .has-m3d body {

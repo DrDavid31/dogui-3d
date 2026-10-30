@@ -51,6 +51,10 @@ export function renderApp({ base = "/" } = {}) {
       ${p.strong ? `<p class="card__strong">${esc(p.strong)}</p>` : ""}
     </article>`;
 
+  // Ventana 3D del modo móvil (mobile.js dibuja ahí el modelo del capítulo). Va en el
+  // HTML para que el espacio exista desde el primer pintado (ver flow.css).
+  const win = (model, tone) => `<div class="m3d" data-m3d="${model}" data-tone="${tone}" aria-hidden="true"></div>`;
+
   // Imagen fija del capítulo: solo se muestra en el modo estático (ver flow.css).
   const still = (name, pos = "50% 50%") => `
     <figure class="render" style="--pos: ${pos}">
@@ -82,6 +86,7 @@ export function renderApp({ base = "/" } = {}) {
         <a class="btn btn--link" href="${esc(H.secondary.href)}">${esc(H.secondary.label)}${arrow}</a>
       </div>
     </div>
+    ${win("globe", "light")}
 
     ${socConsole("hero-console", "soc--screen")}
 
@@ -118,6 +123,7 @@ export function renderApp({ base = "/" } = {}) {
   const detectar = `
   <div class="chapter" id="detectar" data-ch="detectar" data-tone="light" aria-labelledby="detectar-title">
     ${chapterHead(chDetect, "c1-title")}
+    ${win("radar", "light")}
     ${still("detectar", "55% 50%")}
 
     <div class="graph-ui" data-wrap aria-hidden="true">
@@ -296,6 +302,7 @@ export function renderApp({ base = "/" } = {}) {
   const responder = `
   <div class="chapter" id="responder" data-ch="responder" data-tone="dark" aria-labelledby="responder-title">
     ${chapterHead(chRespond, "c2-title")}
+    ${win("racks", "dark")}
     ${still("responder", "50% 30%")}
 
     <section class="sec" id="${S.id}" aria-labelledby="${S.id}-title">
@@ -420,6 +427,7 @@ export function renderApp({ base = "/" } = {}) {
   const automatizar = `
   <div class="chapter" id="automatizar" data-ch="automatizar" data-tone="dark" aria-labelledby="automatizar-title">
     ${chapterHead(chAuto, "c3-title")}
+    ${win("soar", "dark")}
     ${still("automatizar", "72% 40%")}
 
     <section class="sec" id="${AU.id}" aria-labelledby="${AU.id}-title">
@@ -541,6 +549,7 @@ export function renderApp({ base = "/" } = {}) {
     </section>
 
     ${still("contacto", "50% 28%")}
+    ${win("logo", "light")}
 
     <div class="hud hud--final" data-hud="final">
       <p class="statement">${esc(C.story.finalA)}</p>
