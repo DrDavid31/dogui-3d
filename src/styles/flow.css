@@ -225,6 +225,40 @@
   align-items: start;
 }
 
+/* Imágenes fijas de la experiencia 3D: solo en el modo estático (reducir movimiento,
+   sin WebGL, sin JS). En 3D y en las ventanas móviles no se muestran ni se descargan. */
+.render {
+  display: none;
+  margin: 0;
+}
+
+.no-js .render,
+.is-static .render {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .render {
+    display: block;
+  }
+}
+
+.render img {
+  display: block;
+  width: 100%;
+  height: min(56.25vw, 78vh);
+  min-height: 260px;
+  object-fit: cover;
+  object-position: var(--pos, 50% 50%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+
+.sec--hero > .render {
+  grid-column: 1 / -1;
+  margin: 0 calc(var(--gutter) * -1);
+}
+
 /* Anillo decorativo de productos: solo existe alrededor del logo 3D. */
 .logo-ring {
   display: none;

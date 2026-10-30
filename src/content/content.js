@@ -804,3 +804,13 @@ export const footer = {
   text: "Servicios de ciberseguridad, automatización y consultoría financiera especializada.",
   link: { label: "Agenda tu diagnóstico", href: "#contacto" },
 };
+
+// Imágenes fijas de la experiencia 3D, una por capítulo. Se ven en el modo estático
+// (reducir movimiento, sin WebGL, sin JS); el texto alternativo describe la escena.
+export const renders = {
+  hero: "Laptop con un túnel de luz naranja en la pantalla, la entrada al perímetro",
+  detectar: "Radar de detección con hallazgos marcados en naranja",
+  responder: "Muro de monitores de un SOC con tableros de alertas, entre racks de servidores",
+  automatizar: "Flujo de automatización: alerta, engrane del playbook y escudo de contención conectados",
+  contacto: "Logo 3D de DOGUI sobre una placa negra, rodeado de evidencias digitales",
+};

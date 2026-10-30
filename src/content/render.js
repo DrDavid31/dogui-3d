@@ -51,6 +51,12 @@ export function renderApp({ base = "/" } = {}) {
       ${p.strong ? `<p class="card__strong">${esc(p.strong)}</p>` : ""}
     </article>`;
 
+  // Imagen fija del capítulo: solo se muestra en el modo estático (ver flow.css).
+  const still = (name, pos = "50% 50%") => `
+    <figure class="render" style="--pos: ${pos}">
+      <img src="${base}renders/${name}-1600.webp" srcset="${base}renders/${name}-800.webp 800w, ${base}renders/${name}-1600.webp 1600w" sizes="100vw" width="1600" height="900" alt="${esc(C.renders[name])}" loading="lazy" decoding="async" />
+    </figure>`;
+
   const chapterHead = (ch, key) => `
     <header class="hud hud--chapter" data-hud="${key}">
       ${label(ch.n, ch.label)}
@@ -101,6 +107,8 @@ export function renderApp({ base = "/" } = {}) {
       <p class="card__text">${esc(H.panel.note)}</p>
     </aside>
 
+    ${still("hero")}
+
     <div class="hud hud--statement hud--center hud--on-dark" data-hud="perimeter" aria-hidden="true">
       <p class="statement">${esc(C.story.perimeter)}</p>
     </div>
@@ -110,6 +118,7 @@ export function renderApp({ base = "/" } = {}) {
   const detectar = `
   <div class="chapter" id="detectar" data-ch="detectar" data-tone="light" aria-labelledby="detectar-title">
     ${chapterHead(chDetect, "c1-title")}
+    ${still("detectar", "55% 50%")}
 
     <div class="graph-ui" data-wrap aria-hidden="true">
       ${C.detectGraph.nodes.map((n, i) => `<span class="node-label" data-o="node-${i}">${esc(n)}</span>`).join("")}
@@ -287,6 +296,7 @@ export function renderApp({ base = "/" } = {}) {
   const responder = `
   <div class="chapter" id="responder" data-ch="responder" data-tone="dark" aria-labelledby="responder-title">
     ${chapterHead(chRespond, "c2-title")}
+    ${still("responder", "50% 30%")}
 
     <section class="sec" id="${S.id}" aria-labelledby="${S.id}-title">
       <div class="hud hud--left" data-hud="svc-head">
@@ -410,6 +420,7 @@ export function renderApp({ base = "/" } = {}) {
   const automatizar = `
   <div class="chapter" id="automatizar" data-ch="automatizar" data-tone="dark" aria-labelledby="automatizar-title">
     ${chapterHead(chAuto, "c3-title")}
+    ${still("automatizar", "72% 40%")}
 
     <section class="sec" id="${AU.id}" aria-labelledby="${AU.id}-title">
       <div class="hud hud--left" data-hud="soar-head">
@@ -528,6 +539,8 @@ export function renderApp({ base = "/" } = {}) {
           .join("")}
       </div>
     </section>
+
+    ${still("contacto", "50% 28%")}
 
     <div class="hud hud--final" data-hud="final">
       <p class="statement">${esc(C.story.finalA)}</p>

@@ -47,6 +47,8 @@ if (worldMode) {
 } else {
   // Modo flujo: navegación nativa con scroll suave del navegador.
   html.classList.add("is-flow");
+  // Sin ventanas 3D (reducir movimiento, sin WebGL, ?static): se muestran las imágenes fijas.
+  if (!mobile3d) html.classList.add("is-static");
   if (mobile3d) import("./mobile.js").then(({ startMobile }) => startMobile());
   initMenu({
     onNavigate: (id, target) => target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }),
