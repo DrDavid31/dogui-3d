@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { Stage, LightSpec } from "./core/renderer.js";
-import { radar, threatGlobe } from "./scenes/shared/cyber.js";
-import { rackRow, beacon, gear, shieldCheck, logoTile } from "./scenes/shared/ops.js";
+import { radar, threatGlobe, hexShield, crowd, phone } from "./scenes/shared/cyber.js";
+import { rackRow, beacon, gear, shieldCheck, logoTile, mexicoMap, cpuCore } from "./scenes/shared/ops.js";
 
-// Móvil: el contenido sigue en flujo vertical (legible) y cada ventana insertada por
-// mobile-windows.js muestra el modelo 3D de ciberseguridad de su capítulo, que gira
-// con el scroll. Un solo canvas fijo; la cámara se desplaza para seguir a la ventana.
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// Móvil: el contenido sigue en flujo vertical (legible) y cada ventana (.m3d, en el
+// HTML) muestra el modelo 3D de ciberseguridad de su sección, que gira con el scroll. Un solo canvas fijo; la cámara se desplaza para seguir a la ventana.
 const BG = { light: new THREE.Color("#F7F7F5"), dark: new THREE.Color("#0A0A0A") };
 
 async function makeModel(kind) {
@@ -30,15 +31,65 @@ async function makeModel(kind) {
       g.rotation.z = (p - 0.5) * 0.3;
     };
   } else if (kind === "racks") {
+    // Fila de racks en perspectiva (como el pasillo del capítulo 02), completa en la ventana.
     const racks = rackRow({ count: 5, spacing: 660 });
-    racks.group.position.y = -1000;
-    racks.group.scale.setScalar(0.7);
-    size = 2000;
+    racks.group.scale.setScalar(0.5);
+    racks.group.position.y = -500;
     g.add(racks.group);
-    dist = 2300;
+    g.rotation.x = 0.1;
+    size = 1500;
+    dist = 2100;
     update = (clock, p) => {
       racks.update(clock);
-      g.rotation.y = -0.6 + p * 1.1;
+      g.rotation.y = -0.75 + p * 0.5;
+    };
+  } else if (kind === "shield") {
+    // PyME: el teléfono protegido por el escudo hexagonal (onda naranja que lo recorre).
+    const ph = phone();
+    const hex = hexShield({ r: 700, cap: 0.82, cell: 58 });
+    hex.mesh.material.opacity = 0.45;
+    hex.group.position.z = -660;
+    g.add(hex.group, ph);
+    size = 1150;
+    dist = 1900;
+    update = (clock, p) => {
+      hex.update(clock);
+      ph.position.y = Math.sin(clock * 0.9) * 8;
+      g.rotation.y = (p - 0.5) * 0.8;
+    };
+  } else if (kind === "crowd") {
+    // Awareness: las personas pasan de "en riesgo" (anillo naranja) a capacitadas.
+    const people = crowd({ cols: 4, rows: 3, gap: 150 });
+    people.group.position.y = -90;
+    g.add(people.group);
+    g.rotation.x = 0.42;
+    size = 950;
+    dist = 1500;
+    update = (clock, p) => {
+      people.update(clock, clamp01((p - 0.2) / 0.5));
+      people.group.rotation.y = clock * 0.12;
+    };
+  } else if (kind === "map") {
+    // SPEI/SPID: México en puntos con pulsos que convergen (ilustrativo, sin datos).
+    const mx = mexicoMap({ scale: 34 });
+    g.add(mx.group);
+    g.rotation.x = -0.55;
+    size = 1050;
+    dist = 1600;
+    update = (clock, p) => {
+      mx.update(clock);
+      g.rotation.z = (p - 0.5) * 0.25;
+    };
+  } else if (kind === "core") {
+    // Productos: chip central con pulsos que salen por sus pistas.
+    const core = cpuCore({ size: 300 });
+    g.add(core.group);
+    g.rotation.x = -0.5;
+    size = 1150;
+    dist = 1700;
+    update = (clock, p) => {
+      core.update(clock);
+      core.group.rotation.z = clock * 0.08 + p * 0.6;
     };
   } else if (kind === "soar") {
     const nodes = [beacon(), gear({ r: 130 }), shieldCheck({ size: 260 })];

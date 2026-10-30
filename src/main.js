@@ -15,6 +15,8 @@ import { initMenu } from "./ui/menu.js";
 import { initLeadForm } from "./ui/form.js";
 import { initPointer } from "./ui/pointer.js";
 import { collectWindows } from "./mobile-windows.js";
+import { initTopbar } from "./ui/topbar.js";
+import { initCarousels } from "./ui/carousels.js";
 
 const html = document.documentElement;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -48,6 +50,8 @@ if (worldMode) {
 } else {
   // Modo flujo: navegación nativa con scroll suave del navegador.
   html.classList.add("is-flow");
+  initTopbar();
+  initCarousels();
   // Sin ventanas 3D (reducir movimiento, sin WebGL, ?static): se muestran las imágenes fijas.
   if (!mobile3d) html.classList.add("is-static");
   if (mobile3d) {

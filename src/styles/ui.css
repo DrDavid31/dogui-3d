@@ -292,6 +292,46 @@
   }
 }
 
+/* Modo flujo: al hacer scroll aparece una barra con fondo (en el tono de la sección que
+   pasa por debajo) para que el texto no choque con los botones. Ver ui/topbar.js. */
+.is-flow .topbar::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 72px;
+  border-bottom: 1px solid rgb(10 10 10 / 0.08);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.3s,
+    background-color 0.4s,
+    border-color 0.4s;
+}
+
+.is-flow .topbar.is-solid::before {
+  opacity: 1;
+}
+
+.is-flow .topbar[data-bar="dark"]::before {
+  border-bottom-color: rgb(255 255 255 / 0.08);
+  background: color-mix(in srgb, var(--black) 84%, transparent);
+}
+
+.is-flow .topbar[data-bar="dark"] .topbar__logo,
+.is-flow .topbar[data-bar="dark"] .topbar__menu {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+
+@media (max-width: 640px) {
+  .is-flow .topbar::before {
+    height: 64px;
+  }
+}
+
 /* Mientras corre el loader solo se ve el logo 3D; la interfaz entra con el hero. */
 main,
 .topbar,

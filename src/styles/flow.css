@@ -163,10 +163,6 @@
   gap: 12px;
 }
 
-.steps > .hud {
-  grid-column: 1 / -1;
-}
-
 .orbit {
   display: grid;
   gap: 16px;
@@ -286,6 +282,92 @@
 
   .eco {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Celular: cada grupo de tarjetas es un carrusel horizontal ─────────── */
+/* La siguiente tarjeta asoma por la derecha (se entiende que se desliza) y la página
+   queda en la mitad de alto. carousels.js agrega los puntos de posición. */
+@media (max-width: 700px) {
+  .plans,
+  .steps,
+  .grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(84%, 340px);
+    align-items: stretch;
+    gap: 12px;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 6px var(--gutter) 20px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .plans::-webkit-scrollbar,
+  .steps::-webkit-scrollbar,
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .plans > *,
+  .steps > *,
+  .grid > * {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Los planes miden muy distinto: cada uno a su altura (sin huecos grandes). */
+  .plans {
+    align-items: start;
+  }
+
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: -24px;
+  }
+
+  .dots i {
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    background: var(--line);
+    transition:
+      width 0.3s var(--ease-out),
+      background-color 0.3s;
+  }
+
+  .dots i.is-on {
+    width: 18px;
+    background: var(--dogui-orange);
+  }
+
+  /* Toque cómodo (≥ 44 px) y sin zoom automático de iOS al enfocar un campo. */
+  .card__cta,
+  .contact__details a,
+  .footer__link {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .contact__details a {
+    display: inline-flex;
+  }
+
+  .lead-form input,
+  .lead-form select,
+  .lead-form textarea {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 701px) {
+  .dots {
+    display: none;
   }
 }
 

@@ -169,8 +169,8 @@ export function renderApp({ base = "/" } = {}) {
         <ol class="card__list card__list--steps">${E.deliver.items.map((d) => `<li>${esc(d)}</li>`).join("")}</ol>
       </article>
 
+      <div class="hud hud--kicker" data-hud="tem-flow">${label("01", E.flowLabel)}</div>
       <div class="steps" data-wrap aria-label="${esc(E.flowLabel)}">
-        <div class="hud hud--kicker" data-hud="tem-flow">${label("01", E.flowLabel)}</div>
         ${E.flow
           .map(
             (s, i) =>
@@ -184,6 +184,7 @@ export function renderApp({ base = "/" } = {}) {
       </div>
     </section>
 
+    ${win("shield", "light")}
     <section class="sec" id="${P.id}" aria-labelledby="${P.id}-title">
       <div class="hud hud--left" data-hud="pyme-head">
         ${label("01", P.kicker)}
@@ -241,6 +242,7 @@ export function renderApp({ base = "/" } = {}) {
       </div>
     </section>
 
+    ${win("crowd", "light")}
     <section class="sec" id="${W.id}" aria-labelledby="${W.id}-title">
       <div class="hud hud--left" data-hud="aw-head">
         ${label("01", W.kicker)}
@@ -404,6 +406,7 @@ export function renderApp({ base = "/" } = {}) {
       </div>
     </section>
 
+    ${win("map", "dark")}
     <section class="sec" id="${F.id}" aria-labelledby="${F.id}-title">
       <div class="hud hud--left" data-hud="spei-head">
         ${label("02", F.kicker)}
@@ -441,6 +444,7 @@ export function renderApp({ base = "/" } = {}) {
       </ol>
     </section>
 
+    ${win("core", "dark")}
     <section class="sec" id="${PR.id}" aria-labelledby="${PR.id}-title">
       <div class="hud hud--left" data-hud="prod-head">
         ${label("03", PR.kicker)}
