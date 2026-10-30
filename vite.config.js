@@ -3,6 +3,9 @@ import { renderApp, renderChrome } from "./src/content/render.js";
 
 // GitHub Pages sirve el sitio bajo /doguiweb/. Para otra ruta: BASE=/otra/ npm run build
 const base = process.env.BASE || "/doguiweb/";
+// URL pública (canonical, Open Graph, JSON-LD, sitemap): sigue a la ruta base, así cada
+// despliegue se identifica con su propia dirección. Otra: SITE_URL=https://… npm run build
+const siteUrl = process.env.SITE_URL || `https://drdavid31.github.io${base}`;
 
 // Inserta el HTML generado desde src/content en index.html (dev y build):
 // todo el texto llega en el HTML inicial, sin depender de JS.
@@ -14,9 +17,37 @@ function contentHtml() {
       const app = renderApp({ base });
       const chrome = renderChrome({ base });
       return html
+        .replaceAll("__SITE_URL__", siteUrl)
         .replace("<!--app-chrome-->", chrome.header + chrome.chapters)
         .replace("<!--app-main-->", app.hero + app.detectar + app.responder + app.automatizar + app.contacto)
         .replace("<!--app-footer-->", chrome.footer);
+    },
+    // robots.txt y sitemap.xml con la URL de este despliegue.
+    generateBundle() {
+      const today = new Date().toISOString().slice(0, 10);
+      this.emitFile({
+        type: "asset",
+        fileName: "robots.txt",
+        source: `User-agent: *
+Allow: /
+
+Sitemap: ${siteUrl}sitemap.xml
+`,
+      });
+      this.emitFile({
+        type: "asset",
+        fileName: "sitemap.xml",
+        source: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${siteUrl}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+`,
+      });
     },
     configureServer(server) {
       // Vite empaqueta la config (y el contenido que importa): reiniciar recarga los textos.

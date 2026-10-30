@@ -3,7 +3,6 @@
 
 export const site = {
   lang: "es-MX",
-  url: "https://drdavid31.github.io/doguiweb/",
   title: "DOGUI | Ciberseguridad, automatización y consultoría SPEI/SPID",
   description:
     "DOGUI protege empresas con SOC/MDR, Threat Exposure Monitoring, vCISO, SGSI con software propio CIDSI, awareness, automatización y consultoría SPEI/SPID.",

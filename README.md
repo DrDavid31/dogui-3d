@@ -67,9 +67,13 @@ La ruta base es `/doguiweb/`. Para otra ruta: `BASE=/otra/ npm run build`.
 
 `.github/workflows/deploy.yml` publica `dist/` en GitHub Pages en cada push a `main`
 (en el repositorio: *Settings → Pages → Source: GitHub Actions*). En Actions la ruta base
-se toma del nombre del repositorio (`/<repo>/`). Si se reemplaza el
-repositorio `doguiweb` actual, se conservan canonical, Open Graph, `og-dogui.png`,
-`robots.txt` y `sitemap.xml`.
+se toma del nombre del repositorio (`/<repo>/`).
+
+La URL pública (canonical, Open Graph, JSON-LD, `robots.txt` y `sitemap.xml`, que se
+generan en el build) sigue a la ruta base: `https://drdavid31.github.io/<base>/`. Hoy el
+repositorio `dogui-3d` se publica como `https://drdavid31.github.io/dogui-3d/`; si esta
+versión reemplaza al repositorio `doguiweb`, vuelve sola a la URL original. Para un
+dominio propio: `SITE_URL=https://dominio/ npm run build`.
 
 ## Estructura
 
