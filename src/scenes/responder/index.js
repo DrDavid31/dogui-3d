@@ -26,10 +26,12 @@ export const responder = {
     this.FLOOR = -520;
     const S = (id, a, o = {}) => dir.station(id, { ...a, hold: 52, travel: 54, ...o });
 
-    S("c2-intro", look(V(O.x, 170, O.z), -8, -2), { travel: 60, hold: 56, drift: [120, 0, -160] });
-    // Letras cromadas: la cámara las recorre de lado.
-    this.LETTERS = { x: O.x + 900, z: O.z - 2500 };
-    S("c2-letters", { pos: [O.x - 1300, 60, O.z - 1100], target: [O.x - 100, -60, O.z - 2600] }, { drift: [3800, 30, 0], driftTarget: [3800, 0, 0], hold: 72, travel: 50 });
+    // Letras cromadas RESPONDER: completas bajo el título del capítulo y después en
+    // perspectiva, con un paneo corto (la palabra siempre se lee entera).
+    this.LETTERS = { x: O.x + 340, z: O.z - 3400 };
+    S("c2-intro", look(V(O.x, 170, O.z), -6, -2), { travel: 60, hold: 56, drift: [80, 0, -140] });
+    const L = this.LETTERS;
+    S("c2-letters", { pos: [L.x - 1400, -170, L.z + 3100], target: [L.x - 60, -340, L.z - 100] }, { drift: [110, 20, -140], driftTarget: [110, 0, 0], hold: 72, travel: 50 });
     // Pasillo del centro de operaciones.
     const cz = O.z - 3900;
     this.CORRIDOR = { x: X2, z0: cz, z1: cz - 7600 };

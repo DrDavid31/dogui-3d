@@ -52,7 +52,7 @@ export async function buildAutomatizar(ctx, scene) {
 
   // ── AUTOMATIZAR: letras blancas con bordes naranjas desde el punto de fuga ─
   const white = new THREE.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.35, metalness: 0.1, emissive: 0xffffff, emissiveIntensity: 0.08, envMapIntensity: 1 });
-  const word = await letters3d("AUTOMATIZAR", { size: 760, depth: 200, gap: 70, material: white });
+  const word = await letters3d("AUTOMATIZAR", { size: 540, depth: 150, gap: 50, material: white });
   const edgeMat = new THREE.LineBasicMaterial({ color: ORANGE, toneMapped: false });
   word.items.forEach((mesh) => {
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 28), edgeMat);

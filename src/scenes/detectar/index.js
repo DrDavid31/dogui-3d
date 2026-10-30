@@ -13,7 +13,9 @@ function aim(pos, yaw = 0, pitch = 0, dist = 2400) {
 const worldPos = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
 
 // Letras de la transición: dónde están y por qué hueco pasa la cámara.
-export const LETTERS = { word: "DETECTAR", z: 0, y: -760, height: 1500, depth: 320, gap: 300, passIndex: 3, x: 0 };
+// Tamaño pensado para que la palabra completa quepa en pantalla (≈ 3/4 del ancho a 16:10)
+// y la frase de riesgo quede debajo; la cámara después pasa por el hueco entre E y C.
+export const LETTERS = { word: "DETECTAR", z: 0, y: -150, height: 520, depth: 140, gap: 80, passIndex: 3, x: 0 };
 
 export const detectar = {
   id: "detectar",
@@ -55,8 +57,9 @@ export const detectar = {
     LETTERS.x = X + 500;
     LETTERS.z = Z - 14050;
     const passX = LETTERS.x;
-    S("c1-letters", { pos: [passX + 40, 120, LETTERS.z + 2500], target: [passX, 60, LETTERS.z - 200] }, { drift: [-20, 20, -900], hold: 80, travel: 60 });
-    dir.station("c1-through", { pos: [passX, 210, LETTERS.z - 1400], target: [passX, 200, LETTERS.z - 4200], drift: [0, 0, -600], hold: 30, travel: 64 });
+    // La mira queda bajo las letras: la palabra se ve en la mitad superior.
+    S("c1-letters", { pos: [passX + 20, 130, LETTERS.z + 3900], target: [passX, -230, LETTERS.z - 200] }, { drift: [-10, 0, -500], hold: 80, travel: 60 });
+    dir.station("c1-through", { pos: [passX, 60, LETTERS.z - 1400], target: [passX, 60, LETTERS.z - 4200], drift: [0, 0, -600], hold: 30, travel: 64 });
   },
 
   layout(ctx) {
@@ -309,8 +312,11 @@ export const detectar = {
       { t: h3.end - 4, color: "#0A0A0A", near: 3000, far: 9000, bloom: 1.4, vignette: 0.3, grain: 0.04 },
       { t: h3.end + 14, color: "#FFFFFF", near: 600, far: 3600, bloom: 0.6, vignette: 0.02, grain: 0.02 },
       { t: intro.t - 22, color: "#F7F7F5", near: 2600, far: 12000, bloom: 0.3, vignette: 0.08, grain: 0.025 },
-      { t: lt.t + lt.hold * 0.35, color: "#F7F7F5", near: 2600, far: 14000, bloom: 0.3, vignette: 0.09, grain: 0.026 },
-      { t: lt.end + 20, color: "#0A0A0A", near: 2400, far: 11000, bloom: 1.2, vignette: 0.3, grain: 0.04 },
+      // Niebla más lejana en las letras: a 3.9k de distancia se ven nítidas, no grises.
+      { t: lt.t - 10, color: "#F7F7F5", near: 3800, far: 16000, bloom: 0.3, vignette: 0.09, grain: 0.026 },
+      // El fondo se oscurece cuando la frase ya salió, mientras la cámara cruza las letras.
+      { t: lt.end + 5, color: "#F7F7F5", near: 3800, far: 16000, bloom: 0.3, vignette: 0.09, grain: 0.026 },
+      { t: lt.end + 40, color: "#0A0A0A", near: 2400, far: 11000, bloom: 1.2, vignette: 0.3, grain: 0.04 },
     );
 
     this.range = [h3.t, dir.get("c1-through").end + 40];

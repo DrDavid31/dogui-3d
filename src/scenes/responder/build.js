@@ -47,14 +47,14 @@ export async function buildResponder(ctx, scene) {
   add(cubes.mesh, [intro.t - 140, last.end + 100], (t, clock) => cubes.update(clock));
 
   // ── Letras cromadas RESPONDER ──────────────────────────────────────────
-  const word = await letters3d("RESPONDER", { size: 1050, depth: 260, gap: 90 });
+  const word = await letters3d("RESPONDER", { size: 430, depth: 115, gap: 40 });
   word.group.position.set(scene.LETTERS.x, FLOOR, scene.LETTERS.z);
   const lt = S("c2-letters");
   add(word.group, [intro.t - 140, lt.end + 60], (t) => {
     // Cada letra se eleva desde el piso al llegar.
     word.items.forEach((it, i) => {
       const k = ramp(t, intro.t - 120 + i * 6, intro.t - 40 + i * 6);
-      it.position.y = (1 - k) * -900;
+      it.position.y = (1 - k) * -520;
     });
   });
 

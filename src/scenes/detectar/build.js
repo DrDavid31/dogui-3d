@@ -232,10 +232,10 @@ export async function buildDetectar(ctx, scene) {
   const font = await loadFont();
   // Siempre transparente: alternar transparent cambia la variante del shader y la
   // recompila justo cuando aparecen las letras.
-  const letterMat = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0c, roughness: 0.42, metalness: 0.05, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.9, transparent: true });
+  const letterMat = new THREE.MeshPhysicalMaterial({ color: 0x0a0a0a, roughness: 0.45, metalness: 0.05, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.45, transparent: true });
   const letters = new THREE.Group();
   const glyphs = [...LETTERS.word].map((ch) => {
-    const geo = new TextGeometry(ch, { font, size: LETTERS.height, depth: LETTERS.depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 14, bevelSize: 10, bevelSegments: 4 });
+    const geo = new TextGeometry(ch, { font, size: LETTERS.height, depth: LETTERS.depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 6, bevelSize: 4, bevelSegments: 3 });
     geo.computeBoundingBox();
     const bb = geo.boundingBox;
     geo.translate(-bb.min.x, 0, -LETTERS.depth / 2);
@@ -298,10 +298,10 @@ export async function buildDetectar(ctx, scene) {
       letters.visible = ground.visible = lOn;
       const appear = ramp(t, lt.t - 60, lt.t - 22);
       letterMat.opacity = appear;
-      letters.position.y = (1 - appear) * -260;
+      letters.position.y = (1 - appear) * -120;
       if (lOn) stage.renderer.shadowMap.needsUpdate = true;
-      const dark = ramp(t, lt.t + lt.hold * 0.35, lt.end + 20);
-      letterMat.envMapIntensity = 0.9 * (1 - dark) + 0.25;
+      const dark = ramp(t, lt.end + 5, lt.end + 40);
+      letterMat.envMapIntensity = 0.45 * (1 - dark) + 0.15;
       ground.material.opacity = 0.16 * (1 - dark);
     },
     light: studioLight(stage),
