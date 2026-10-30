@@ -39,9 +39,9 @@ export async function buildDetectar(ctx, scene) {
   rd.group.quaternion.copy(radarQuat);
   const intro = S("c1-intro");
   const tem = S("c1-tem");
-  add(rd.group, [intro.t - 120, tem.end + 80], (t, clock) => {
+  add(rd.group, [intro.t - 40, tem.end + 80], (t, clock) => {
     rd.update(clock);
-    const k = ramp(t, intro.t - 110, intro.t - 20);
+    const k = ramp(t, intro.t - 38, intro.t - 6);
     rd.group.scale.setScalar(0.82 + 0.18 * k);
   });
   // Línea fina de cada hallazgo a su blip (detectado → tarjeta).
@@ -272,7 +272,7 @@ export async function buildDetectar(ctx, scene) {
   group.add(shadowLight, shadowLight.target);
 
   const lt = S("c1-letters");
-  const lettersOn = [lt.t - 110, S("c1-through").end + 40];
+  const lettersOn = [lt.t - 62, S("c1-through").end + 40];
   const bubbles = scene.bubbles;
   const tmp = new THREE.Vector3();
 
@@ -300,7 +300,7 @@ export async function buildDetectar(ctx, scene) {
       // Letras: emergen de la niebla; sombras solo cuando están en escena.
       const lOn = t > lettersOn[0] && t < lettersOn[1];
       letters.visible = ground.visible = lOn;
-      const appear = ramp(t, lt.t - 110, lt.t - 35);
+      const appear = ramp(t, lt.t - 60, lt.t - 22);
       const fading = appear < 0.999;
       if (fading !== letterMat.transparent) {
         letterMat.transparent = fading;
