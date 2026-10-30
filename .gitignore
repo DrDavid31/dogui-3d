@@ -3,3 +3,6 @@ dist/
 captures/
 .DS_Store
 Thumbs.db
+
+# Reportes locales de Lighthouse
+lighthouse-*.html
