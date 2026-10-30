@@ -218,9 +218,20 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-.sec--contact {
+.contact-panel {
+  display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
+}
+
+/* Anillo decorativo de productos: solo existe alrededor del logo 3D. */
+.logo-ring {
+  display: none;
+}
+
+.is-world .logo-ring {
+  display: block;
 }
 
 .contact__copy {
@@ -230,7 +241,7 @@
 
 @media (max-width: 900px) {
   .sec--hero,
-  .sec--contact {
+  .contact-panel {
     grid-template-columns: 1fr;
   }
 
@@ -260,4 +271,40 @@
   .eco {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Móvil con 3D ligero: ventanas al modelo de cada capítulo ──────────── */
+.m3d {
+  height: 62vh;
+  min-height: 300px;
+  max-height: 560px;
+  pointer-events: none;
+}
+
+.has-m3d body {
+  background: transparent;
+}
+
+.has-m3d .chapter,
+.has-m3d .sec--hero {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.has-m3d .chapter[data-tone="light"] > :not(.m3d) {
+  background: var(--paper);
+}
+
+.has-m3d .chapter[data-tone="dark"] > :not(.m3d) {
+  background: var(--black);
+}
+
+.has-m3d .sec--hero > .m3d {
+  margin: 0 calc(var(--gutter) * -1);
+}
+
+.has-m3d .footer {
+  position: relative;
+  z-index: 2;
 }

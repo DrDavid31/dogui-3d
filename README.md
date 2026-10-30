@@ -5,9 +5,17 @@ recorre un mundo continuo (Three.js) mientras el usuario hace scroll. Conserva t
 contenido del sitio actual y todo el texto vive en el DOM (SEO, lectores de pantalla y
 versión sin WebGL).
 
-**Estado:** Hero + Capítulo 01 · Detectar terminados. Capítulos 02 (Responder),
-03 (Automatizar), la transición del logo y el 04 (Contacto) todavía se muestran en la
-versión estática (flujo), debajo del mundo 3D.
+**Estado:** recorrido 3D completo: loader, Hero, 01 Detectar, 02 Responder,
+03 Automatizar, transición del logo y 04 Contacto. En móvil el contenido va en flujo
+vertical con "ventanas" 3D por capítulo; con `prefers-reduced-motion`, sin WebGL o sin
+JS se muestra la versión estática completa.
+
+Modelos 3D (todos de ciberseguridad, en `src/scenes/shared/`): radar de detección,
+globo de amenazas con arcos, escudo hexagonal, evidencias (correo, documento filtrado,
+credencial, llave, base de datos, chip), personas (factor humano), pipeline de datos,
+racks de servidores con LEDs, muro de monitores SOC, mapa de México en puntos,
+roadmap 30·60·90, nodos SOAR (baliza → engrane → escudo), chip central, anillo PDCA,
+letras y números cromados, y el logo extruido del SVG oficial sobre placa negra.
 
 ## Requisitos
 
@@ -31,6 +39,9 @@ Parámetros útiles en desarrollo:
 | `?static` | Fuerza la versión estática (flujo), como en móvil o sin WebGL. |
 | `?freeze=1.4` | Congela el loader en ese segundo (solo en `dev`). |
 | `#pyme`, `#exposicion`… | Entra directo a esa estación de la cámara. |
+
+Capturas de estaciones (con `npm run dev` corriendo):
+`node scripts/capture.mjs <carpeta> @c1-intro "@c2-soc|+20"` (`VIEWPORT=1536x864` opcional).
 
 En `dev`, `window.__dogui` expone el escenario, el director de cámara y el scroll
 (p. ej. `__dogui.scroll.jumpToTime(585)`).
@@ -72,9 +83,14 @@ src/
     loader.js              Logo 3D (extruido del SVG oficial) que se ensambla.
     assets.js              SVG → ExtrudeGeometry, fuente 3D, sombras de contacto.
     timeline.js            Rampas, ventanas e interpolación monótona.
+  mobile.js                Móvil: ventanas 3D por capítulo sobre el contenido en flujo.
   scenes/
     hero/                  Mesa + laptop + consola SOC + portal/túnel neón.
     detectar/              Capítulo 01 (index = guion y contenido, build = geometría).
+    responder/             Capítulo 02: letras cromadas, racks, SOC, 24/7·360·90, vCISO, SPEI.
+    automatizar/           Capítulo 03: hiperespacio, SOAR, catálogo, CIDSI, software, logo.
+    contacto/              Capítulo 04: paquetes, cierre con logo y formulario.
+    shared/                Materiales y librería de modelos (cyber.js, ops.js).
   ui/                      Menú, formulario (API + mailto), cursor, magnéticos, tilt.
   styles/                  tokens, base, flow (estático), world (3D), ui.
 public/

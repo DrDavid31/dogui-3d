@@ -7,12 +7,16 @@ import { Env } from "./core/env.js";
 import { Scroll } from "./core/scroll.js";
 import { Loader } from "./core/loader.js";
 import { initMenu } from "./ui/menu.js";
+import { setLineResolution } from "./scenes/shared/materials.js";
 import { hero } from "./scenes/hero/index.js";
 import { detectar } from "./scenes/detectar/index.js";
+import { responder } from "./scenes/responder/index.js";
+import { automatizar } from "./scenes/automatizar/index.js";
+import { contacto } from "./scenes/contacto/index.js";
 
 // Escenas en orden de scroll. Cada una declara estaciones de cámara (stations),
 // coloca su contenido HTML (layout) y construye su geometría WebGL (build, diferido).
-const SCENES = [hero, detectar];
+const SCENES = [hero, detectar, responder, automatizar, contacto];
 const TAIL = 30;
 
 export async function startWorld({ pointer, skipIntro = false }) {
@@ -155,6 +159,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
 
   window.addEventListener("resize", () => {
     stage.resize();
+    setLineResolution(window.innerWidth, window.innerHeight);
   });
 
   gsap.ticker.add(tick);

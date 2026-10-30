@@ -487,6 +487,13 @@ export function renderApp({ base = "/" } = {}) {
       <p class="statement">${esc(C.story.closeA)}</p>
       <p class="statement statement--muted">${esc(C.story.closeB)}</p>
     </div>
+
+    <div class="logo-ring" data-wrap aria-hidden="true">
+      ${SA.clusters
+        .flatMap((cl) => cl.items)
+        .map((p, i) => `<span class="chip chip--ring" data-o="ring-${i}">${icon(p.icon)}<span>${esc(p.title)}</span></span>`)
+        .join("")}
+    </div>
   </div>`;
 
   // ── Capítulo 04 · Contacto ─────────────────────────────────────────────
@@ -536,6 +543,7 @@ export function renderApp({ base = "/" } = {}) {
     </div>
 
     <section class="sec sec--contact" id="${CT.id}" aria-labelledby="${CT.id}-title">
+      <div class="contact-panel" data-hud="contact">
       <div class="contact__copy">
         ${label("04", CT.kicker)}
         <h3 class="h-section" id="${CT.id}-title">${esc(CT.title)}</h3>
@@ -560,6 +568,7 @@ export function renderApp({ base = "/" } = {}) {
         <button class="btn btn--primary full" type="submit" data-magnetic>${esc(FM.submit)}${arrow}</button>
         <p class="form-note full" data-form-note role="status" aria-live="polite">${esc(FM.note)}</p>
       </form>
+      </div>
     </section>
   </div>`;
 

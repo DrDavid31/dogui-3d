@@ -330,3 +330,217 @@ html[data-tone="dark"] {
   width: min(1100px, 90vw);
   translate: -50% 0;
 }
+
+/* ── Capítulos oscuros: tarjetas de vidrio oscuro con borde neón ───────── */
+.is-world .chapter[data-tone="dark"] .card {
+  border-color: rgb(255 255 255 / 0.09);
+  background: linear-gradient(180deg, rgb(30 30 30 / 0.94), rgb(14 14 14 / 0.94));
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+
+.is-world .is-world-ch .card--service {
+  width: 330px;
+  min-height: 420px;
+  border-color: rgb(255 107 0 / 0.55);
+  box-shadow:
+    0 0 0 1px rgb(255 107 0 / 0.12),
+    0 0 32px -10px rgb(255 107 0 / 0.55),
+    0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+
+.is-world .is-world-ch .card--service .card__bignum {
+  font-size: 58px;
+}
+
+.is-world .is-world-ch .card--method,
+.is-world .is-world-ch .card--deliverable,
+.is-world .is-world-ch .card--impact,
+.is-world .is-world-ch .card--catalog,
+.is-world .is-world-ch .card--soar,
+.is-world .is-world-ch .card--cap {
+  width: 300px;
+}
+
+.is-world .is-world-ch .card--method {
+  min-height: 250px;
+  transition:
+    border-color 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
+}
+
+.is-world .is-world-ch .card--method.is-lit {
+  border-color: rgb(255 107 0 / 0.75);
+  box-shadow:
+    0 0 40px -8px rgb(255 107 0 / 0.6),
+    0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+
+.is-world .is-world-ch .card--method:not(.is-lit) .card__bignum {
+  color: var(--g-600);
+}
+
+.is-world .is-world-ch .card--deliverable {
+  min-height: 300px;
+}
+
+.is-world .is-world-ch .card--problem {
+  width: 420px;
+}
+
+.is-world .is-world-ch .card--eco {
+  width: 760px;
+}
+
+.is-world .is-world-ch .soc--big {
+  width: 640px;
+  padding: 26px;
+}
+
+.is-world .is-world-ch .soc--big .soc__event {
+  font-size: 15px;
+}
+
+.is-world .chip--sat {
+  padding: 12px 20px;
+  border-color: rgb(255 107 0 / 0.6);
+  background: rgb(14 14 14 / 0.92);
+  color: var(--paper);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 0 30px -8px rgb(255 107 0 / 0.6);
+}
+
+/* Números: el valor lo muestra el 3D cromado; aquí queda la etiqueta (y el valor para lectores). */
+.is-world .is-world-ch .trust__item {
+  width: 340px;
+  justify-items: center;
+  color: var(--g-300);
+  font-size: 18px;
+  text-align: center;
+}
+
+.is-world .is-world-ch .trust__item strong,
+.is-world .is-world-ch .counter strong {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.is-world .is-world-ch .trust__item .i {
+  width: 24px;
+  height: 24px;
+}
+
+.is-world .is-world-ch .audience {
+  width: max-content;
+  max-width: 1100px;
+  justify-content: center;
+}
+
+.is-world .chapter[data-tone="dark"] .audience li {
+  border-color: rgb(255 255 255 / 0.18);
+  background: rgb(14 14 14 / 0.85);
+  color: var(--paper);
+}
+
+.is-world .is-world-ch .counter {
+  width: 320px;
+  justify-items: center;
+  text-align: center;
+}
+
+.is-world .is-world-ch .counter span {
+  color: var(--g-300);
+  font-size: 15px;
+}
+
+.is-world .is-world-ch .cidsi {
+  width: 460px;
+}
+
+.is-world .chip--ring {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.is-world .is-world-ch .card--pkg {
+  width: 300px;
+  min-height: 430px;
+  transform-style: flat;
+}
+
+.is-world .is-world-ch .cluster__title h4 {
+  font-size: 30px;
+}
+
+/* "MX" no tiene número 3D: se muestra el valor junto al mapa. */
+.is-world .is-world-ch [data-o="trust-2"] strong {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  font-size: 64px;
+}
+
+.is-world .is-world-ch .trust__item span {
+  font-size: 17px;
+}
+
+/* ── Capítulo 04 ──────────────────────────────────────────────────────── */
+.is-world .is-world-ch .hud--final {
+  inset: auto var(--gutter) 10vh;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.is-world .is-world-ch .hud--final .intro {
+  max-width: 640px;
+  margin: 10px 0 6px;
+}
+
+.is-world .is-world-ch .hud--final .intro .lede {
+  font-size: 15px;
+}
+
+.is-world .is-world-ch .contact-panel {
+  --ink: var(--hud-ink);
+  --ink-2: var(--hud-ink-2);
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  width: min(1180px, calc(100vw - 2 * var(--gutter)));
+  opacity: 0;
+  pointer-events: none;
+  translate: -50% -50%;
+}
+
+.is-world .is-world-ch .contact-panel.is-on {
+  pointer-events: auto;
+}
+
+.is-world .is-world-ch .contact-panel .lead-form {
+  padding: 24px;
+  gap: 12px;
+}
+
+.is-world .is-world-ch .contact-panel .lead-form input,
+.is-world .is-world-ch .contact-panel .lead-form select {
+  min-height: 44px;
+}
+
+@media (max-height: 760px) {
+  .is-world .is-world-ch .contact-panel .lead-form textarea {
+    rows: 3;
+    min-height: 84px;
+    height: 84px;
+  }
+}

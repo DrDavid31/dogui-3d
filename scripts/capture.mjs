@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 const [, , outDir = "captures", ...times] = process.argv;
 const URL = process.env.URL || "http://localhost:5178/doguiweb/?nointro";
 const shots = times.length
-  ? times.map((t) => ({ t: Number(t), name: `t${t}` }))
+  ? times.map((t) => ({ t, name: t.startsWith("@") ? t.slice(1).replace("|", "_") : `t${t}` }))
   : [
       { t: 0, name: "01-hero" },
       { t: 165, name: "02-hero-capacidades" },
@@ -39,13 +39,24 @@ for (const channel of ["chrome", "msedge"]) {
   } catch {}
 }
 if (!browser) throw new Error("No se pudo abrir Chrome ni Edge");
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const [VW, VH] = (process.env.VIEWPORT || "1440x900").split("x").map(Number);
+const page = await browser.newPage({ viewport: { width: VW, height: VH } });
 await page.goto(URL, { waitUntil: "networkidle" });
 await page.waitForFunction(() => window.__dogui?.built?.size >= 2, null, { timeout: 30000 });
 await page.mouse.move(720, 450);
 
 for (const s of shots) {
-  await page.evaluate((t) => window.__dogui.scroll.jumpToTime(t), s.t);
+  // "@id" = mitad del hold de esa estación; "@id|+30" = desplazado.
+  await page.evaluate((spec) => {
+    const d = window.__dogui;
+    let t = Number(spec);
+    if (typeof spec === "string" && spec.startsWith("@")) {
+      const [id, off = "0"] = spec.slice(1).split("|");
+      const st = d.dir.get(id);
+      t = (st.t + st.end) / 2 + Number(off);
+    }
+    d.scroll.jumpToTime(t);
+  }, String(s.t));
   await page.waitForTimeout(2600);
   const file = resolve(outDir, `${s.name}.png`);
   await page.screenshot({ path: file });
