@@ -138,6 +138,37 @@ export class Post {
     return this.final.uniforms;
   }
 
+  get sceneTarget() {
+    return this.composer.renderTarget1;
+  }
+
+  /** Compila los shaders de posproceso sin bloquear, antes del primer cuadro. */
+  precompile(camera) {
+    const r = this.renderer;
+    // Mismos atributos que el quad de pantalla completa (posición + uv, sin normales).
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute([-1, 3, 0, -1, -1, 0, 3, -1, 0], 3));
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute([0, 2, 0, 0, 2, 0], 2));
+    const prev = r.getRenderTarget();
+    const waits = [];
+    const passes = [...(this.bloomComposer?.passes ?? []), ...this.composer.passes];
+    for (const pass of passes) {
+      for (const v of Object.values(pass)) {
+        for (const m of Array.isArray(v) ? v : [v]) {
+          if (!m?.isMaterial) continue;
+          // Igual que el quad de pantalla completa: escena sin luces ni niebla; solo la
+          // pasada final dibuja en pantalla (sRGB), las demás en render targets.
+          const s = new THREE.Scene();
+          s.add(new THREE.Mesh(geo, m));
+          r.setRenderTarget(m === this.final.material ? null : this.composer.renderTarget2);
+          waits.push(r.compileAsync(s, camera));
+        }
+      }
+    }
+    r.setRenderTarget(prev);
+    return Promise.all(waits).then(() => geo.dispose());
+  }
+
   setSize(w, h, pr) {
     this.composer.setPixelRatio(pr);
     this.composer.setSize(w, h);

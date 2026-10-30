@@ -3,6 +3,7 @@ import { placeInView } from "../../core/camera.js";
 import { ramp } from "../../core/timeline.js";
 import { M, ORANGE, glow, fatLines } from "../shared/materials.js";
 import { speedLines, letters3d, text3d, beacon, gear, shieldCheck, cpuCore, pdcaRing, logoTile, dust, gridFloor } from "../shared/ops.js";
+import { darkLight } from "../shared/lights.js";
 
 const at = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
 const quatOf = (frame, rx = 0, ry = 0, rz = 0) => new THREE.Quaternion().setFromRotationMatrix(frame).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)));
@@ -17,12 +18,10 @@ export async function buildAutomatizar(ctx, scene) {
   const m = M();
   const group = new THREE.Group();
   group.name = "automatizar";
+  // Oculto hasta que world.js compile sus shaders (si se dibuja antes, congela el cuadro).
+  group.visible = false;
   stage.scene.add(group);
 
-  const hemi = new THREE.HemisphereLight(0xa0a0a0, 0x0a0a0a, 0.6);
-  const key = new THREE.DirectionalLight(0xffffff, 2.2);
-  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
-  group.add(hemi, key, key.target, rim, rim.target);
 
   const parts = [];
   const add = (obj, on, update) => {
@@ -35,6 +34,7 @@ export async function buildAutomatizar(ctx, scene) {
 
   // ── Hiperespacio (en espacio de cámara) ────────────────────────────────
   const lines = speedLines({ count: 560 });
+  lines.mesh.visible = false;
   stage.camera.add(lines.mesh);
   const saas0 = S("c3-saas");
   const saas3 = S("c3-saas-3");
@@ -138,9 +138,9 @@ export async function buildAutomatizar(ctx, scene) {
     tile.group.position.y = scene.LOGO.y + Math.sin(clock * 0.9) * 14;
   });
 
-  const tmp = new THREE.Vector3();
   return {
     group,
+    light: darkLight(stage, { sky: 0xa0a0a0, hemi: 0.6 }),
     update: (t, clock, dt) => {
       for (const p of parts) {
         const on = t > p.on[0] && t < p.on[1];
@@ -154,11 +154,6 @@ export async function buildAutomatizar(ctx, scene) {
       const hyper = ramp(t, intro.t - 60, intro.t) * (1 - ramp(t, intro.end - 10, S("c3-soar").t)) + 0.55 * ramp(t, saas0.end - 20, S("c3-saas-0").t) * (1 - ramp(t, saas3.end, S("c3-counters").t));
       lines.mesh.visible = hyper > 0.01;
       if (lines.mesh.visible) lines.update(dt, 1800 + speed * 0.9, 0.6 + Math.min(4, speed / 1500), hyper);
-
-      key.position.set(cam.x - 1800, cam.y + 2600, cam.z + 1200);
-      key.target.position.copy(cam).add(tmp.set(0, 0, -2400));
-      rim.position.set(cam.x + 2400, cam.y + 800, cam.z - 5200);
-      rim.target.position.copy(cam).add(tmp.set(0, 0, -1600));
     },
   };
 }

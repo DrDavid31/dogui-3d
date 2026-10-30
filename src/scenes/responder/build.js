@@ -4,6 +4,7 @@ import { placeInView } from "../../core/camera.js";
 import { ramp } from "../../core/timeline.js";
 import { M, glow, fatLines } from "../shared/materials.js";
 import { rackRow, socWall, gridFloor, edgeCubes, dust, letters3d, text3d, mexicoMap } from "../shared/ops.js";
+import { darkLight } from "../shared/lights.js";
 
 const at = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
 const quatOf = (frame, rx = 0, ry = 0, rz = 0) => new THREE.Quaternion().setFromRotationMatrix(frame).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)));
@@ -15,14 +16,10 @@ export async function buildResponder(ctx, scene) {
   const m = M();
   const group = new THREE.Group();
   group.name = "responder";
+  // Oculto hasta que world.js compile sus shaders (si se dibuja antes, congela el cuadro).
+  group.visible = false;
   stage.scene.add(group);
   const { O, X2, FLOOR, CORRIDOR } = scene;
-
-  // Luces: relleno tenue + llave y contraluz para que el cromo tenga brillos.
-  const hemi = new THREE.HemisphereLight(0x9a9a9a, 0x0a0a0a, 0.55);
-  const key = new THREE.DirectionalLight(0xffffff, 2.2);
-  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
-  group.add(hemi, key, key.target, rim, rim.target);
 
   const parts = [];
   const add = (obj, on, update) => {
@@ -180,6 +177,7 @@ export async function buildResponder(ctx, scene) {
   const methodLit = scene.methodLit;
   return {
     group,
+    light: darkLight(stage),
     update: (t, clock, dt) => {
       for (const p of parts) {
         const on = t > p.on[0] && t < p.on[1];
@@ -193,11 +191,6 @@ export async function buildResponder(ctx, scene) {
           l.el?.classList.toggle("is-lit", lit);
         }
       }
-      const cam = stage.camera.position;
-      key.position.set(cam.x - 1800, cam.y + 2600, cam.z + 1200);
-      key.target.position.set(cam.x, cam.y, cam.z - 2400);
-      rim.position.set(cam.x + 2400, cam.y + 800, cam.z - 5200);
-      rim.target.position.set(cam.x, cam.y, cam.z - 1600);
     },
   };
 }

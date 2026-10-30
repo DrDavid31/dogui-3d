@@ -25,6 +25,10 @@ export class Hud {
         type: "lines",
         mask: "lines",
         linesClass: "line",
+        // El texto sigue en el DOM dentro de las líneas: sin aria-label (prohibido en <p>)
+        // ni aria-hidden. <span> mantiene el HTML válido dentro de párrafos y títulos.
+        aria: "none",
+        tag: "span",
         autoSplit: true,
         onSplit: (self) => {
           const tl = gsap.timeline({ paused: true });

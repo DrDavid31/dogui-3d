@@ -27,11 +27,36 @@ function contentHtml() {
   };
 }
 
+// Precarga las fuentes visibles en el primer cuadro (título, texto, etiquetas): sin
+// esto, el cambio de fuente de respaldo a la real desplaza el hero en móvil (CLS).
+const PRELOAD_FONTS = /(plus-jakarta-sans-latin-800|inter-latin-400|inter-latin-600|jetbrains-mono-latin-500)-normal-[\w-]+\.woff2$/;
+
+function fontPreload() {
+  return {
+    name: "dogui-font-preload",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, { bundle }) {
+        if (!bundle) return html;
+        return Object.keys(bundle)
+          .filter((f) => PRELOAD_FONTS.test(f))
+          .map((f) => ({
+            tag: "link",
+            attrs: { rel: "preload", href: base + f, as: "font", type: "font/woff2", crossorigin: "" },
+            injectTo: "head",
+          }));
+      },
+    },
+  };
+}
+
 export default defineConfig({
   base,
-  plugins: [contentHtml()],
+  plugins: [contentHtml(), fontPreload()],
   build: {
     target: "es2020",
+    // Mapas de fuente publicados (el repositorio es público): depuración en producción.
+    sourcemap: true,
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
   },

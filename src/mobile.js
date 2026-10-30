@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Stage } from "./core/renderer.js";
+import { Stage, LightSpec } from "./core/renderer.js";
 import { radar, threatGlobe } from "./scenes/shared/cyber.js";
 import { rackRow, beacon, gear, shieldCheck, logoTile } from "./scenes/shared/ops.js";
 
@@ -81,10 +81,12 @@ export async function startMobile() {
   const stage = new Stage(canvas, { mobile: true });
   stage.scene.fog.near = 1e5;
   stage.scene.fog.far = 2e5;
-  const light = new THREE.HemisphereLight(0xffffff, 0x777777, 1.2);
-  const sun = new THREE.DirectionalLight(0xffffff, 2);
-  sun.position.set(-800, 1600, 1600);
-  stage.scene.add(light, sun);
+  const L = new LightSpec();
+  L.ground.set(0x777777);
+  L.hemi = 1.2;
+  L.key = 2;
+  L.keyPos.set(-800, 1600, 1600);
+  stage.applyLights(L);
 
   // Inserta las ventanas (decorativas) en el DOM.
   const wins = [];
@@ -102,10 +104,13 @@ export async function startMobile() {
 
   const load = (w) => {
     if (!w.loading) {
-      w.loading = makeModel(w.kind).then((m) => {
-        w.model = m;
+      w.loading = makeModel(w.kind).then(async (m) => {
         m.group.visible = false;
         stage.scene.add(m.group);
+        // Shaders compilados en paralelo antes de mostrarlo (sin congelar el scroll).
+        await stage.ready;
+        await stage.precompile(m.group);
+        w.model = m;
       });
     }
     return w.loading;

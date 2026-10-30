@@ -133,15 +133,9 @@ export const hero = {
     const { stage } = ctx;
     const group = new THREE.Group();
     group.name = "hero";
+    // Oculto hasta que world.js compile sus shaders (si se dibuja antes, congela el cuadro).
+    group.visible = false;
     stage.scene.add(group);
-
-    // Luces de estudio (el entorno RoomEnvironment aporta el relleno).
-    const hemi = new THREE.HemisphereLight(0xffffff, 0xdedbd4, 0.9);
-    const key = new THREE.DirectionalLight(0xffffff, 1.4);
-    key.position.set(-900, 1600, 1200);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.7);
-    rim.position.set(1200, 800, -900);
-    group.add(hemi, key, rim);
 
     // Mesa blanca.
     const white = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7, metalness: 0, envMapIntensity: 1.2 });
@@ -319,6 +313,19 @@ export const hero = {
 
     return {
       group,
+      // Luces de estudio (el entorno RoomEnvironment aporta el relleno); dentro del
+      // túnel solo brillan los neones.
+      light: (t, L) => {
+        L.sky.set(0xffffff);
+        L.ground.set(0xdedbd4);
+        L.hemi = inside ? 0 : 0.9;
+        L.key = inside ? 0 : 1.4;
+        L.keyPos.set(-900, 1600, 1200);
+        L.keyAt.set(0, 0, 0);
+        L.rim = inside ? 0 : 0.7;
+        L.rimPos.set(1200, 800, -900);
+        L.rimAt.set(0, 0, 0);
+      },
       update: (t, clock) => {
         // ¿La cámara ya cruzó el plano de la pantalla?
         camLocal.copy(stage.camera.position).applyMatrix4(inv);
@@ -328,7 +335,6 @@ export const hero = {
           for (const m2 of stencilMats) m2.stencilFunc = through ? THREE.AlwaysStencilFunc : THREE.EqualStencilFunc;
           laptop.visible = !through;
           tableGroup.visible = !through;
-          hemi.visible = key.visible = rim.visible = !through;
         }
 
         // Encendido del túnel mientras la consola se apaga.

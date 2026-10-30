@@ -64,6 +64,9 @@ export function rackRow({ count = 6, spacing = 660, seed = 4 } = {}) {
   const c = new THREE.Color();
   const white = new THREE.Color(0xd8d8d8);
   const dim = new THREE.Color(0x222222);
+  // Color por instancia desde el inicio: si se crea en el primer update cambia la
+  // variante del shader y se recompila al entrar al pasillo.
+  for (const s of states) leds.setColorAt(s.n, dim);
   let last = -1;
   return {
     group: g,

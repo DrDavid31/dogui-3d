@@ -1,11 +1,12 @@
 import { gsap } from "gsap";
-import { Stage } from "./core/renderer.js";
+import { Stage, LightSpec } from "./core/renderer.js";
 import { Director } from "./core/director.js";
 import { DomWorld } from "./core/dom3d.js";
 import { Hud } from "./core/hud.js";
 import { Env } from "./core/env.js";
 import { Scroll } from "./core/scroll.js";
 import { Loader } from "./core/loader.js";
+import { smooth } from "./core/timeline.js";
 import { initMenu } from "./ui/menu.js";
 import { setLineResolution } from "./scenes/shared/materials.js";
 import { hero } from "./scenes/hero/index.js";
@@ -18,6 +19,8 @@ import { contacto } from "./scenes/contacto/index.js";
 // coloca su contenido HTML (layout) y construye su geometría WebGL (build, diferido).
 const SCENES = [hero, detectar, responder, automatizar, contacto];
 const TAIL = 30;
+// Al entrar a un capítulo, su luz se mezcla con la del anterior durante este tramo (vh).
+const LIGHT_BLEND = 50;
 
 export async function startWorld({ pointer, skipIntro = false }) {
   const html = document.documentElement;
@@ -51,14 +54,18 @@ export async function startWorld({ pointer, skipIntro = false }) {
   const scroll = new Scroll({ track, total });
   scroll.stop();
 
-  // Construcción diferida de cada capítulo (geometría pesada).
+  // Construcción diferida de cada capítulo (geometría pesada). Sus shaders se compilan
+  // en paralelo antes de mostrarlo: sin eso, el primer cuadro del capítulo se congela.
   const built = new Map();
   const building = new Map();
   const build = (s) => {
     if (!building.has(s)) {
       building.set(
         s,
-        s.build(ctx).then((r) => {
+        s.build(ctx).then(async (r) => {
+          await stage.ready;
+          // La cámara también: algunas escenas le cuelgan objetos (líneas de hiperespacio).
+          await Promise.all([stage.precompile(r.group), stage.precompile(stage.camera)]);
           built.set(s, r);
           return r;
         }),
@@ -67,6 +74,25 @@ export async function startWorld({ pointer, skipIntro = false }) {
     return building.get(s);
   };
   await build(hero);
+  await Promise.all([stage.precompile(stage.scene), stage.post?.precompile(stage.camera)]);
+
+  // Luces: manda el capítulo en curso; al entrar a uno nuevo se mezcla con el anterior.
+  const lightNow = new LightSpec();
+  const lightPrev = new LightSpec();
+  const updateLights = (t) => {
+    let i = -1;
+    SCENES.forEach((s, k) => built.has(s) && t >= s.range[0] && (i = k));
+    if (i < 0) return;
+    built.get(SCENES[i]).light(t, lightNow);
+    const prev = i > 0 && built.get(SCENES[i - 1]);
+    const k = (t - SCENES[i].range[0]) / LIGHT_BLEND;
+    if (prev && k < 1) {
+      prev.light(t, lightPrev);
+      stage.applyLights(lightPrev.lerp(lightNow, smooth(Math.max(0, k))));
+    } else {
+      stage.applyLights(lightNow);
+    }
+  };
 
   // ── Navegación: los anclas vuelan la cámara hasta su punto ─────────────
   const timeForId = (id) => (anchors.has(id) ? anchors.get(id) : null);
@@ -151,6 +177,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
       if (on) r.update(t, clock, dt);
     }
 
+    updateLights(t);
     dom.update(t);
     hud.update(t);
     updateChapters(t);

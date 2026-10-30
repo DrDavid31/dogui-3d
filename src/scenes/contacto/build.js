@@ -4,6 +4,7 @@ import { ramp } from "../../core/timeline.js";
 import { rng } from "../shared/materials.js";
 import { ARTIFACTS } from "../shared/cyber.js";
 import { logoTile } from "../shared/ops.js";
+import { studioLight } from "../shared/lights.js";
 
 const at = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
 const D0 = 1236;
@@ -15,11 +16,9 @@ export async function buildContacto(ctx, scene) {
   const S = (id) => dir.get(id);
   const group = new THREE.Group();
   group.name = "contacto";
+  // Oculto hasta que world.js compile sus shaders (si se dibuja antes, congela el cuadro).
+  group.visible = false;
   stage.scene.add(group);
-
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.15);
-  const sun = new THREE.DirectionalLight(0xffffff, 2.1);
-  group.add(hemi, sun, sun.target);
 
   const parts = [];
   const add = (obj, on, update) => {
@@ -84,18 +83,15 @@ export async function buildContacto(ctx, scene) {
     bg.children.forEach((o, i) => (o.rotation.y += (i % 2 ? 0.003 : -0.003)));
   });
 
-  const tmp = new THREE.Vector3();
   return {
     group,
+    light: studioLight(stage),
     update: (t, clock, dt) => {
       for (const p of parts) {
         const on = t > p.on[0] && t < p.on[1];
         p.obj.visible = on;
         if (on && p.update) p.update(t, clock, dt);
       }
-      const cam = stage.camera.position;
-      sun.position.set(cam.x - 1600, cam.y + 2400, cam.z + 1800);
-      sun.target.position.copy(cam).add(tmp.set(0, 0, -2000));
     },
   };
 }

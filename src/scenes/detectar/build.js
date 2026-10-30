@@ -6,6 +6,7 @@ import { ramp } from "../../core/timeline.js";
 import { M, glow, fatLines, rng } from "../shared/materials.js";
 import { radar, threatGlobe, hexShield, ARTIFACTS, envelope, leakedDoc, credentialCard, accessKey, crowd, pipeline, phone as phoneModel } from "../shared/cyber.js";
 import { LETTERS } from "./index.js";
+import { studioLight } from "../shared/lights.js";
 
 const at = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
 const quatOf = (frame, rx = 0, ry = 0, rz = 0) => new THREE.Quaternion().setFromRotationMatrix(frame).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)));
@@ -17,14 +18,12 @@ export async function buildDetectar(ctx, scene) {
   const S = (id) => dir.get(id);
   const group = new THREE.Group();
   group.name = "detectar";
+  // Oculto hasta que world.js compile sus shaders (si se dibuja antes, congela el cuadro).
+  group.visible = false;
   stage.scene.add(group);
   const { RADAR, radarQuat, GLOBE, PHONE, phoneQuat } = scene.points;
   const m = M();
 
-  // Luz de estudio del capítulo (el entorno PMREM aporta el relleno).
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.15);
-  const sun = new THREE.DirectionalLight(0xffffff, 2.1);
-  group.add(hemi, sun, sun.target);
 
   const parts = []; // { obj, on: [a, b], update?(t, clock, dt) }
   const add = (obj, on, update) => {
@@ -231,7 +230,9 @@ export async function buildDetectar(ctx, scene) {
 
   // ── Letras gigantes DETECTAR ───────────────────────────────────────────
   const font = await loadFont();
-  const letterMat = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0c, roughness: 0.42, metalness: 0.05, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.9 });
+  // Siempre transparente: alternar transparent cambia la variante del shader y la
+  // recompila justo cuando aparecen las letras.
+  const letterMat = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0c, roughness: 0.42, metalness: 0.05, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.9, transparent: true });
   const letters = new THREE.Group();
   const glyphs = [...LETTERS.word].map((ch) => {
     const geo = new TextGeometry(ch, { font, size: LETTERS.height, depth: LETTERS.depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 14, bevelSize: 10, bevelSegments: 4 });
@@ -261,21 +262,16 @@ export async function buildDetectar(ctx, scene) {
   ground.receiveShadow = true;
   group.add(ground);
 
-  const shadowLight = new THREE.DirectionalLight(0xffffff, 0.001);
+  // Luz de sombras compartida (renderer.js): se apunta a las letras.
+  const shadowLight = stage.lights.shadow;
   shadowLight.position.set(LETTERS.x - 3200, LETTERS.y + 5200, LETTERS.z + 3800);
   shadowLight.target.position.set(LETTERS.x, LETTERS.y, LETTERS.z - 400);
   Object.assign(shadowLight.shadow.camera, { left: -7000, right: 7000, top: 3000, bottom: -4200, near: 100, far: 14000 });
-  shadowLight.shadow.mapSize.set(2048, 2048);
-  shadowLight.shadow.radius = 8;
-  shadowLight.shadow.bias = -0.0008;
-  shadowLight.shadow.normalBias = 6;
-  group.add(shadowLight, shadowLight.target);
+  shadowLight.shadow.camera.updateProjectionMatrix();
 
   const lt = S("c1-letters");
   const lettersOn = [lt.t - 62, S("c1-through").end + 40];
   const bubbles = scene.bubbles;
-  const tmp = new THREE.Vector3();
-
   return {
     group,
     update: (t, clock, dt) => {
@@ -301,23 +297,14 @@ export async function buildDetectar(ctx, scene) {
       const lOn = t > lettersOn[0] && t < lettersOn[1];
       letters.visible = ground.visible = lOn;
       const appear = ramp(t, lt.t - 60, lt.t - 22);
-      const fading = appear < 0.999;
-      if (fading !== letterMat.transparent) {
-        letterMat.transparent = fading;
-        letterMat.needsUpdate = true;
-      }
       letterMat.opacity = appear;
       letters.position.y = (1 - appear) * -260;
-      shadowLight.castShadow = lOn;
+      if (lOn) stage.renderer.shadowMap.needsUpdate = true;
       const dark = ramp(t, lt.t + lt.hold * 0.35, lt.end + 20);
       letterMat.envMapIntensity = 0.9 * (1 - dark) + 0.25;
       ground.material.opacity = 0.16 * (1 - dark);
-
-      // La luz principal acompaña a la cámara (estudio constante).
-      const cam = stage.camera.position;
-      sun.position.set(cam.x - 1600, cam.y + 2400, cam.z + 1800);
-      sun.target.position.copy(cam).add(tmp.set(0, 0, -2000));
     },
+    light: studioLight(stage),
   };
 }
 

@@ -31,7 +31,11 @@ export class Loader {
       m.needsUpdate = true;
     }
     logo.position.set(0, 0, -D * 1.05);
+    // Oculto hasta que sus shaders estén listos: dibujarlo antes congela el cuadro.
+    logo.visible = false;
     this.stage.camera.add(logo);
+    await this.stage.precompile(logo);
+    logo.visible = true;
 
     // Cada pieza llega desde otra profundidad y rotación.
     const rnd = (a, b) => a + Math.random() * (b - a);
