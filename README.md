@@ -151,8 +151,9 @@ scripts/
 - **Sin trabajo repetido por cuadro.** La pasada de bloom conserva las luces con intensidad
   0 en vez de quitarlas: si cambiara el estado de luces entre pasadas, three.js volvería a
   evaluar el programa de cada material iluminado en cada cuadro.
-- **Sin pausas al avanzar.** Los capítulos se precargan al terminar el logo inicial (antes
-  retrasarían el arranque) y se construyen por partes: en un `build.js` nuevo, pon
+- **Sin pausas al avanzar.** Al terminar el logo inicial se precarga el capítulo siguiente,
+  y el resto a la primera interacción (mouse, rueda, tecla o toque); antes del logo
+  retrasarían el arranque. Se construyen por partes: en un `build.js` nuevo, pon
   `await yieldTask()` entre modelos pesados. El contexto WebGL de escritorio es uno solo,
   sin prueba previa: si `new Stage` falla, `startWorld` devuelve `false` y `main.js` usa el
   modo estático.

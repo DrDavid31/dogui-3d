@@ -233,12 +233,27 @@ export async function startWorld({ pointer, skipIntro = false }) {
 
   // Pre-construye los capítulos en tiempo libre, uno por uno, para que al avanzar rápido
   // (o saltar desde el menú) ya estén listos y no haya pausas a media ruta. Empieza al
-  // terminar el loader: antes competiría con él por el GPU y lo retrasaría.
+  // terminar el loader (antes competiría con él por el GPU y lo retrasaría): primero el
+  // capítulo siguiente y, a la primera señal de que hay alguien ahí, el resto.
   const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 400));
   const preload = (i) => {
     const s = SCENES[i];
     if (!s) return;
     idle(() => build(s).then(() => setTimeout(() => preload(i + 1), 600)));
+  };
+  const preloadOnInteraction = () => {
+    idle(() => build(detectar));
+    const ac = new AbortController();
+    for (const ev of ["pointermove", "wheel", "keydown", "touchstart"]) {
+      window.addEventListener(
+        ev,
+        () => {
+          ac.abort();
+          preload(SCENES.indexOf(detectar) + 1);
+        },
+        { passive: true, signal: ac.signal },
+      );
+    }
   };
 
   // Hash inicial (#servicios, etc.) o ?nointro: sin loader.
@@ -259,6 +274,6 @@ export async function startWorld({ pointer, skipIntro = false }) {
     loader = null;
     scroll.start();
   }
-  preload(SCENES.indexOf(detectar));
+  preloadOnInteraction();
   menu.setCurrent?.(hashId || "inicio");
 }
