@@ -89,14 +89,14 @@ src/
     renderer.js            Renderer, escena, cámara, entorno PMREM.
     camera.js              Ruta CatmullRom + parallax + colocación en encuadre.
     director.js            Estaciones de cámara (hold/travel) → tiempos y encuadres.
-    scroll.js              Lenis + GSAP ScrollTrigger (scrub 1.2 s).
+    scroll.js              Lenis + GSAP ScrollTrigger (scrub 0.6 s) + ritmo (Pace).
     post.js                Bloom selectivo (solo capa naranja), FXAA, viñeta y grano.
     dom3d.js               Proyecta tarjetas HTML en el mundo (matemática CSS3D).
     hud.js                 Textos en pantalla con revelado por líneas (SplitText).
     env.js                 Fondo/niebla claro ↔ oscuro por tiempo y tono de la UI.
     loader.js              Logo 3D (extruido del SVG oficial) que se ensambla.
     assets.js              SVG → ExtrudeGeometry, fuente 3D, sombras de contacto.
-    timeline.js            Rampas, ventanas e interpolación monótona.
+    timeline.js            Rampas, ventanas, interpolación monótona y ritmo del scroll (Pace).
   mobile-windows.js        Móvil: reserva las ventanas 3D en el DOM (sin three.js).
   mobile.js                Móvil: llena las ventanas con los modelos (carga diferida).
   scenes/
@@ -120,8 +120,14 @@ scripts/
 
 ## Cómo funciona
 
-- **Un solo tiempo maestro.** El scroll (Lenis) mueve un valor `time` en vh con
-  ScrollTrigger (`scrub: 1.2`). Cámara, fondo, niebla, tarjetas y textos se derivan de él.
+- **Un solo tiempo maestro.** El scroll (Lenis) mueve un valor `time` con ScrollTrigger
+  (`scrub: 0.6`). Cámara, fondo, niebla, tarjetas y textos se derivan de él.
+- **Ritmo.** Para que el recorrido sea más rápido o más lento no se toca la coreografía:
+  `Pace` (`core/timeline.js`) decide cuánto scroll cuesta cada unidad de tiempo. Por defecto,
+  `hold = 0.6` vh en las paradas donde se lee y `travel = 0.3` vh en los viajes de cámara.
+  Con esos valores el recorrido completo son unas 250 vueltas de rueda.
+- **Atajos.** `PageDown`, `PageUp` y `Espacio` van de parada en parada. El botón «Ver todo
+  lo que ofrecemos» abre el mapa de servicios del menú, desde donde se salta a cualquiera.
 - **Estaciones.** Cada escena declara estaciones de cámara (dónde se lee y cuánto dura el
   viaje). El director arma la `CatmullRomCurve3` y reparte los tiempos.
 - **Tarjetas HTML en 3D.** Las tarjetas son el mismo HTML del sitio; `dom3d.js` les aplica
@@ -142,6 +148,17 @@ scripts/
   `KHR_parallel_shader_compile` (`Stage.precompile`) antes de mostrarse; el entorno PMREM
   y el posproceso también. Al agregar un objeto: no cambies `transparent`, `fog` ni los
   colores por instancia después de construirlo (es otra variante del shader).
+- **Sin trabajo repetido por cuadro.** La pasada de bloom conserva las luces con intensidad
+  0 en vez de quitarlas: si cambiara el estado de luces entre pasadas, three.js volvería a
+  evaluar el programa de cada material iluminado en cada cuadro.
+- **Sin pausas al avanzar.** Los capítulos se precargan al terminar el logo inicial (antes
+  retrasarían el arranque) y se construyen por partes: en un `build.js` nuevo, pon
+  `await yieldTask()` entre modelos pesados. El contexto WebGL de escritorio es uno solo,
+  sin prueba previa: si `new Stage` falla, `startWorld` devuelve `false` y `main.js` usa el
+  modo estático.
+- **El formulario no atrapa el scroll.** Se desplaza por dentro con `data-lenis-prevent`,
+  pero no lleva `overscroll-behavior: contain`: con eso, la rueda se queda atorada cuando
+  el cursor está sobre él y no se llega a lo que sigue.
 
 ## Editar textos
 

@@ -20,22 +20,47 @@ export const site = {
   bookingUrl: "", // Agenda en línea para la llamada de 30 min (Calendly, Cal.com…)
 };
 
-export const nav = [
-  { href: "#servicios", label: "Servicios" },
-  { href: "#productos", label: "Productos" },
-  { href: "#exposicion", label: "Exposición" },
-  { href: "#sgsi", label: "SGSI" },
-  { href: "#pyme", label: "PyME" },
-  { href: "#awareness", label: "Awareness" },
-  { href: "#vciso", label: "vCISO" },
-  { href: "#saas", label: "SaaS" },
-  { href: "#spei-spid", label: "SPEI/SPID" },
-  { href: "#metodo", label: "Método" },
-  { href: "#paquetes", label: "Paquetes" },
-  { href: "#herramientas", label: "Diagnóstico gratis" },
-  { href: "#preguntas", label: "Preguntas" },
-  { href: "#contacto", label: "Contacto" },
-];
+// Menú: mapa de todo lo que ofrece DOGUI, para verlo de un vistazo e ir directo.
+export const nav = {
+  title: "Todo lo que ofrece DOGUI",
+  groups: [
+    {
+      label: "Detectar",
+      items: [
+        { href: "#exposicion", label: "Exposición digital", text: "Filtraciones, correos y marca en dark web y Telegram." },
+        { href: "#pyme", label: "Paquetes PyME", text: "Protección lista para operar, con canal de WhatsApp." },
+        { href: "#awareness", label: "Awareness", text: "Cursos y simulaciones de phishing para tu equipo." },
+      ],
+    },
+    {
+      label: "Responder",
+      items: [
+        { href: "#servicios", label: "Servicios", text: "SOC/MDR, pentesting, respuesta a incidentes y cumplimiento." },
+        { href: "#metodo", label: "Método", text: "De diagnóstico a operación continua, en 4 pasos." },
+        { href: "#vciso", label: "vCISO", text: "Dirección de seguridad sin contratar un CISO." },
+        { href: "#spei-spid", label: "SPEI/SPID", text: "Consultoría para flujos de pagos y operación financiera." },
+      ],
+    },
+    {
+      label: "Automatizar",
+      items: [
+        { href: "#automatizacion", label: "Automatizaciones", text: "Alertas, bloqueos y tickets sin trabajo repetitivo." },
+        { href: "#productos", label: "Productos", text: "Inteligencia, endpoints, correlación y riesgos." },
+        { href: "#sgsi", label: "SGSI con CIDSI", text: "Software propio para operar tu gestión de seguridad." },
+        { href: "#saas", label: "Software DOGUI", text: "13 productos propios en tu infraestructura." },
+      ],
+    },
+    {
+      label: "Empezar",
+      items: [
+        { href: "#paquetes", label: "Paquetes", text: "Elige el punto de entrada y crecemos desde ahí." },
+        { href: "#herramientas", label: "Diagnóstico gratis", text: "Autodiagnóstico, selector y revisión de correo." },
+        { href: "#preguntas", label: "Preguntas", text: "Costos, antivirus, WhatsApp y más." },
+        { href: "#contacto", label: "Contacto", text: "Cuéntanos qué quieres proteger." },
+      ],
+    },
+  ],
+};
 
 export const cta = { label: "Agendar diagnóstico", href: "#contacto" };
 
@@ -64,7 +89,7 @@ export const hero = {
   copy:
     "Servicios gestionados, consultoría especializada y automatizaciones para detectar amenazas, responder incidentes y fortalecer entornos críticos, incluyendo flujos SPEI y SPID.",
   primary: { label: "Agendar diagnóstico", href: "#contacto", icon: "calendar-check" },
-  secondary: { label: "Ver paquetes", href: "#paquetes", icon: "packages" },
+  secondary: { label: "Ver todo lo que ofrecemos", href: "#paquetes", icon: "packages" },
   panel: {
     label: "Vista ejecutiva de DOGUI",
     status: "Operación lista para presentar",

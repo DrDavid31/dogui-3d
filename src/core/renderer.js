@@ -85,8 +85,10 @@ export class Stage {
     shadow.shadow.normalBias = 6;
     this.scene.add(hemi, key, key.target, rim, rim.target, shadow, shadow.target);
     this.lights = { hemi, key, rim, shadow };
+    const all = [hemi, key, rim, shadow];
+    for (const l of all) l.layers.enable(BLOOM_LAYER);
 
-    this.post = mobile ? null : new Post(this.renderer, this.scene, this.camera, { bloom: true });
+    this.post = mobile ? null : new Post(this.renderer, this.scene, this.camera, { bloom: true, lights: all });
 
     this.width = 1;
     this.height = 1;
@@ -172,8 +174,7 @@ export class Stage {
     renderer.setRenderTarget(post ? post.sceneTarget : null);
     const waits = [renderer.compileAsync(object, camera, scene)];
     if (post) {
-      // Igual que BloomSourcePass: sin niebla y con la cámara solo en la capa de bloom
-      // (las luces quedan fuera de esa capa: es otra variante sin luces).
+      // Igual que BloomSourcePass: sin niebla y con la cámara solo en la capa de bloom.
       const glow = [];
       object.traverse((o) => o.layers.isEnabled(BLOOM_LAYER) && glow.push(o));
       const fog = scene.fog;

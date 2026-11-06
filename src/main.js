@@ -35,9 +35,7 @@ function hasWebGL2() {
 }
 
 const forceFlow = params.has("static");
-const webgl = hasWebGL2();
-const worldMode = !forceFlow && !reduceMotion && !small && webgl;
-const mobile3d = !forceFlow && !reduceMotion && small && webgl;
+const worldMode = !forceFlow && !reduceMotion && !small && "WebGL2RenderingContext" in window;
 
 // Si la ventana cruza el umbral escritorio ↔ móvil, se recarga en el modo correcto.
 window.matchMedia("(max-width: 900px), (pointer: coarse)").addEventListener("change", () => {
@@ -48,9 +46,8 @@ initLeadForm();
 initTools();
 const pointer = initPointer({ motion: !reduceMotion });
 
-if (worldMode) {
-  import("./world.js").then(({ startWorld }) => startWorld({ pointer, skipIntro: params.has("nointro") }));
-} else {
+function startFlow() {
+  const mobile3d = !forceFlow && !reduceMotion && small && hasWebGL2();
   // Modo flujo: navegación nativa con scroll suave del navegador.
   html.classList.add("is-flow");
   initTopbar();
@@ -69,4 +66,13 @@ if (worldMode) {
   initMenu({
     onNavigate: (id, target) => target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }),
   });
+}
+
+if (worldMode) {
+  import("./world.js").then(async ({ startWorld }) => {
+    // false: el navegador no pudo crear el contexto WebGL.
+    if ((await startWorld({ pointer, skipIntro: params.has("nointro") })) === false) startFlow();
+  });
+} else {
+  startFlow();
 }

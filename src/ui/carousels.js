@@ -2,10 +2,14 @@
 // agregan los puntos de posición y, si no tiene enlaces, se vuelve enfocable para
 // poder recorrerlo con teclado.
 const SELECTOR = ".plans, .steps, .grid";
+const STRIP = ".orbit__list"; // Franjas de chips: también se deslizan, sin puntos.
 
 export function initCarousels() {
   const mq = window.matchMedia("(max-width: 700px)");
   if (!mq.matches) return;
+  for (const strip of document.querySelectorAll(STRIP)) {
+    if (strip.scrollWidth > strip.clientWidth + 4) strip.tabIndex = 0;
+  }
   for (const track of document.querySelectorAll(SELECTOR)) {
     const cards = [...track.children];
     if (cards.length < 2 || track.scrollWidth <= track.clientWidth + 4) continue;

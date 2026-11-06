@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { placeInView } from "../../core/camera.js";
-import { ramp } from "../../core/timeline.js";
+import { ramp, yieldTask } from "../../core/timeline.js";
 import { M, ORANGE, glow, fatLines } from "../shared/materials.js";
 import { speedLines, letters3d, text3d, beacon, gear, shieldCheck, cpuCore, pdcaRing, logoTile, dust, gridFloor } from "../shared/ops.js";
 import { darkLight } from "../shared/lights.js";
@@ -32,6 +32,7 @@ export async function buildAutomatizar(ctx, scene) {
   const intro = S("c3-intro");
   const logoSt = S("c3-logo");
 
+  await yieldTask();
   // ── Hiperespacio (en espacio de cámara) ────────────────────────────────
   const lines = speedLines({ count: 560 });
   lines.mesh.visible = false;
@@ -50,6 +51,7 @@ export async function buildAutomatizar(ctx, scene) {
   motes.position.set(scene.O.x, -400, scene.O.z - 6000);
   add(motes, [intro.t - 140, S("c3-counters").end + 60]);
 
+  await yieldTask();
   // ── AUTOMATIZAR: letras blancas con bordes naranjas desde el punto de fuga ─
   const white = new THREE.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.35, metalness: 0.1, emissive: 0xffffff, emissiveIntensity: 0.08, envMapIntensity: 1 });
   const word = await letters3d("AUTOMATIZAR", { size: 540, depth: 150, gap: 50, material: white });
@@ -69,6 +71,7 @@ export async function buildAutomatizar(ctx, scene) {
     });
   });
 
+  await yieldTask();
   // ── SOAR: baliza → engrane → escudo, unidos por un haz de luz ──────────
   const soar = S("c3-soar");
   const fS = F("c3-soar");
@@ -97,6 +100,7 @@ export async function buildAutomatizar(ctx, scene) {
     nodes[2].group.rotation.y = Math.sin(clock * 0.8) * 0.25;
   });
 
+  await yieldTask();
   // ── Catálogo: chip central con pistas de datos ─────────────────────────
   const prod = S("c3-prod");
   const fP = F("c3-prod");
@@ -108,6 +112,7 @@ export async function buildAutomatizar(ctx, scene) {
     core.group.rotation.z = Math.sin(clock * 0.3) * 0.08;
   });
 
+  await yieldTask();
   // ── CIDSI: ciclo PDCA girando detrás de la consola ─────────────────────
   const sg = S("c3-sgsi");
   const fG = F("c3-sgsi");
@@ -116,6 +121,7 @@ export async function buildAutomatizar(ctx, scene) {
   pdca.group.quaternion.copy(quatOf(fG, 0, -0.25));
   add(pdca.group, [sg.t - 80, S("c3-sgsi-cap").t - 10], (t, clock) => pdca.update(clock));
 
+  await yieldTask();
   // ── Contadores cromados 13 · 30+ ───────────────────────────────────────
   const cn = S("c3-counters");
   const fC = F("c3-counters");
@@ -130,6 +136,7 @@ export async function buildAutomatizar(ctx, scene) {
     });
   });
 
+  await yieldTask();
   // ── Logo 3D (placa negra + Centinela) para la transición a claro ───────
   const tile = await logoTile({ size: 620, depth: 80 });
   tile.group.position.copy(scene.LOGO);

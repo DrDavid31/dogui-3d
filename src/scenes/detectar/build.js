@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { loadFont } from "../../core/assets.js";
 import { placeInView } from "../../core/camera.js";
-import { ramp } from "../../core/timeline.js";
+import { ramp, yieldTask } from "../../core/timeline.js";
 import { M, glow, fatLines, rng } from "../shared/materials.js";
 import { radar, threatGlobe, hexShield, ARTIFACTS, envelope, leakedDoc, credentialCard, accessKey, crowd, pipeline, phone as phoneModel } from "../shared/cyber.js";
 import { LETTERS } from "./index.js";
@@ -32,6 +32,7 @@ export async function buildDetectar(ctx, scene) {
     return obj;
   };
 
+  await yieldTask();
   // ── Radar de detección + hallazgos conectados a sus blips ──────────────
   const rd = radar({ r: scene.radarR, blips: scene.blips });
   rd.group.position.copy(RADAR);
@@ -62,6 +63,7 @@ export async function buildDetectar(ctx, scene) {
     links.material.opacity = ramp(t, intro.t - 18, intro.t + 8) * (1 - ramp(t, intro.end, tem.t - 24)) * 0.9;
   });
 
+  await yieldTask();
   // ── Globo de amenazas: lo que vigilamos en todo internet ───────────────
   const gl = threatGlobe({ r: 520, arcs: 11 });
   gl.group.position.copy(GLOBE);
@@ -74,6 +76,7 @@ export async function buildDetectar(ctx, scene) {
     gl.group.rotation.y = clock * 0.05 + t * 0.002;
   });
 
+  await yieldTask();
   // ── Evidencia: artefactos sobre una plataforma de escaneo ─────────────
   const del = S("c1-deliver");
   const fDel = F("c1-deliver");
@@ -115,6 +118,7 @@ export async function buildDetectar(ctx, scene) {
     });
   });
 
+  await yieldTask();
   // ── Proceso 01–05: pipeline que corre bajo las tarjetas ────────────────
   const flow = S("c1-flow");
   const fFlow = F("c1-flow");
@@ -132,6 +136,7 @@ export async function buildDetectar(ctx, scene) {
   const pipe = pipeline(pts, { radius: 11, packets: 12, nodes: [0.16, 0.33, 0.5, 0.66, 0.82] });
   add(pipe.group, [flow.t - 110, flow.end + 30], (t, clock) => pipe.update(clock));
 
+  await yieldTask();
   // ── Planes: capas de defensa (1, 2 y 3 anillos) detrás de cada tarjeta ──
   const plans = S("c1-plans");
   const fPlans = F("c1-plans");
@@ -150,6 +155,7 @@ export async function buildDetectar(ctx, scene) {
   });
   add(layers, [plans.t - 40, plans.end + 30]);
 
+  await yieldTask();
   // ── PyME: teléfono protegido por un escudo hexagonal ───────────────────
   const pyme = S("c1-pyme");
   const ph = phoneModel();
@@ -190,6 +196,7 @@ export async function buildDetectar(ctx, scene) {
     },
   });
 
+  await yieldTask();
   // ── Awareness: el factor humano pasa de "en riesgo" a "capacitado" ─────
   const aw = S("c1-aw");
   const awPlans = S("c1-aw-plans");
@@ -202,6 +209,7 @@ export async function buildDetectar(ctx, scene) {
     people.update(clock, ramp(t, aw.t, S("c1-aw-sum").end));
   });
 
+  await yieldTask();
   // ── Artefactos flotando en los bordes del encuadre (lejos del texto) ───
   const rand = rng(21);
   const drifting = [];
@@ -228,21 +236,24 @@ export async function buildDetectar(ctx, scene) {
     drifting.push(o);
   });
 
+  await yieldTask();
   // ── Letras gigantes DETECTAR ───────────────────────────────────────────
   const font = await loadFont();
   // Siempre transparente: alternar transparent cambia la variante del shader y la
   // recompila justo cuando aparecen las letras.
   const letterMat = new THREE.MeshPhysicalMaterial({ color: 0x0a0a0a, roughness: 0.45, metalness: 0.05, clearcoat: 0.35, clearcoatRoughness: 0.4, envMapIntensity: 0.45, transparent: true });
   const letters = new THREE.Group();
-  const glyphs = [...LETTERS.word].map((ch) => {
+  const glyphs = [];
+  for (const ch of LETTERS.word) {
     const geo = new TextGeometry(ch, { font, size: LETTERS.height, depth: LETTERS.depth, curveSegments: 10, bevelEnabled: true, bevelThickness: 6, bevelSize: 4, bevelSegments: 3 });
     geo.computeBoundingBox();
     const bb = geo.boundingBox;
     geo.translate(-bb.min.x, 0, -LETTERS.depth / 2);
     const mesh = new THREE.Mesh(geo, letterMat);
     mesh.castShadow = true;
-    return { mesh, w: bb.max.x - bb.min.x };
-  });
+    glyphs.push({ mesh, w: bb.max.x - bb.min.x });
+    await yieldTask();
+  }
   let x = 0;
   const xs = glyphs.map((g) => {
     const p = x;

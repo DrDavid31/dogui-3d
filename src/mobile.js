@@ -14,6 +14,7 @@ async function makeModel(kind) {
   let update = () => {};
   let dist = 1900;
   let size = 1100; // ancho aproximado del modelo (para que quepa en pantallas angostas)
+  let height = 0; // alto aproximado, si es mucho menor que el ancho (0 = igual al ancho)
   if (kind === "globe") {
     const gl = threatGlobe({ r: 520, arcs: 8 });
     g.add(gl.group);
@@ -38,6 +39,7 @@ async function makeModel(kind) {
     g.add(racks.group);
     g.rotation.x = 0.1;
     size = 1500;
+    height = 1050;
     dist = 2100;
     update = (clock, p) => {
       racks.update(clock);
@@ -64,6 +66,7 @@ async function makeModel(kind) {
     g.add(people.group);
     g.rotation.x = 0.42;
     size = 950;
+    height = 620;
     dist = 1500;
     update = (clock, p) => {
       people.update(clock, clamp01((p - 0.2) / 0.5));
@@ -75,6 +78,7 @@ async function makeModel(kind) {
     g.add(mx.group);
     g.rotation.x = -0.55;
     size = 1050;
+    height = 620;
     dist = 1600;
     update = (clock, p) => {
       mx.update(clock);
@@ -100,6 +104,7 @@ async function makeModel(kind) {
     nodes[0].group.rotation.x = 0.4;
     dist = 1700;
     size = 1150;
+    height = 420;
     update = (clock, p) => {
       nodes[1].group.rotation.z = clock * 0.8 + p * 3;
       nodes[2].group.rotation.y = Math.sin(clock * 0.8) * 0.3;
@@ -115,7 +120,7 @@ async function makeModel(kind) {
       tile.group.rotation.y = Math.sin(clock * 0.6) * 0.4 + (p - 0.5) * 0.8;
     };
   }
-  return { group: g, update, dist, size };
+  return { group: g, update, dist, size, height: height || size };
 }
 
 export async function startMobile(wins) {
@@ -193,8 +198,11 @@ export async function startMobile(wins) {
     const cy = r.top + r.height / 2;
     // Distancia mínima para que el modelo ocupe ~86% del ancho visible.
     const aspect = stage.width / H;
-    const fit = m.size / 0.86 / (2 * Math.tan(THREE.MathUtils.degToRad(20)) * aspect);
-    stage.camera.position.set(0, 0, Math.max(m.dist, fit));
+    const fov = 2 * Math.tan(THREE.MathUtils.degToRad(20));
+    const fit = m.size / 0.86 / (fov * aspect);
+    // Y a lo alto, dentro de la ventana (no de toda la pantalla).
+    const fitH = (m.height / 0.92 / fov) * (H / Math.max(1, r.height));
+    stage.camera.position.set(0, 0, Math.max(m.dist, fit, fitH));
     stage.camera.lookAt(0, 0, 0);
     stage.camera.setViewOffset(stage.width, H, 0, H / 2 - cy, stage.width, H);
     stage.renderer.render(stage.scene, stage.camera);

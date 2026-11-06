@@ -539,11 +539,12 @@ html[data-tone="dark"] {
 }
 
 /* El formulario (con consentimiento y aviso simplificado) cabe siempre en pantalla:
-   si no alcanza la altura, se desplaza por dentro (data-lenis-prevent). */
+   si no alcanza la altura, se desplaza por dentro (data-lenis-prevent) y al llegar al
+   borde el scroll sigue a la página. No usar overscroll-behavior: contain aquí: con el
+   cursor sobre el formulario, la página se queda atascada y no se llega a lo que sigue. */
 .is-world .is-world-ch .contact-panel .lead-form {
   max-height: calc(100svh - 168px);
   overflow-y: auto;
-  overscroll-behavior: contain;
   scrollbar-width: thin;
 }
 

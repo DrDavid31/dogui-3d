@@ -6,7 +6,7 @@ import { Hud } from "./core/hud.js";
 import { Env } from "./core/env.js";
 import { Scroll } from "./core/scroll.js";
 import { Loader } from "./core/loader.js";
-import { smooth } from "./core/timeline.js";
+import { smooth, Pace, yieldTask } from "./core/timeline.js";
 import { initMenu } from "./ui/menu.js";
 import { setLineResolution } from "./scenes/shared/materials.js";
 import { hero } from "./scenes/hero/index.js";
@@ -22,18 +22,21 @@ const TAIL = 30;
 // Al entrar a un capítulo, su luz se mezcla con la del anterior durante este tramo (vh).
 const LIGHT_BLEND = 50;
 
-// Cede el hilo principal entre los pasos pesados del arranque: varias tareas cortas en
-// vez de una larga (la página sigue respondiendo mientras corre el loader).
-const yieldTask = () => (globalThis.scheduler?.yield ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
-
 export async function startWorld({ pointer, skipIntro = false }) {
   const html = document.documentElement;
+  // Crear el contexto WebGL es lo más caro del arranque (hasta ~1 s bloqueando), así que
+  // no se hace una prueba aparte: este es el único. Sin WebGL, main.js usa el modo estático.
+  let stage;
+  try {
+    stage = new Stage(document.querySelector("[data-stage]"));
+  } catch {
+    return false;
+  }
   // is-arranging: oculto mientras se acomoda en varias tareas (sin cuadros a medio
   // acomodar ni desplazamientos de diseño).
   html.classList.add("is-world", "has-stage", "is-loading", "is-arranging");
   html.dataset.tone = "light";
 
-  const stage = new Stage(document.querySelector("[data-stage]"));
   const dir = new Director(stage.camera);
   for (const s of SCENES) s.stations(dir);
   dir.finalize();
@@ -62,7 +65,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
   env.set(envKeys);
 
   const total = dir.total + TAIL;
-  const scroll = new Scroll({ track, total });
+  const scroll = new Scroll({ track, total, pace: new Pace(dir.list, total) });
   scroll.stop();
 
   // Construcción diferida de cada capítulo (geometría pesada). Sus shaders se compilan
@@ -111,7 +114,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
     onNavigate: (id, target) => {
       const t = timeForId(id);
       if (t != null) scroll.scrollToTime(t);
-      else scroll.lenis.scrollTo(target, { offset: 0, duration: 2 });
+      else scroll.lenis.scrollTo(target, { offset: 0, duration: 1.4 });
     },
   });
 
@@ -124,11 +127,34 @@ export async function startWorld({ pointer, skipIntro = false }) {
     if (Math.abs(t - scroll.time) > 8) scroll.jumpToTime(t);
   });
 
+  // PageDown / PageUp / Espacio: de parada en parada, sin pasarse ninguna.
+  document.addEventListener("keydown", (e) => {
+    const forward = e.key === "PageDown" || (e.key === " " && !e.shiftKey);
+    const back = e.key === "PageUp" || (e.key === " " && e.shiftKey);
+    if ((!forward && !back) || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.target instanceof Element && e.target.closest("a, button, input, select, textarea, summary, [data-menu]")) return;
+    const now = scroll.rawTime;
+    if (now >= total - 1 && forward) return; // Después del recorrido: scroll normal de la página.
+    // Punto de lectura de cada parada. El margen evita quedarse en la misma parada al
+    // llegar desde un enlace del menú, que deja la cámara justo en su inicio.
+    const stop = (s) => s.t + s.hold * 0.15;
+    const next = forward ? dir.list.find((s) => stop(s) > now + 12) : [...dir.list].reverse().find((s) => stop(s) < now - 12);
+    e.preventDefault();
+    scroll.scrollToTime(next ? stop(next) : forward ? total : 0, { duration: 0.8 });
+  });
+
   // ── Indicador de capítulos ──────────────────────────────────────────────
   const chapterLinks = [...document.querySelectorAll("[data-chapter-link]")];
   const chapterRanges = SCENES.filter((s) => s.chapter).map((s) => ({ id: s.chapter, from: s.chapterFrom }));
   let currentChapter = null;
+  const chaptersNav = document.querySelector("[data-chapters]");
+  let lastP = -1;
   const updateChapters = (t) => {
+    const p = Math.round((t / total) * 200) / 200;
+    if (p !== lastP) {
+      chaptersNav?.style.setProperty("--p", p);
+      lastP = p;
+    }
     let id = null;
     for (const r of chapterRanges) if (t >= r.from) id = r.id;
     if (t >= total - 1) {
@@ -180,7 +206,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
     for (const s of SCENES) {
       const r = built.get(s);
       if (!r) {
-        if (s.range && t > s.range[0] - 400) build(s);
+        if (s.range && t > s.range[0] - 800) build(s);
         continue;
       }
       const on = t >= s.range[0] - 30 && t <= s.range[1];
@@ -205,14 +231,20 @@ export async function startWorld({ pointer, skipIntro = false }) {
 
   hud.splitWhenIdle();
 
-  // Pre-construye el siguiente capítulo mientras el usuario está en el hero.
-  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 400));
-  idle(() => build(detectar));
+  // Pre-construye los capítulos en tiempo libre, uno por uno, para que al avanzar rápido
+  // (o saltar desde el menú) ya estén listos y no haya pausas a media ruta. Empieza al
+  // terminar el loader: antes competiría con él por el GPU y lo retrasaría.
+  const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 400));
+  const preload = (i) => {
+    const s = SCENES[i];
+    if (!s) return;
+    idle(() => build(s).then(() => setTimeout(() => preload(i + 1), 600)));
+  };
 
   // Hash inicial (#servicios, etc.) o ?nointro: sin loader.
   const hashId = decodeURIComponent(location.hash.slice(1));
   const startT = hashId ? timeForId(hashId) : null;
-  const revealHero = () => gsap.to(ctx.heroHud, { gate: 1, duration: 1.1, ease: "power2.out" });
+  const revealHero = () => gsap.to(ctx.heroHud, { gate: 1, duration: 0.7, ease: "power2.out" });
 
   if (skipIntro || hashId) {
     html.classList.remove("is-loading");
@@ -227,5 +259,6 @@ export async function startWorld({ pointer, skipIntro = false }) {
     loader = null;
     scroll.start();
   }
+  preload(SCENES.indexOf(detectar));
   menu.setCurrent?.(hashId || "inicio");
 }

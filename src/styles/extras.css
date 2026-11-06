@@ -717,9 +717,36 @@
 }
 
 .glossary {
-  display: grid;
-  gap: 14px;
   max-width: 980px;
+}
+
+.glossary summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.glossary summary::-webkit-details-marker {
+  display: none;
+}
+
+.glossary summary::after {
+  content: "+";
+  color: var(--dogui-orange);
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.glossary[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.glossary[open] dl {
+  margin-top: 14px;
 }
 
 .glossary dl {

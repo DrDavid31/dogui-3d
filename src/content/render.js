@@ -89,7 +89,7 @@ export function renderApp({ base = "/" } = {}) {
       <p class="lede">${esc(H.copy)}</p>
       <div class="actions">
         ${btn(H.primary, "primary")}
-        <a class="btn btn--link" href="${esc(H.secondary.href)}">${esc(H.secondary.label)}${arrow}</a>
+        <a class="btn btn--link" href="${esc(H.secondary.href)}" data-menu-open>${esc(H.secondary.label)}${arrow}</a>
       </div>
     </div>
     ${win("globe", "light")}
@@ -746,10 +746,10 @@ export function renderApp({ base = "/" } = {}) {
       <div class="faq">
         ${FQ.items.map((f) => `<details class="faq__item"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}
       </div>
-      <div class="glossary">
-        <h3 class="h-sub">${esc(FQ.glossaryTitle)}</h3>
+      <details class="glossary">
+        <summary class="h-sub">${esc(FQ.glossaryTitle)}</summary>
         <dl>${FQ.glossary.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join("")}</dl>
-      </div>
+      </details>
     </section>
   </div>`;
 
@@ -825,10 +825,18 @@ export function renderChrome({ base = "/", home = "" } = {}) {
       </button>
       <a class="btn btn--primary btn--sm" href="${esc(home + C.cta.href)}" data-magnetic>${esc(C.cta.label)}<span class="btn__arrow" aria-hidden="true">→</span></a>
     </div>
-    <nav class="menu" id="site-menu" aria-label="Secciones" data-menu hidden>
-      <ol>
-        ${C.nav.map((n, i) => `<li><a href="${home}${n.href}"><span class="menu__n">${String(i + 1).padStart(2, "0")}</span>${esc(n.label)}</a></li>`).join("")}
-      </ol>
+    <nav class="menu" id="site-menu" aria-label="${esc(C.nav.title)}" data-menu data-lenis-prevent hidden>
+      <p class="menu__title">${esc(C.nav.title)}</p>
+      <div class="menu__groups">
+        ${C.nav.groups
+          .map(
+            (g) => `<div class="menu__group">
+          <p class="menu__label">${esc(g.label)}</p>
+          <ul>${g.items.map((n) => `<li><a href="${home}${n.href}"><strong>${esc(n.label)}</strong><span>${esc(n.text)}</span></a></li>`).join("")}</ul>
+        </div>`,
+          )
+          .join("")}
+      </div>
     </nav>
   </header>
   ${waHref ? `<a class="wa-float" href="${esc(waHref)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(C.whatsapp.label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg><span>${esc(C.whatsapp.label)}</span></a>` : ""}`,

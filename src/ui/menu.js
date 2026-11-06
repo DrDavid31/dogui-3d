@@ -12,6 +12,8 @@ export function initMenu({ onNavigate } = {}) {
   };
 
   toggle.addEventListener("click", () => open(menu.hidden));
+  // Otros botones que abren el mapa ("Ver todo lo que ofrecemos").
+  const opener = (t) => (t instanceof Element ? t.closest("[data-menu-open]") : null);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !menu.hidden) {
       open(false);
@@ -19,13 +21,18 @@ export function initMenu({ onNavigate } = {}) {
     }
   });
   document.addEventListener("click", (e) => {
+    if (opener(e.target)) {
+      e.preventDefault();
+      open(true);
+      return;
+    }
     if (!menu.hidden && !menu.contains(e.target) && !toggle.contains(e.target)) open(false);
   });
 
   // Cualquier enlace interno (#ancla) pasa por el navegador de la experiencia.
   document.addEventListener("click", (e) => {
     const a = e.target instanceof Element ? e.target.closest('a[href^="#"]') : null;
-    if (!a) return;
+    if (!a || a.hasAttribute("data-menu-open")) return;
     const hash = a.getAttribute("href");
     if (!hash || hash === "#") return;
     const id = decodeURIComponent(hash.slice(1));

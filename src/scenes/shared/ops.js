@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { loadFont, createLogo } from "../../core/assets.js";
+import { yieldTask } from "../../core/timeline.js";
 import { M, ORANGE, glow, fatLines, canvasTexture, fbm, rng, roundedSlab, roundRectShape } from "./materials.js";
 
 // Modelos de operación (capítulos 02–04): centro de datos, SOC, automatización.
@@ -388,6 +389,7 @@ export async function letters3d(word, { size = 900, depth = 220, gap = 60, mater
     x += bb.max.x - bb.min.x + gap;
     g.add(mesh);
     items.push(mesh);
+    await yieldTask();
   }
   const width = x - gap;
   items.forEach((m) => (m.position.x -= width / 2));

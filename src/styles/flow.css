@@ -346,6 +346,42 @@
     background: var(--dogui-orange);
   }
 
+  /* Página más corta: menos aire, chips en franja deslizable y sin las consolas
+     decorativas (aria-hidden: su contenido no es información). */
+  .sec {
+    padding-block: 48px;
+    gap: 22px;
+  }
+
+  .hud--chapter {
+    padding-top: 64px;
+  }
+
+  .hud--statement {
+    padding-block: 44px;
+  }
+
+  .soc--screen,
+  .soc--big,
+  .soc-sat {
+    display: none;
+  }
+
+  .orbit__list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
+    justify-content: start;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 2px var(--gutter) 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .orbit__list::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Toque cómodo (≥ 44 px) y sin zoom automático de iOS al enfocar un campo. */
   .card__cta,
   .contact__details a,
@@ -381,11 +417,11 @@
   }
 
   .panel__metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .eco {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -394,9 +430,9 @@
    para el modo móvil 3D): el espacio existe desde el primer pintado, sin saltos. */
 .m3d {
   display: none;
-  height: 62vh;
-  min-height: 300px;
-  max-height: 560px;
+  height: 44vh;
+  min-height: 260px;
+  max-height: 420px;
   pointer-events: none;
 }
 
@@ -434,4 +470,10 @@
 .has-m3d .footer {
   position: relative;
   z-index: 2;
+}
+
+@media (max-width: 480px) {
+  .card--eco .eco {
+    grid-template-columns: 1fr 1fr;
+  }
 }

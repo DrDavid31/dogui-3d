@@ -11,15 +11,33 @@ export const BLOOM_LAYER = 1;
 const BLACK = new THREE.Color(0x000000);
 
 class BloomSourcePass extends RenderPass {
+  constructor(scene, camera, lights) {
+    super(scene, camera);
+    this.lights = lights;
+    this.levels = lights.map(() => 0);
+  }
+
   render(renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
-    const { scene, camera } = this;
+    const { scene, camera, lights, levels } = this;
     const bg = scene.background;
     const fog = scene.fog;
     const mask = camera.layers.mask;
     scene.background = BLACK;
     scene.fog = null;
     camera.layers.set(BLOOM_LAYER);
+    // Las luces siguen presentes pero en 0: se ve igual que sin luces. Si se quitaran,
+    // cambia el estado de luces dos veces por cuadro y three.js vuelve a evaluar el
+    // programa de cada material iluminado, en cada cuadro.
+    lights.forEach((l, i) => {
+      levels[i] = l.intensity;
+      l.intensity = 0;
+    });
+    // El mapa de sombras se dibuja en la pasada normal (esta solo ve la capa de bloom).
+    const shadowPending = renderer.shadowMap.needsUpdate;
+    renderer.shadowMap.needsUpdate = false;
     super.render(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
+    renderer.shadowMap.needsUpdate = shadowPending;
+    lights.forEach((l, i) => (l.intensity = levels[i]));
     camera.layers.mask = mask;
     scene.background = bg;
     scene.fog = fog;
@@ -106,7 +124,7 @@ const FinalShader = {
 };
 
 export class Post {
-  constructor(renderer, scene, camera, { bloom = true } = {}) {
+  constructor(renderer, scene, camera, { bloom = true, lights = [] } = {}) {
     this.renderer = renderer;
     this.enabled = true;
     this.bloomEnabled = bloom;
@@ -123,7 +141,7 @@ export class Post {
       const brt = new THREE.WebGLRenderTarget(2, 2, { type: THREE.HalfFloatType, depthBuffer: true, stencilBuffer: true });
       this.bloomComposer = new EffectComposer(renderer, brt);
       this.bloomComposer.renderToScreen = false;
-      this.bloomComposer.addPass(new BloomSourcePass(scene, camera));
+      this.bloomComposer.addPass(new BloomSourcePass(scene, camera, lights));
       this.bloomPass = new UnrealBloomPass(new THREE.Vector2(256, 256), 1.1, 0.55, 0.0);
       this.bloomComposer.addPass(this.bloomPass);
     }

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { placeInView } from "../../core/camera.js";
-import { ramp } from "../../core/timeline.js";
+import { ramp, yieldTask } from "../../core/timeline.js";
 import { M, glow, fatLines } from "../shared/materials.js";
 import { rackRow, socWall, gridFloor, edgeCubes, dust, letters3d, text3d, mexicoMap } from "../shared/ops.js";
 import { darkLight } from "../shared/lights.js";
@@ -30,6 +30,7 @@ export async function buildResponder(ctx, scene) {
   const intro = S("c2-intro");
   const last = S("c2-spei-2");
 
+  await yieldTask();
   // ── Piso en cuadrícula, polvo y cubos con borde naranja ────────────────
   const floor = gridFloor({ size: 70000, cell: 320 });
   floor.position.set((O.x + X2) / 2, FLOOR, (O.z + last.pos.z) / 2);
@@ -46,6 +47,7 @@ export async function buildResponder(ctx, scene) {
   cubes.mesh.position.set((O.x + X2) / 2, FLOOR + 300, O.z + 1000);
   add(cubes.mesh, [intro.t - 140, last.end + 100], (t, clock) => cubes.update(clock));
 
+  await yieldTask();
   // ── Letras cromadas RESPONDER ──────────────────────────────────────────
   const word = await letters3d("RESPONDER", { size: 430, depth: 115, gap: 40 });
   word.group.position.set(scene.LETTERS.x, FLOOR, scene.LETTERS.z);
@@ -58,6 +60,7 @@ export async function buildResponder(ctx, scene) {
     });
   });
 
+  await yieldTask();
   // ── Pasillo de racks del centro de operaciones ─────────────────────────
   const zMid = CORRIDOR.z0 - 3300;
   const left = rackRow({ count: 10, spacing: 660, seed: 4 });
@@ -94,6 +97,7 @@ export async function buildResponder(ctx, scene) {
     links.material.opacity = ramp(t, soc.t - 20, soc.t + 10) * 0.9;
   });
 
+  await yieldTask();
   // ── Números cromados 24/7 · 360 · 90 ───────────────────────────────────
   for (const n of scene.numbers) {
     const st = S(n.id);
@@ -107,6 +111,7 @@ export async function buildResponder(ctx, scene) {
     });
   }
 
+  await yieldTask();
   // ── Método: línea de luz bajo las tarjetas y pulso que avanza ──────────
   const meth = S("c2-method");
   const fM = F("c2-method");
@@ -127,6 +132,7 @@ export async function buildResponder(ctx, scene) {
     mDots.forEach((d, i) => d.scale.setScalar(t > meth.t - 10 + i * 12 ? 1.4 : 0.6));
   });
 
+  await yieldTask();
   // ── vCISO: roadmap 30 · 60 · 90 sobre el piso ──────────────────────────
   const RZ = scene.ROAD_Z;
   const roadPts = [
@@ -166,6 +172,7 @@ export async function buildResponder(ctx, scene) {
   }
   add(roadGroup, [S("c2-vciso").t - 60, S("c2-vciso-eco").end + 60]);
 
+  await yieldTask();
   // ── SPEI/SPID: mapa de México en puntos ────────────────────────────────
   const sp = S("c2-spei");
   const fS = F("c2-spei");

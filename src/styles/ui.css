@@ -77,8 +77,11 @@
   position: absolute;
   top: 52px;
   right: 0;
-  width: min(420px, calc(100vw - 32px));
-  padding: 14px;
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100svh - 84px);
+  padding: 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 20px;
   background: rgb(10 10 10 / 0.96);
@@ -90,22 +93,57 @@
   display: none;
 }
 
-.menu ol {
+.menu__title {
+  margin: 0 0 14px;
+  padding: 0 10px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.menu__groups {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px 8px;
+}
+
+.menu__label {
+  margin: 0 0 4px;
+  padding: 0 10px;
+  color: var(--dogui-orange);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.menu ul {
+  display: grid;
   gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .menu a {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 10px 12px;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
   border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
   text-decoration: none;
   transition: background-color 0.2s;
+}
+
+.menu a strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.menu a span {
+  color: var(--g-300);
+  font-size: 12.5px;
+  line-height: 1.35;
 }
 
 .menu a:hover,
@@ -113,13 +151,7 @@
   background: rgb(255 255 255 / 0.07);
 }
 
-.menu__n {
-  color: var(--g-400);
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-
-.menu a[aria-current="true"] .menu__n {
+.menu a[aria-current="true"] strong {
   color: var(--dogui-orange);
 }
 
@@ -154,6 +186,20 @@
 
 [data-tone="dark"] .chapters {
   background: rgb(16 16 16 / 0.6);
+}
+
+/* Avance del recorrido completo (world.js actualiza --p de 0 a 1). */
+.chapters::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--dogui-orange);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
 }
 
 .is-world .chapters {
@@ -336,7 +382,7 @@
 main,
 .topbar,
 .chapters {
-  transition: opacity 0.8s var(--ease-out);
+  transition: opacity 0.5s var(--ease-out);
 }
 
 .is-loading:not(.is-revealing) main,

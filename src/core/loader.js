@@ -8,7 +8,7 @@ const BLACK = new THREE.Color("#0A0A0A");
 /**
  * Loader: fondo negro, el logo 3D (extruido del SVG oficial) se ensambla pieza por pieza
  * desde distintas profundidades, destella en naranja y funde a la escena del hero.
- * Dura como máximo ~2.4 s y se puede saltar.
+ * Dura como máximo ~1.6 s y se puede saltar.
  */
 export class Loader {
   constructor(stage, { onReveal } = {}) {
@@ -61,27 +61,27 @@ export class Loader {
     this.tl = tl;
     const order = [...pieces].sort(() => Math.random() - 0.5);
     order.forEach((p, k) => {
-      tl.to(p.position, { x: p.userData.home.x, y: p.userData.home.y, z: p.userData.home.z, duration: 1.05, ease: "expo.out" }, 0.05 + k * 0.022);
-      tl.to(p.rotation, { x: 0, y: 0, z: 0, duration: 1.05, ease: "expo.out" }, 0.05 + k * 0.022);
+      tl.to(p.position, { x: p.userData.home.x, y: p.userData.home.y, z: p.userData.home.z, duration: 0.7, ease: "expo.out" }, 0.03 + k * 0.014);
+      tl.to(p.rotation, { x: 0, y: 0, z: 0, duration: 0.7, ease: "expo.out" }, 0.03 + k * 0.014);
     });
     const accent = materials.find((m) => m.userData.isAccent);
-    tl.addLabel("flash", 1.3);
-    tl.to(this, { flash: 1, duration: 0.16, ease: "power2.out" }, "flash");
-    if (accent) tl.to(accent, { emissiveIntensity: 5, duration: 0.16, ease: "power2.out" }, "flash");
-    tl.to(logo.rotation, { y: 0.12, x: -0.04, duration: 1.1, ease: "sine.inOut" }, 0.4);
-    tl.to(this, { flash: 0, duration: 0.5, ease: "power2.in" }, "flash+=0.2");
-    if (accent) tl.to(accent, { emissiveIntensity: 0.9, duration: 0.5 }, "flash+=0.2");
-    tl.addLabel("out", 1.75);
-    tl.to(logo.position, { z: -D * 0.35, duration: 0.6, ease: "power2.in" }, "out");
-    tl.to(materials, { opacity: 0, duration: 0.45, ease: "power1.in" }, "out+=0.12");
-    tl.to(this, { mix: 0, duration: 0.65, ease: "power2.inOut" }, "out");
+    tl.addLabel("flash", 0.8);
+    tl.to(this, { flash: 1, duration: 0.12, ease: "power2.out" }, "flash");
+    if (accent) tl.to(accent, { emissiveIntensity: 5, duration: 0.12, ease: "power2.out" }, "flash");
+    tl.to(logo.rotation, { y: 0.12, x: -0.04, duration: 0.8, ease: "sine.inOut" }, 0.2);
+    tl.to(this, { flash: 0, duration: 0.3, ease: "power2.in" }, "flash+=0.12");
+    if (accent) tl.to(accent, { emissiveIntensity: 0.9, duration: 0.3 }, "flash+=0.12");
+    tl.addLabel("out", 1.1);
+    tl.to(logo.position, { z: -D * 0.35, duration: 0.45, ease: "power2.in" }, "out");
+    tl.to(materials, { opacity: 0, duration: 0.35, ease: "power1.in" }, "out+=0.08");
+    tl.to(this, { mix: 0, duration: 0.5, ease: "power2.inOut" }, "out");
     tl.call(
       () => {
         document.documentElement.classList.add("is-revealing");
         this.onReveal?.();
       },
       null,
-      "out+=0.25",
+      "out+=0.15",
     );
 
     // Solo desarrollo: ?freeze=1.4 congela el loader en ese segundo (capturas).

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { placeInView } from "../../core/camera.js";
-import { ramp } from "../../core/timeline.js";
+import { ramp, yieldTask } from "../../core/timeline.js";
 import { rng } from "../shared/materials.js";
 import { ARTIFACTS } from "../shared/cyber.js";
 import { logoTile } from "../shared/ops.js";
@@ -27,6 +27,7 @@ export async function buildContacto(ctx, scene) {
     return obj;
   };
 
+  await yieldTask();
   // ── Cierre: logo 3D grande con fragmentos (artefactos) orbitando ───────
   const fin = S("c4-final");
   const fF = F("c4-final");
@@ -63,6 +64,7 @@ export async function buildContacto(ctx, scene) {
     });
   });
 
+  await yieldTask();
   // ── Contacto: artefactos tenues al fondo, lejos del formulario ─────────
   const ct = S("c4-contact");
   const fC = F("c4-contact");
