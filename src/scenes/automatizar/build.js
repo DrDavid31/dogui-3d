@@ -62,7 +62,7 @@ export async function buildAutomatizar(ctx, scene) {
     glow(edges);
   });
   word.group.position.set(scene.O.x, -240, scene.LETTERS_Z);
-  add(word.group, [intro.t - 80, S("c3-soar").t + 10], (t) => {
+  add(word.group, [intro.t - 62, S("c3-soar").t + 10], (t) => {
     const k = ramp(t, intro.t - 60, intro.end - 30);
     word.items.forEach((it, i) => {
       const d = Math.abs(i - 5) / 5;

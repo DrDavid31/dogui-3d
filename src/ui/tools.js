@@ -12,10 +12,11 @@ const descriptions = new Map();
     if (typeof v.title === "string" && typeof v.text === "string" && !descriptions.has(v.title)) descriptions.set(v.title, v.text);
     Object.values(v).forEach(collect);
   }
-})([C.pyme, C.exposicion, C.awareness, C.vciso, C.servicios, C.paquetes]);
+})([C.pyme, C.exposicion, C.awareness, C.vciso, C.servicios, C.paquetes, C.forense.product]);
 
 // Opción del formulario que corresponde a cada recomendación.
 const SERVICE = [
+  [/Forense/, "Forense digital / Investigación de fraude"],
   [/Awareness/, "DOGUI Awareness"],
   [/Leak|Threat Exposure|Dark Web|Exposición digital/, "Threat Exposure Monitoring / Dark Web"],
   [/Compliance/, "GRC / Cumplimiento"],
@@ -90,7 +91,7 @@ function initQuiz(form, out) {
   });
 }
 
-/** Recomendación según tamaño (0–3), preocupación (0–4) y quién ve la seguridad (0–2). */
+/** Recomendación según tamaño (0–3), preocupación (0–5) y quién ve la seguridad (0–2). */
 function recommend(size, worry, team) {
   const pick = (...byS) => byS[Math.min(size, byS.length - 1)];
   const main = [
@@ -99,8 +100,10 @@ function recommend(size, worry, team) {
     pick("DOGUI Compliance Lite", "DOGUI Compliance Lite", "SGSI con plataforma CIDSI"),
     size === 0 && team === 0 ? "DOGUI Essential" : "Operación protegida",
     "Financiero crítico",
+    C.forense.product.title,
   ][worry];
-  const plus = team === 2 ? null : size === 0 ? "Diagnóstico" : pick(null, "DOGUI vCISO Starter", "DOGUI vCISO Plus", "DOGUI vCISO Pro");
+  // Un caso que ya ocurrió se atiende primero; la dirección de seguridad se ve después.
+  const plus = team === 2 || worry === 5 ? null : size === 0 ? "Diagnóstico" : pick(null, "DOGUI vCISO Starter", "DOGUI vCISO Plus", "DOGUI vCISO Pro");
   return { main, plus };
 }
 

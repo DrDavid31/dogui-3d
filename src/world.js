@@ -22,6 +22,34 @@ const TAIL = 30;
 // Al entrar a un capítulo, su luz se mezcla con la del anterior durante este tramo (vh).
 const LIGHT_BLEND = 50;
 
+/**
+ * Dónde se lee: las paradas de cámara y los textos que solo aparecen durante un viaje
+ * (títulos de capítulo). Esos tramos cuestan más scroll y tienen su punto de lectura; si
+ * no, un texto se ve durante menos de una vuelta de rueda.
+ */
+function readingPoints(stations, items) {
+  const holds = stations.filter((s) => s.hold > 0).map((s) => [s.t, s.end]);
+  const overlap = (a, b) => holds.reduce((n, [c, d]) => n + Math.max(0, Math.min(b, d) - Math.max(a, c)), 0);
+  const extras = [];
+  for (const { show } of items) {
+    const [, b, c] = show;
+    if (c == null) continue;
+    const from = Math.min(b, c);
+    const to = Math.max(b, c);
+    if (overlap(from, to) >= 12) continue;
+    const mid = (from + to) / 2;
+    extras.push([Math.min(from, mid - 8), Math.max(to, mid + 8)]);
+  }
+  const zones = [];
+  for (const z of [...holds, ...extras].sort((p, q) => p[0] - q[0])) {
+    const last = zones.at(-1);
+    if (last && z[0] <= last[1]) last[1] = Math.max(last[1], z[1]);
+    else zones.push([...z]);
+  }
+  const stops = [...stations.filter((s) => s.hold > 0).map((s) => s.t + s.hold * 0.45), ...extras.map(([a, b]) => (a + b) / 2)].sort((p, q) => p - q);
+  return { zones, stops };
+}
+
 export async function startWorld({ pointer, skipIntro = false }) {
   const html = document.documentElement;
   // Crear el contexto WebGL es lo más caro del arranque (hasta ~1 s bloqueando), así que
@@ -65,7 +93,8 @@ export async function startWorld({ pointer, skipIntro = false }) {
   env.set(envKeys);
 
   const total = dir.total + TAIL;
-  const scroll = new Scroll({ track, total, pace: new Pace(dir.list, total) });
+  const { zones, stops } = readingPoints(dir.list, [...hud.items, ...dom.items]);
+  const scroll = new Scroll({ track, total, pace: new Pace(zones, total), stops });
   scroll.stop();
 
   // Construcción diferida de cada capítulo (geometría pesada). Sus shaders se compilan
@@ -113,14 +142,19 @@ export async function startWorld({ pointer, skipIntro = false }) {
   const menu = initMenu({
     onNavigate: (id, target) => {
       const t = timeForId(id);
-      if (t != null) scroll.scrollToTime(t);
+      if (t != null) scroll.scrollToTime(scroll.stopAt(t));
       else scroll.lenis.scrollTo(target, { offset: 0, duration: 1.4 });
     },
   });
 
-  // Foco con teclado dentro del mundo: lleva la cámara al elemento enfocado.
+  // Foco con teclado dentro del mundo: lleva la cámara al elemento enfocado. Solo con Tab:
+  // un clic en un campo, o volver a esta pestaña, también disparan focusin y no deben
+  // mover la página.
+  let tabAt = -1e4;
+  document.addEventListener("keydown", (e) => e.key === "Tab" && (tabAt = performance.now()), true);
   document.addEventListener("focusin", (e) => {
     const el = e.target;
+    if (performance.now() - tabAt > 300) return;
     if (!(el instanceof Element) || !el.closest(".is-world-ch")) return;
     const t = dom.timeFor(el) ?? hud.timeFor(el);
     if (t == null) return;
@@ -135,12 +169,9 @@ export async function startWorld({ pointer, skipIntro = false }) {
     if (e.target instanceof Element && e.target.closest("a, button, input, select, textarea, summary, [data-menu]")) return;
     const now = scroll.rawTime;
     if (now >= total - 1 && forward) return; // Después del recorrido: scroll normal de la página.
-    // Punto de lectura de cada parada. El margen evita quedarse en la misma parada al
-    // llegar desde un enlace del menú, que deja la cámara justo en su inicio.
-    const stop = (s) => s.t + s.hold * 0.15;
-    const next = forward ? dir.list.find((s) => stop(s) > now + 12) : [...dir.list].reverse().find((s) => stop(s) < now - 12);
+    const next = forward ? stops.find((s) => s > now + 4) : stops.findLast((s) => s < now - 4);
     e.preventDefault();
-    scroll.scrollToTime(next ? stop(next) : forward ? total : 0, { duration: 0.8 });
+    scroll.scrollToTime(next ?? (forward ? total : 0), { duration: 0.8 });
   });
 
   // ── Indicador de capítulos ──────────────────────────────────────────────
@@ -265,7 +296,7 @@ export async function startWorld({ pointer, skipIntro = false }) {
     html.classList.remove("is-loading");
     ctx.heroHud.gate = 1;
     scroll.start();
-    if (startT != null) scroll.jumpToTime(startT);
+    if (startT != null) scroll.jumpToTime(scroll.stopAt(startT));
     else if (hashId) document.getElementById(hashId)?.scrollIntoView();
   } else {
     loader = new Loader(stage, { onReveal: revealHero });

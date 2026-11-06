@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { servicios, metodo, vciso, impacto, spei } from "../../content/content.js";
+import { servicios, metodo, vciso, impacto, spei, forense } from "../../content/content.js";
 
 // Capítulo 02 · Responder (fondo negro): letras cromadas, pasillo de racks, SOC,
 // números 24/7 · 360 · 90, método, vCISO e impacto + SPEI/SPID.
@@ -59,6 +59,14 @@ export const responder = {
     S("c2-impact", look(V(X2, 160, iz), 0, -2), { drift: [0, 0, -120], hold: 56 });
     S("c2-spei", look(V(X2, 160, iz - 1500), 0, -2), { drift: [0, 0, -120], hold: 56 });
     S("c2-spei-2", look(V(X2, 160, iz - 2900), 0, -2), { drift: [0, 0, -120], hold: 60 });
+    // Forense: el disco de evidencia, los servicios, el rastro del fraude y la cadena de custodia.
+    const fz = iz - 4500;
+    this.FOR_Z = fz;
+    S("c2-for-head", look(V(X2 - 100, 190, fz), 4, -3), { drift: [-30, 0, -110], hold: 64, travel: 70 });
+    S("c2-for-a", look(V(X2, 160, fz - 1500), 0, -2), { drift: [0, 0, -120], hold: 60 });
+    S("c2-for-b", look(V(X2, 160, fz - 2900), 0, -2), { drift: [0, 0, -120], hold: 60 });
+    S("c2-for-cases", look(V(X2 + 120, 180, fz - 4400), -3, -3), { drift: [0, 0, -100], hold: 66 });
+    S("c2-for-steps", look(V(X2, 160, fz - 5900), 0, -2), { drift: [0, 0, -100], hold: 64 });
   },
 
   layout(ctx) {
@@ -74,6 +82,7 @@ export const responder = {
     anchors.set("vciso", dir.get("c2-vciso").t);
     anchors.set("impacto", dir.get("c2-impact").t);
     anchors.set("spei-spid", dir.get("c2-spei").t);
+    anchors.set("forense", dir.get("c2-for-head").t);
 
     const card = (key, id, pose, delay = 0, from) =>
       dom.add(q(`[data-o="${key}"]`), {
@@ -160,8 +169,27 @@ export const responder = {
     spei.items.forEach((_, i) => card(`spei-${i}`, "c2-spei-2", { x: (i - 1) * 330, y: 50, z: i === 1 ? -40 : 60, ry: (1 - i) * 8, s: 0.96 }, i * 6));
     dom.add(q('[data-o="audience"]'), { anchor: F("c2-spei-2"), pose: { x: 0, y: -300, z: 0 }, show: shift(W("c2-spei-2"), 14), from: { y: -60, o: 0 } });
 
+    // Forense: encabezado junto al disco, servicios en dos filas, casos junto al grafo y
+    // pasos sobre la cadena de custodia.
+    hud.add(q('[data-hud="for-head"]'), { show: W("c2-for-head") });
+    forense.items.forEach((_, i) => {
+      const id = i < 4 ? "c2-for-a" : "c2-for-b";
+      const k = i % 4;
+      card(`for-${i}`, id, { x: row4[k], y: k % 2 ? -14 : 14, z: k % 2 ? 90 : 0, ry: (1.5 - k) * 4, s: 0.94 }, k * 6, { x: (k - 1.5) * 120, z: 520, ry: (k - 1.5) * -18, o: 0 });
+    });
+    hud.add(q('[data-hud="for-cases-head"]'), { show: W("c2-for-cases") });
+    card("for-cases", "c2-for-cases", { x: -470, y: -60, z: 0, ry: 8, s: 0.94 }, 0, { x: -200, z: 420, ry: 30, o: 0 });
+    card("for-aside", "c2-for-cases", { x: -70, y: -60, z: 50, ry: 3, s: 0.94 }, 8, { y: -120, z: 420, o: 0 });
+    hud.add(q('[data-hud="for-steps-head"]'), { show: W("c2-for-steps") });
+    const stepsT = dir.get("c2-for-steps");
+    forense.steps.items.forEach((_, i) => {
+      card(`for-step-${i}`, "c2-for-steps", { x: row4[i] * 0.98, y: 20, z: i % 2 ? 50 : 0, ry: (1.5 - i) * 3, s: 0.94 }, i * 5);
+      this.methodLit.push({ el: q(`[data-o="for-step-${i}"]`), t: stepsT.t - 12 + i * 11 });
+    });
+    dom.add(q('[data-o="for-note"]'), { anchor: F("c2-for-steps"), pose: { x: 0, y: -300, z: 0 }, show: shift(W("c2-for-steps"), 14), from: { y: -60, o: 0 } });
+
     // Ambiente oscuro durante todo el capítulo.
-    const end = dir.get("c2-spei-2");
+    const end = dir.get("c2-for-steps");
     env.push(
       { t: intro.t - 30, color: "#0A0A0A", near: 2600, far: 12000, bloom: 1.05, vignette: 0.3, grain: 0.04 },
       { t: end.end, color: "#0A0A0A", near: 2600, far: 12000, bloom: 1.05, vignette: 0.3, grain: 0.04 },

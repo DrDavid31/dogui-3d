@@ -307,6 +307,7 @@ export function renderApp({ base = "/" } = {}) {
   const I = C.impacto;
   const M = C.metodo;
   const F = C.spei;
+  const FO = C.forense;
   const responder = `
   <div class="chapter" id="responder" data-ch="responder" data-tone="dark" aria-labelledby="responder-title">
     ${chapterHead(chRespond, "c2-title")}
@@ -425,6 +426,55 @@ export function renderApp({ base = "/" } = {}) {
       <ul class="audience" data-o="audience" aria-label="${esc(I.audienceLabel)}">
         ${I.audience.map((a) => `<li>${esc(a)}</li>`).join("")}
       </ul>
+    </section>
+
+    ${win("forensic", "dark")}
+    <section class="sec" id="${FO.id}" aria-labelledby="${FO.id}-title">
+      <div class="hud hud--left" data-hud="for-head">
+        ${label("02", FO.kicker)}
+        <h3 class="h-section" id="${FO.id}-title">${esc(FO.title)}</h3>
+        <p class="lede">${esc(FO.text)}</p>
+      </div>
+      <div class="grid grid--4" data-wrap aria-label="${esc(FO.itemsLabel)}">
+        ${FO.items
+          .map(
+            (s, i) => `
+        <article class="card card--service" data-o="for-${i}">
+          <div class="card__head"><span class="card__bignum">${String(i + 1).padStart(2, "0")}</span><div class="card__icon">${icon(s.icon)}</div></div>
+          <p class="card__tier">${esc(s.kicker)}</p>
+          <h4 class="card__title">${esc(s.title)}</h4>
+          <p class="card__text">${esc(s.text)}</p>
+          ${list(s.items)}
+        </article>`,
+          )
+          .join("")}
+      </div>
+      <div class="hud hud--top" data-hud="for-cases-head">
+        ${label("02", FO.cases.kicker)}
+        <h3 class="h-sub">${esc(FO.cases.title)}</h3>
+      </div>
+      <article class="card card--problem" data-o="for-cases">
+        <h4 class="card__title">${esc(FO.cases.label)}</h4>
+        ${list(FO.cases.items)}
+      </article>
+      <aside class="card card--accent" data-o="for-aside">
+        <p class="card__tier">${esc(FO.aside.label)}</p>
+        <h4 class="card__title">${esc(FO.aside.title)}</h4>
+        <p class="card__text">${esc(FO.aside.text)}</p>
+      </aside>
+      <div class="hud hud--top" data-hud="for-steps-head">
+        ${label("02", FO.steps.kicker)}
+        <h3 class="h-sub">${esc(FO.steps.title)}</h3>
+      </div>
+      <ol class="grid grid--4 method" data-wrap>
+        ${FO.steps.items
+          .map(
+            (s, i) =>
+              `<li class="card card--method" data-o="for-step-${i}"><span class="card__bignum">${esc(s.n)}</span><h4 class="card__title">${esc(s.title)}</h4><p class="card__text">${esc(s.text)}</p></li>`,
+          )
+          .join("")}
+      </ol>
+      <p class="forense-note" data-o="for-note">${esc(FO.note)}</p>
     </section>
   </div>`;
 
@@ -596,7 +646,7 @@ export function renderApp({ base = "/" } = {}) {
           </div>
         </aside>
       </div>
-      <form class="lead-form" data-lead-form data-lenis-prevent novalidate>
+      <form class="lead-form" data-lead-form data-inner-scroll novalidate>
         <label class="hp-field" aria-hidden="true">${esc(FM.honeypot)}<input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
         <label>${esc(FM.name)}<input name="name" type="text" autocomplete="name" maxlength="80" required /></label>
         <label>${esc(FM.company)}<input name="company" type="text" autocomplete="organization" maxlength="100" required /></label>

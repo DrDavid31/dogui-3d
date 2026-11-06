@@ -39,6 +39,7 @@ export const nav = {
         { href: "#metodo", label: "Método", text: "De diagnóstico a operación continua, en 4 pasos." },
         { href: "#vciso", label: "vCISO", text: "Dirección de seguridad sin contratar un CISO." },
         { href: "#spei-spid", label: "SPEI/SPID", text: "Consultoría para flujos de pagos y operación financiera." },
+        { href: "#forense", label: "Forense y fraude", text: "Evidencia e investigación cuando algo ya pasó." },
       ],
     },
     {
@@ -645,6 +646,106 @@ export const spei = {
   ],
 };
 
+export const forense = {
+  id: "forense",
+  kicker: "Forense digital e investigación de fraude",
+  title: "Cuando algo ya pasó, reconstruimos qué ocurrió y lo respaldamos con evidencia.",
+  text: "Fraude interno, correo comprometido, pagos desviados o información que salió de la empresa. Preservamos la evidencia antes de que se pierda, reconstruimos los hechos y te entregamos un informe claro para dirección y tus abogados.",
+  // Nombre con el que lo recomienda el selector de paquete.
+  product: {
+    title: "DOGUI Forense",
+    text: "Forense digital e investigación de fraude: preservamos la evidencia, reconstruimos los hechos y entregamos un informe claro.",
+  },
+  itemsLabel: "Servicios de forense digital e investigación de fraude",
+  items: [
+    {
+      icon: "hard-drive",
+      kicker: "Evidencia",
+      title: "Preservación de evidencia",
+      text: "Copia forense de equipos, celulares, correo y nube, sin alterar el original.",
+      items: ["Imagen forense verificada con hash", "Cadena de custodia documentada", "Bitácoras antes de que se sobrescriban"],
+    },
+    {
+      icon: "scan",
+      kicker: "Análisis",
+      title: "Análisis forense digital",
+      text: "Qué pasó en cada sistema, cuándo y desde qué cuenta, aunque los datos estén incompletos o borrados.",
+      items: ["Archivos borrados o alterados", "Actividad de usuarios y bitácoras", "Línea de tiempo de los hechos"],
+    },
+    {
+      icon: "fingerprint",
+      kicker: "Fraude interno",
+      title: "Investigación de fraude interno",
+      text: "Investigaciones confidenciales de desvíos, corrupción y conductas indebidas.",
+      items: ["Desvío de recursos y conflicto de interés", "Revisión de correo y equipos de la empresa", "Hallazgos separados de opiniones"],
+    },
+    {
+      icon: "mail-warning",
+      kicker: "Fraude externo",
+      title: "Correo comprometido y fraude en pagos",
+      text: "Cómo suplantaron o entraron a una cuenta, qué mensajes cambiaron y a dónde se fue el pago.",
+      items: ["Compromiso de correo (BEC)", "Facturas y cuentas bancarias alteradas", "Cronología para el banco y la autoridad"],
+    },
+    {
+      icon: "file-lock",
+      kicker: "Información",
+      title: "Robo de información",
+      text: "Qué salió de la empresa, desde qué cuenta o equipo y por qué medio.",
+      items: ["Copias a USB, nube y correo personal", "Salida de empleados y proveedores", "Secretos comerciales y bases de clientes"],
+    },
+    {
+      icon: "chart",
+      kicker: "Datos",
+      title: "Análisis de datos y rastreo de fondos",
+      text: "Cruzamos pagos, proveedores y nómina para encontrar patrones y seguir el dinero.",
+      items: ["Proveedores y pagos atípicos", "Vínculos entre personas y cuentas", "Cuantificación de la pérdida"],
+    },
+    {
+      icon: "building",
+      kicker: "Legal",
+      title: "Apoyo a litigio",
+      text: "Trabajamos con tus abogados y peritos, y ordenamos la información digital del caso.",
+      items: ["Informe técnico por escrito", "Búsqueda y revisión de documentos (eDiscovery)", "Apoyo técnico en denuncias y juicios"],
+    },
+    {
+      icon: "shield-check",
+      kicker: "Prevención",
+      title: "Controles antifraude",
+      text: "Cerramos el hueco por el que pasó, para que no se repita.",
+      items: ["Evaluación de riesgos de fraude", "Canal de denuncia", "Capacitación a tu equipo"],
+    },
+  ],
+  cases: {
+    kicker: "Cuándo llamarnos",
+    title: "Seguimos el rastro hasta donde llevan los datos.",
+    label: "Casos frecuentes",
+    items: [
+      "Un pago se fue a una cuenta que no era",
+      "Alguien cambió una factura o los datos bancarios de un proveedor",
+      "Quien dejó la empresa se llevó información",
+      "Hay dinero o inventario que no cuadra",
+      "Recibiste una denuncia interna o un requerimiento",
+      "Hubo un ataque y necesitas saber qué tocaron",
+    ],
+  },
+  aside: {
+    label: "Si sospechas algo hoy",
+    title: "No borres, no apagues, no confrontes.",
+    text: "Deja los equipos como están, guarda los correos y no avises a la persona involucrada. Cada cambio puede destruir evidencia: contáctanos antes de mover nada.",
+  },
+  steps: {
+    kicker: "Cómo trabajamos",
+    title: "De la primera sospecha al informe final.",
+    items: [
+      { n: "01", title: "Preservamos", text: "Aseguramos equipos, cuentas y bitácoras, con registro de quién tocó qué y cuándo." },
+      { n: "02", title: "Analizamos", text: "Trabajamos sobre copias verificadas y cruzamos la evidencia digital con datos de la operación." },
+      { n: "03", title: "Reconstruimos", text: "Armamos la línea de tiempo: qué pasó, cómo y qué cuentas o equipos intervinieron." },
+      { n: "04", title: "Reportamos", text: "Informe para dirección y abogados, con hallazgos, evidencia y qué corregir." },
+    ],
+  },
+  note: "Investigamos sistemas y datos de tu empresa con la autorización de quien corresponde. Si el caso llega a una autoridad, ella decide qué evidencia admite y qué valor le da: por eso trabajamos con tus abogados desde el inicio.",
+};
+
 // ─── Capítulo 03 · Automatizar ─────────────────────────────────────────────
 
 export const automation = {
@@ -812,7 +913,7 @@ export const contacto = {
     service: "Servicio de interés",
     servicePlaceholder: "Selecciona una opción",
     groups: [
-      { label: "Servicios gestionados", options: ["SOC / MDR", "Pentesting / Red Team", "Respuesta a incidentes", "GRC / Cumplimiento", "DOGUI vCISO", "Automatizaciones"] },
+      { label: "Servicios gestionados", options: ["SOC / MDR", "Pentesting / Red Team", "Respuesta a incidentes", "Forense digital / Investigación de fraude", "GRC / Cumplimiento", "DOGUI vCISO", "Automatizaciones"] },
       {
         label: "Productos y plataformas",
         options: ["Threat Exposure Monitoring / Dark Web", "SGSI / CIDSI", "DOGUI Awareness", "PyME / WhatsApp Security Assistant", "Software DOGUI (SaaS)"],
@@ -918,6 +1019,7 @@ export const recursos = {
           "Cumplir con clientes, auditorías o ISO 27001",
           "Detectar y responder ataques todo el tiempo",
           "Proteger operaciones financieras (SPEI/SPID)",
+          "Investigar un fraude o incidente que ya ocurrió",
         ],
       },
       { id: "team", q: "¿Quién ve la seguridad hoy?", options: ["Nadie, o el dueño", "Alguien de TI, sin ser especialista", "Un equipo de seguridad"] },
@@ -1057,6 +1159,10 @@ export const faq = {
       a: "Sí. Con DOGUI WhatsApp Security Assistant tus empleados reportan links, correos, archivos y fraudes desde el canal que ya usan, y DOGUI Awareness envía capacitaciones y evaluaciones por ahí.",
     },
     {
+      q: "¿Qué hago si sospecho de un fraude o de alguien de mi equipo?",
+      a: "No borres nada, no apagues los equipos y no confrontes a la persona: cualquiera de esas cosas puede destruir evidencia. Contáctanos primero; preservamos la información y trabajamos con tus abogados.",
+    },
+    {
       q: "¿Qué hacen con la información de mi empresa?",
       a: "La tratamos con confidencialidad y conforme a nuestro Aviso de privacidad. El alcance y las reglas de confidencialidad de cada servicio quedan por escrito en la propuesta y el contrato.",
     },
@@ -1082,6 +1188,11 @@ export const faq = {
     ["Ransomware", "Ataque que cifra tu información y pide un rescate para devolverla."],
     ["ISO 27001 · PCI DSS", "Normas de seguridad: la primera para la información en general, la segunda para datos de tarjetas."],
     ["SPEI · SPID", "Sistemas de pagos electrónicos de Banxico en pesos y en dólares."],
+    ["Imagen forense", "Copia exacta de un disco o celular, para analizarla sin tocar el original."],
+    ["Hash", "Huella digital de un archivo: si cambia un solo dato, la huella cambia. Así se comprueba que la copia es idéntica."],
+    ["Cadena de custodia", "Registro de quién tuvo la evidencia, cuándo y qué hizo con ella."],
+    ["BEC", "Compromiso de correo de negocios: suplantar o entrar a un correo de la empresa para desviar pagos."],
+    ["eDiscovery", "Buscar, ordenar y revisar correos y documentos electrónicos para un caso legal."],
   ],
 };
 

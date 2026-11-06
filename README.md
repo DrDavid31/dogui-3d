@@ -124,8 +124,12 @@ scripts/
   (`scrub: 0.6`). Cámara, fondo, niebla, tarjetas y textos se derivan de él.
 - **Ritmo.** Para que el recorrido sea más rápido o más lento no se toca la coreografía:
   `Pace` (`core/timeline.js`) decide cuánto scroll cuesta cada unidad de tiempo. Por defecto,
-  `hold = 0.6` vh en las paradas donde se lee y `travel = 0.3` vh en los viajes de cámara.
-  Con esos valores el recorrido completo son unas 250 vueltas de rueda.
+  `hold = 1` vh donde se lee y `travel = 0.28` vh en los viajes de cámara, unas 294 vueltas
+  de rueda en total. Bajar `hold` hace que los textos se pasen de largo: 0.6 ya era poco.
+- **Paradas.** Un gesto de rueda o touchpad no puede saltarse un punto de lectura: se detiene
+  ahí al menos `STOP_DWELL` ms (`core/scroll.js`), de bajada y de subida; si el movimiento
+  termina en un viaje de cámara, sigue hasta la parada próxima. `readingPoints` (`world.js`)
+  saca las paradas de las estaciones y de los textos que solo se ven durante un viaje.
 - **Atajos.** `PageDown`, `PageUp` y `Espacio` van de parada en parada. El botón «Ver todo
   lo que ofrecemos» abre el mapa de servicios del menú, desde donde se salta a cualquiera.
 - **Estaciones.** Cada escena declara estaciones de cámara (dónde se lee y cuánto dura el
@@ -157,9 +161,12 @@ scripts/
   `await yieldTask()` entre modelos pesados. El contexto WebGL de escritorio es uno solo,
   sin prueba previa: si `new Stage` falla, `startWorld` devuelve `false` y `main.js` usa el
   modo estático.
-- **El formulario no atrapa el scroll.** Se desplaza por dentro con `data-lenis-prevent`,
-  pero no lleva `overscroll-behavior: contain`: con eso, la rueda se queda atorada cuando
-  el cursor está sobre él y no se llega a lo que sigue.
+- **El formulario no atrapa el scroll.** Con `data-inner-scroll` se desplaza por dentro y en
+  su borde sigue la página con Lenis. No uses ahí `data-lenis-prevent`: el scroll nativo se
+  pelea con Lenis y la página brinca. Tampoco `overscroll-behavior: contain`: la rueda se
+  queda atorada con el cursor encima.
+- **El foco solo mueve la cámara con Tab.** Un clic en un campo o volver a la pestaña también
+  disparan `focusin` y no deben mover la página.
 
 ## Editar textos
 

@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { placeInView } from "../../core/camera.js";
 import { ramp, yieldTask } from "../../core/timeline.js";
 import { M, glow, fatLines } from "../shared/materials.js";
-import { rackRow, socWall, gridFloor, edgeCubes, dust, letters3d, text3d, mexicoMap } from "../shared/ops.js";
+import { rackRow, socWall, gridFloor, edgeCubes, dust, letters3d, text3d, mexicoMap, evidenceDrive, fraudGraph, custodyChain } from "../shared/ops.js";
 import { darkLight } from "../shared/lights.js";
 
 const at = (frame, pose) => new THREE.Vector3().setFromMatrixPosition(placeInView(frame, pose));
@@ -28,7 +28,7 @@ export async function buildResponder(ctx, scene) {
     return obj;
   };
   const intro = S("c2-intro");
-  const last = S("c2-spei-2");
+  const last = S("c2-for-steps");
 
   await yieldTask();
   // ── Piso en cuadrícula, polvo y cubos con borde naranja ────────────────
@@ -180,6 +180,45 @@ export async function buildResponder(ctx, scene) {
   map.group.position.copy(at(fS, { x: 330, y: 10, z: 900 }));
   map.group.quaternion.copy(quatOf(fS, -0.12, -0.32));
   add(map.group, [sp.t - 56, S("c2-spei-2").t + 20], (t, clock) => map.update(clock));
+
+  await yieldTask();
+  // ── Forense: copia del disco, rastro del fraude y cadena de custodia ───
+  // Cada animación corre sola al llegar a su parada (no se queda a medias si te detienes
+  // a leer) y se rebobina al alejarse.
+  const playback = (from, to, seconds) => {
+    let k = 0;
+    return (t, dt) => {
+      k = t > from && t < to ? Math.min(1, k + dt / seconds) : Math.max(0, k - dt);
+      return k;
+    };
+  };
+  const forDust = dust({ count: 500, box: [9000, 3000, 12000], size: 6 });
+  forDust.position.set(X2, FLOOR, scene.FOR_Z - 3000);
+  const fHead = S("c2-for-head");
+  add(forDust, [fHead.t - 120, last.end + 100]);
+
+  const drive = evidenceDrive({ size: 300 });
+  const fH = F("c2-for-head");
+  drive.group.position.copy(at(fH, { x: 330, y: -20, z: 620 }));
+  drive.group.quaternion.copy(quatOf(fH, -0.05, -0.3));
+  const driveK = playback(fHead.t - 30, fHead.end + 30, 3.6);
+  add(drive.group, [fHead.t - 66, fHead.end + 40], (t, clock, dt) => drive.update(clock, driveK(t, dt)));
+
+  const fCases = S("c2-for-cases");
+  const graph = fraudGraph({ r: 420 });
+  const fC = F("c2-for-cases");
+  graph.group.position.copy(at(fC, { x: 470, y: 0, z: 760 }));
+  graph.group.quaternion.copy(quatOf(fC, 0, -0.18));
+  const graphK = playback(fCases.t - 24, fCases.end + 30, 4);
+  add(graph.group, [fCases.t - 60, fCases.end + 40], (t, clock, dt) => graph.update(clock, graphK(t, dt)));
+
+  const fSteps = S("c2-for-steps");
+  const chain = custodyChain({ count: 11, r: 54 });
+  const fT = F("c2-for-steps");
+  chain.group.position.copy(at(fT, { x: 0, y: -210, z: 240 }));
+  chain.group.quaternion.copy(quatOf(fT));
+  const chainK = playback(fSteps.t - 14, fSteps.end + 30, 3.4);
+  add(chain.group, [fSteps.t - 56, fSteps.end + 40], (t, clock, dt) => chain.update(clock, chainK(t, dt)));
 
   const methodLit = scene.methodLit;
   return {

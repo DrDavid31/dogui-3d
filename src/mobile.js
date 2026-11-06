@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Stage, LightSpec } from "./core/renderer.js";
 import { radar, threatGlobe, hexShield, crowd, phone } from "./scenes/shared/cyber.js";
-import { rackRow, beacon, gear, shieldCheck, logoTile, mexicoMap, cpuCore } from "./scenes/shared/ops.js";
+import { rackRow, beacon, gear, shieldCheck, logoTile, mexicoMap, cpuCore, evidenceDrive } from "./scenes/shared/ops.js";
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
@@ -84,6 +84,14 @@ async function makeModel(kind) {
       mx.update(clock);
       g.rotation.z = (p - 0.5) * 0.25;
     };
+  } else if (kind === "forensic") {
+    // Forense: los bloques pasan del disco de evidencia a su copia verificada.
+    const drive = evidenceDrive({ size: 420 });
+    g.add(drive.group);
+    size = 1000;
+    height = 620;
+    dist = 1600;
+    update = (clock, p) => drive.update(clock, clamp01((p - 0.2) / 0.5));
   } else if (kind === "core") {
     // Productos: chip central con pulsos que salen por sus pistas.
     const core = cpuCore({ size: 300 });

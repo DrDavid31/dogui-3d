@@ -634,6 +634,233 @@ export function shieldCheck({ size = 300, depth = 70 } = {}) {
   return { group: g };
 }
 
+// ── Forense digital ──────────────────────────────────────────────────────
+/**
+ * Disco de evidencia y su copia forense: los bloques viajan del original a la copia, unos
+ * pocos marcados en naranja (hallazgos), y al terminar aparece el sello de verificación.
+ * update(clock, k): k = 0 → 1 avance de la copia.
+ */
+export function evidenceDrive({ size = 300 } = {}) {
+  const m = M();
+  const g = new THREE.Group();
+  const w = size;
+  const h = size * 1.35;
+  const d = size * 0.13;
+  const left = -w * 0.72;
+  const right = w * 0.72;
+
+  const body = new THREE.Mesh(roundedSlab(w, h, d, size * 0.05), m.blackMatte);
+  body.position.x = left;
+  const platter = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.37, w * 0.37, 5, 64), m.steel);
+  platter.rotation.x = Math.PI / 2;
+  platter.position.set(left, h * 0.14, d / 2 + 5);
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.07, w * 0.07, 12, 24), m.graphite);
+  hub.rotation.x = Math.PI / 2;
+  hub.position.set(left, h * 0.14, d / 2 + 10);
+  const pivot = new THREE.Group();
+  pivot.position.set(left + w * 0.34, -h * 0.3, d / 2 + 14);
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(w * 0.07, h * 0.5, 5), m.graphite);
+  arm.position.y = h * 0.25;
+  const armTip = new THREE.Mesh(new THREE.SphereGeometry(w * 0.022, 12, 10), m.led);
+  armTip.position.y = h * 0.5;
+  glow(armTip);
+  pivot.add(arm, armTip);
+  const scan = new THREE.Mesh(new THREE.BoxGeometry(w * 1.08, 4, 4), m.led);
+  scan.position.set(left, 0, d / 2 + 18);
+  glow(scan);
+  g.add(body, platter, hub, pivot, scan);
+
+  // Marco de la copia: gris mientras se llena, naranja al quedar verificada.
+  const rect = (hw, hh) => [right - hw, -hh, 0, right + hw, -hh, 0, right + hw, -hh, 0, right + hw, hh, 0, right + hw, hh, 0, right - hw, hh, 0, right - hw, hh, 0, right - hw, -hh, 0];
+  const frame = fatLines(rect(w / 2, h / 2), { color: 0x6a6a66, width: 1.4 });
+  const frameDone = fatLines(rect(w / 2, h / 2), { color: 0xff6b00, width: 2.4 });
+  glow(frameDone);
+  g.add(frame, frameDone);
+
+  // Bloques: los marcados se dibujan aparte, con el material encendido.
+  const cols = 7;
+  const rows = 9;
+  const cell = (w - 18) / cols;
+  const rowH = (h - 18) / rows;
+  const box = new THREE.BoxGeometry(cell * 0.82, rowH * 0.82, d * 0.3);
+  const slots = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      slots.push({ x: right + (c - (cols - 1) / 2) * cell, y: h / 2 - 9 - (r + 0.5) * rowH, sx: left + (c - (cols - 1) / 2) * cell * 0.9, flag: (r * cols + c) % 11 === 4 });
+    }
+  }
+  const plain = slots.filter((s) => !s.flag);
+  const flagged = slots.filter((s) => s.flag);
+  const iPlain = new THREE.InstancedMesh(box, m.graphite, plain.length);
+  const iFlag = new THREE.InstancedMesh(box, m.led, flagged.length);
+  glow(iFlag);
+  iPlain.frustumCulled = false;
+  iFlag.frustumCulled = false;
+  g.add(iPlain, iFlag);
+
+  const seal = shieldCheck({ size: size * 0.5, depth: 30 });
+  seal.group.position.set(right, 0, d * 2);
+  g.add(seal.group);
+
+  const mtx = new THREE.Matrix4();
+  const pos = new THREE.Vector3();
+  const quat = new THREE.Quaternion();
+  const scl = new THREE.Vector3();
+  const n = slots.length;
+  const place = (mesh, list) => {
+    list.forEach((s, i) => {
+      const u = Math.min(1, Math.max(0, (update.k - (slots.indexOf(s) / n) * 0.72) / 0.2));
+      const e = u * u * (3 - 2 * u);
+      pos.set(s.sx + (s.x - s.sx) * e, s.y, d * 0.5 + Math.sin(e * Math.PI) * size * 0.34);
+      scl.setScalar(u > 0 ? 1 : 0);
+      mtx.compose(pos, quat, scl);
+      mesh.setMatrixAt(i, mtx);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+  };
+  function update(clock, k) {
+    update.k = k;
+    platter.rotation.y = clock * 5;
+    pivot.rotation.z = 0.28 + Math.sin(clock * 1.7) * 0.2;
+    place(iPlain, plain);
+    place(iFlag, flagged);
+    const running = k > 0 && k < 0.92;
+    scan.visible = running;
+    if (running) scan.position.y = h / 2 - ((clock * 0.8) % 1) * h;
+    const done = Math.min(1, Math.max(0, (k - 0.88) / 0.12));
+    frame.visible = done < 1;
+    frameDone.visible = done >= 1;
+    seal.group.visible = done > 0;
+    seal.group.scale.setScalar(Math.max(0.001, done * (1 + Math.sin(done * Math.PI) * 0.18)));
+    g.rotation.y = Math.sin(clock * 0.45) * 0.05;
+  }
+  update.k = 0;
+  return { group: g, update };
+}
+
+/**
+ * Grafo de personas, cuentas y operaciones: un pulso recorre el camino sospechoso y lo
+ * enciende nodo por nodo, hasta marcar el último. Ilustrativo, sin datos.
+ * update(clock, k): k = 0 → 1 avance del rastro.
+ */
+export function fraudGraph({ r = 420, count = 40, seed = 7 } = {}) {
+  const m = M();
+  const g = new THREE.Group();
+  const rand = rng(seed);
+  const pts = [];
+  for (let i = 0; i < count; i++) {
+    pts.push(new THREE.Vector3((rand() * 2 - 1) * r * 1.15, (rand() * 2 - 1) * r * 0.92, (rand() * 2 - 1) * r * 0.42));
+  }
+  // Cada nodo se une con sus dos vecinos más cercanos.
+  const linePos = [];
+  pts.forEach((p, i) => {
+    const near = pts
+      .map((q, j) => [p.distanceToSquared(q), j])
+      .filter(([, j]) => j !== i)
+      .sort((a, b) => a[0] - b[0])
+      .slice(0, 2);
+    for (const [, j] of near) linePos.push(p.x, p.y, p.z, pts[j].x, pts[j].y, pts[j].z);
+  });
+  const web = fatLines(linePos, { color: 0x5c5c58, width: 1.1 });
+  g.add(web);
+
+  const nodeGeo = new THREE.SphereGeometry(r * 0.024, 14, 10);
+  const nodes = new THREE.InstancedMesh(nodeGeo, m.steel, pts.length);
+  const mtx = new THREE.Matrix4();
+  pts.forEach((p, i) => nodes.setMatrixAt(i, mtx.makeTranslation(p.x, p.y, p.z)));
+  g.add(nodes);
+
+  // El camino: seis nodos repartidos de izquierda a derecha.
+  const sorted = [...pts].sort((a, b) => a.x - b.x);
+  const path = [0, 0.2, 0.4, 0.6, 0.8, 1].map((u) => sorted[Math.round(u * (sorted.length - 1))]);
+  const segments = [];
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = path[i];
+    const b = path[i + 1];
+    const seg = fatLines([a.x, a.y, a.z, b.x, b.y, b.z], { color: 0xff6b00, width: 2.6 });
+    glow(seg);
+    g.add(seg);
+    segments.push(seg);
+  }
+  const lit = path.map((p) => {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(r * 0.038, 18, 14), m.led);
+    s.position.copy(p);
+    glow(s);
+    g.add(s);
+    return s;
+  });
+  const pulse = new THREE.Mesh(new THREE.SphereGeometry(r * 0.03, 16, 12), m.ledWhite);
+  glow(pulse);
+  g.add(pulse);
+  // Anillos en el último nodo: aquí terminó el rastro.
+  const end = path.at(-1);
+  const rings = [0, 0.5].map((phase) => {
+    const mat = new THREE.MeshBasicMaterial({ color: ORANGE, transparent: true, depthWrite: false, toneMapped: false });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(r * 0.06, r * 0.075, 48), mat);
+    ring.position.copy(end);
+    glow(ring);
+    g.add(ring);
+    return { ring, mat, phase };
+  });
+
+  const hops = segments.length;
+  return {
+    group: g,
+    update(clock, k) {
+      const at = k * hops;
+      segments.forEach((s, i) => (s.visible = at >= i + 1));
+      lit.forEach((s, i) => (s.visible = at >= i));
+      const running = k > 0 && k < 1;
+      pulse.visible = running;
+      if (running) {
+        const i = Math.min(hops - 1, Math.floor(at));
+        pulse.position.lerpVectors(path[i], path[i + 1], at - i);
+      }
+      for (const { ring, mat, phase } of rings) {
+        ring.visible = k >= 1;
+        const u = (clock * 0.5 + phase) % 1;
+        ring.scale.setScalar(1 + u * 3);
+        mat.opacity = (1 - u) * 0.9;
+      }
+      g.rotation.y = Math.sin(clock * 0.3) * 0.12;
+      g.rotation.x = Math.sin(clock * 0.22) * 0.03;
+    },
+  };
+}
+
+/**
+ * Cadena de custodia: eslabones de cromo que se encienden uno por uno.
+ * update(clock, k): k = 0 → 1 eslabones encendidos.
+ */
+export function custodyChain({ count = 11, r = 54 } = {}) {
+  const m = M();
+  const g = new THREE.Group();
+  const geo = new THREE.TorusGeometry(r, r * 0.2, 12, 40);
+  const gap = r * 1.72;
+  const lit = [];
+  for (let i = 0; i < count; i++) {
+    const x = (i - (count - 1) / 2) * gap;
+    const rot = i % 2 ? Math.PI / 2 : 0;
+    const link = new THREE.Mesh(geo, m.chrome);
+    link.position.x = x;
+    link.rotation.x = rot;
+    // Sin bloom: tantos eslabones encendidos tiñen de rojo todo el encuadre.
+    const on = new THREE.Mesh(geo, m.orange);
+    on.position.x = x;
+    on.rotation.x = rot;
+    on.scale.setScalar(1.015);
+    g.add(link, on);
+    lit.push(on);
+  }
+  return {
+    group: g,
+    update(clock, k) {
+      lit.forEach((on, i) => (on.visible = k * count > i));
+      g.rotation.x = Math.sin(clock * 0.5) * 0.05;
+    },
+  };
+}
+
 // ── Núcleo de procesamiento (catálogo de productos) ──────────────────────
 export function cpuCore({ size = 420 } = {}) {
   const m = M();

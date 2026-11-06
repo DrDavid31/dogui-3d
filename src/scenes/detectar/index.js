@@ -139,10 +139,11 @@ export const detectar = {
     // Qué monitoreamos: chips en órbita alrededor del grafo.
     const wm = W("c1-monitor");
     dom.add(q('[data-o="tem-monitor-title"]'), {
-      world: new THREE.Matrix4().makeTranslation(this.GLOBE.clone().add(new THREE.Vector3(0, 720, 0))),
-      billboard: true,
+      // En el encuadre, no en el mundo: sobre el globo quedaba fuera de la pantalla.
+      anchor: F("c1-monitor"),
+      pose: { x: 0, y: 345, z: 0 },
       show: wm,
-      from: { o: 0 },
+      from: { y: 40, o: 0 },
     });
     const monitorN = exposicion.monitor.items.length;
     this.orbit = { R: 760, tilt: deg(14), n: monitorN };

@@ -80,7 +80,9 @@ export function monotoneMap(xs, ys) {
  * hold y travel: vh de scroll por cada unidad de tiempo en cada tipo de tramo.
  */
 export class Pace {
-  constructor(stations, total, { hold = 0.6, travel = 0.3 } = {}) {
+  /** zones: tramos [desde, hasta] donde se lee, ordenados y sin traslaparse. */
+  constructor(zones, total, { hold = 1, travel = 0.28 } = {}) {
+    this.zones = zones;
     const ts = [0];
     const ss = [0];
     const add = (to, rate) => {
@@ -89,9 +91,9 @@ export class Pace {
       ts.push(to);
       ss.push(ss[ss.length - 1] + (to - from) * rate);
     };
-    for (const st of stations) {
-      add(st.t, travel);
-      add(st.end, hold);
+    for (const [from, to] of zones) {
+      add(from, travel);
+      add(to, hold);
     }
     add(total, hold);
     this.ts = ts;
@@ -110,6 +112,11 @@ export class Pace {
       else hi = mid;
     }
     return to[lo] + ((v - from[lo]) / (from[hi] - from[lo])) * (to[hi] - to[lo]);
+  }
+
+  /** ¿Este instante está en una zona de lectura (y no en un viaje de cámara)? */
+  isReading(t) {
+    return this.zones.some(([from, to]) => t >= from && t <= to);
   }
 
   /** vh de scroll → tiempo. */

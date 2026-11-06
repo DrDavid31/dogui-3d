@@ -1001,3 +1001,17 @@
     padding: 0 14px;
   }
 }
+
+/* Forense: nota de alcance bajo los pasos. */
+.forense-note {
+  max-width: 760px;
+  margin-top: 20px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.is-world .is-world-ch .forense-note {
+  width: 760px;
+  margin: 0;
+  text-align: center;
+}
