@@ -1,6 +1,9 @@
 {
   "name": "DOGUI Ciberseguridad",
   "short_name": "DOGUI",
+  "lang": "es-MX",
+  "start_url": "../",
+  "scope": "../",
   "icons": [
     {
       "src": "icon-192.png",

@@ -75,14 +75,15 @@ export const automatizar = {
       const phase = (i / productos.items.length) * Math.PI * 2;
       dom.add(q(`[data-o="prod-${i}"]`), {
         anchor: F("c3-prod"),
-        pose: { s: 0.78 },
+        pose: { s: 0.84 },
         show: shift(wp, i * 4),
         from: { o: 0, s: 0.6 },
         live: (t, pose) => {
           const a = phase + (t - prodT.t) * 0.012 + ctx.clock() * 0.06;
-          pose.x = this.prodCenter.x + Math.cos(a) * 470;
+          pose.x = this.prodCenter.x + Math.cos(a) * 500;
           pose.y = this.prodCenter.y + Math.sin(a) * 300;
-          pose.z = this.prodCenter.z - 300 + Math.sin(a + 1.2) * 260;
+          // Poca diferencia de profundidad: todas las tarjetas se leen, no solo las de enfrente.
+          pose.z = this.prodCenter.z - 470 + Math.sin(a + 1.2) * 90;
         },
       });
     });
@@ -119,7 +120,9 @@ export const automatizar = {
       dom.add(q(`[data-o="ring-${i}"]`), {
         world: (t) => {
           const a = phase + ctx.clock() * 0.12 + (t - lg.t) * 0.01;
-          return tmpM.makeTranslation(this.LOGO.x + Math.cos(a) * 900, this.LOGO.y + Math.sin(a * 2) * 70 - 40, this.LOGO.z + Math.sin(a) * 520);
+          // El anillo gira por debajo del logo (no lo tapa) y las etiquetas van ampliadas:
+          // a esta distancia de la cámara, a su tamaño normal no se alcanzaban a leer.
+          return tmpM.makeTranslation(this.LOGO.x + Math.cos(a) * 860, this.LOGO.y - 400 + Math.sin(a * 2) * 36, this.LOGO.z + Math.sin(a) * 380).scale(RING_SCALE);
         },
         billboard: true,
         show: shift(wl, 6 + (i % 4) * 4),
@@ -143,6 +146,7 @@ export const automatizar = {
 };
 
 const tmpM = new THREE.Matrix4();
+const RING_SCALE = new THREE.Vector3(1.7, 1.7, 1.7);
 function shift(w, d) {
   return [w[0] + d, w[1] + d, w[2], w[3]];
 }

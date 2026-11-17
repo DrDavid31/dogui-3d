@@ -700,7 +700,7 @@ textarea {
   justify-self: start;
   padding: 3px 8px;
   border-radius: 6px;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -866,14 +866,20 @@ textarea {
 
 .cluster__title {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 14px;
+  gap: 4px 14px;
+}
+
+.cluster__title span {
+  white-space: nowrap;
 }
 
 .cluster__title h4 {
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: -0.03em;
 }
 
@@ -1167,6 +1173,8 @@ textarea {
 
 .footer__link {
   display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   gap: 8px;
   color: var(--paper);
   font-weight: 600;

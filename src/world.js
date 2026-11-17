@@ -167,7 +167,9 @@ export async function startWorld({ pointer, skipIntro = false }) {
     const back = e.key === "PageUp" || (e.key === " " && e.shiftKey);
     if ((!forward && !back) || e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.target instanceof Element && e.target.closest("a, button, input, select, textarea, summary, [data-menu]")) return;
-    const now = scroll.rawTime;
+    // Desde el destino del movimiento en curso: si la cámara aún va llegando a una parada,
+    // PageDown lleva a la siguiente, no a la misma.
+    const now = scroll.targetTime;
     if (now >= total - 1 && forward) return; // Después del recorrido: scroll normal de la página.
     const next = forward ? stops.find((s) => s > now + 4) : stops.findLast((s) => s < now - 4);
     e.preventDefault();

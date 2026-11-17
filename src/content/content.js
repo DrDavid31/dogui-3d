@@ -5,19 +5,24 @@ export const site = {
   lang: "es-MX",
   title: "DOGUI | Ciberseguridad, automatización y consultoría SPEI/SPID",
   description:
-    "DOGUI protege empresas con SOC/MDR, Threat Exposure Monitoring, vCISO, SGSI con software propio CIDSI, awareness, automatización y consultoría SPEI/SPID.",
+    "DOGUI protege empresas con SOC/MDR, monitoreo de exposición digital, vCISO, forense digital, SGSI con software propio CIDSI, awareness, automatización y consultoría SPEI/SPID.",
   ogTitle: "DOGUI | Ciberseguridad y consultoría SPEI/SPID",
   ogDescription:
     "Servicios gestionados, monitoreo de exposición digital, SGSI con software propio CIDSI, automatización y consultoría especializada para operaciones críticas.",
   ogImageAlt: "DOGUI · Ciberseguridad ofensiva, defensiva y financiera",
   twitterDescription:
-    "SOC/MDR, Threat Exposure Monitoring, vCISO, Awareness, SGSI CIDSI y consultoría SPEI/SPID para empresas.",
+    "SOC/MDR, monitoreo de exposición digital, vCISO, forense digital, awareness, SGSI CIDSI y consultoría SPEI/SPID para empresas.",
   email: "ventas@dogui.mx",
   // Teléfono, WhatsApp y agenda: al llenarlos aparecen solos en contacto, el botón flotante
   // de WhatsApp, la línea de incidentes y los datos para buscadores. Vacíos no se muestran.
   phone: "", // Como se muestra, p. ej. "+52 55 1234 5678"
   whatsapp: "", // Solo dígitos con lada internacional, p. ej. "525512345678"
   bookingUrl: "", // Agenda en línea para la llamada de 30 min (Calendly, Cal.com…)
+  // API que recibe el formulario (POST /api/leads, la del repositorio doguiweb).
+  // "/" = el mismo servidor del sitio; "https://api.ejemplo.mx" = otro servidor (debe
+  // permitir este origen en ALLOWED_ORIGINS). Vacío = el formulario abre el correo del
+  // visitante con los datos listos, sin llamar a ninguna API.
+  api: "",
 };
 
 // Menú: mapa de todo lo que ofrece DOGUI, para verlo de un vistazo e ir directo.
@@ -88,12 +93,12 @@ export const hero = {
   kicker: "Ciberseguridad ofensiva, defensiva y financiera",
   title: "DOGUI protege tu operación antes, durante y después de un ataque.",
   copy:
-    "Servicios gestionados, consultoría especializada y automatizaciones para detectar amenazas, responder incidentes y fortalecer entornos críticos, incluyendo flujos SPEI y SPID.",
+    "Servicios gestionados, consultoría especializada y automatizaciones para detectar amenazas, responder a incidentes y fortalecer entornos críticos, incluidos los flujos SPEI y SPID.",
   primary: { label: "Agendar diagnóstico", href: "#contacto", icon: "calendar-check" },
   secondary: { label: "Ver todo lo que ofrecemos", href: "#paquetes", icon: "packages" },
   panel: {
     label: "Vista ejecutiva de DOGUI",
-    status: "Operación lista para presentar",
+    status: "Defensa coordinada",
     pill: "MX",
     title: "Defensa integral para entornos críticos",
     metrics: [
@@ -144,14 +149,14 @@ export const trust = [
 ];
 
 export const intro = {
-  title: "Deja de perseguir alertas sueltas. Construye una defensa que venda confianza.",
-  text: "DOGUI combina especialistas, tecnología y automatización para que tu empresa mejore visibilidad, reduzca tiempos de respuesta y pueda demostrar controles ante clientes, auditores y socios de negocio.",
+  title: "Deja de perseguir alertas sueltas. Construye una defensa que genere confianza.",
+  text: "DOGUI combina especialistas, tecnología y automatización para que tu empresa gane visibilidad, responda más rápido y pueda demostrar sus controles ante clientes, auditores y socios de negocio.",
 };
 
 // ─── Capítulo 01 · Detectar ────────────────────────────────────────────────
 
 export const detectGraph = {
-  nodes: ["Dominio", "Correos", "Telegram", "Dark web", "Repositorios", "Ransomware leak sites"],
+  nodes: ["Dominio", "Correos", "Telegram", "Dark web", "Repositorios", "Sitios de ransomware"],
   findings: ["Credencial filtrada", "Dominio parecido detectado", "Documento expuesto"],
   findingLabel: "Hallazgo",
 };
@@ -161,13 +166,13 @@ export const exposicion = {
   kicker: "Monitoreo de exposición digital",
   title: "Detecta filtraciones, menciones y señales de riesgo antes de que afecten a tu empresa.",
   text: [
-    "DOGUI Threat Exposure Monitoring ayuda a identificar si la información de tu empresa, empleados, dominios, sistemas o marca aparece expuesta en fuentes abiertas, repositorios públicos, canales de Telegram, deep web, dark web y sitios de filtraciones.",
-    "Este servicio está diseñado para empresas que necesitan visibilidad externa sin operar un equipo interno de inteligencia de amenazas.",
+    "DOGUI Threat Exposure Monitoring identifica si la información de tu empresa, tus empleados, dominios, sistemas o marca aparece expuesta en fuentes abiertas, repositorios públicos, canales de Telegram, deep web, dark web y sitios de filtraciones.",
+    "Está pensado para empresas que necesitan saber qué se ve de ellas desde fuera, sin operar un equipo interno de inteligencia de amenazas.",
   ],
   aside: {
-    label: "Producto estrella",
+    label: "Lo que recibes",
     title: "Monitoreo, evidencia y acciones concretas.",
-    text: "Convertimos hallazgos externos en alertas claras, nivel de riesgo, recomendaciones de mitigación y seguimiento hasta cierre.",
+    text: "Convertimos cada hallazgo en una alerta clara, con su nivel de riesgo, recomendaciones de mitigación y seguimiento hasta el cierre.",
   },
   // Texto del producto TEM (catálogo de productos del sitio actual).
   product: {
@@ -197,7 +202,7 @@ export const exposicion = {
       "Credenciales filtradas",
       "Canales públicos de Telegram",
       "Repositorios públicos",
-      "Sitios de ransomware leak",
+      "Sitios de filtración de ransomware",
       "Foros y fuentes de filtraciones",
     ],
   },
@@ -209,16 +214,16 @@ export const exposicion = {
       "Nivel de riesgo por hallazgo",
       "Recomendaciones de mitigación",
       "Reporte mensual ejecutivo",
-      "Seguimiento de hallazgos hasta cierre",
+      "Seguimiento de hallazgos hasta el cierre",
     ],
   },
   flowLabel: "Cómo funciona DOGUI Threat Exposure Monitoring",
   flow: [
-    { n: "01", title: "Definimos palabras clave", text: "Dominio, marca, correos, ejecutivos, sistemas y términos sensibles." },
-    { n: "02", title: "Monitoreamos fuentes de riesgo", text: "DOGUI usa automatizaciones propias para buscar señales relevantes." },
-    { n: "03", title: "Validamos hallazgos", text: "Clasificamos falsos positivos y priorizamos por impacto operativo." },
-    { n: "04", title: "Alertamos y recomendamos", text: "El cliente recibe evidencia clara, riesgo y acciones sugeridas." },
-    { n: "05", title: "Reportamos mensualmente", text: "Entregamos resumen ejecutivo con tendencias, hallazgos y pendientes." },
+    { n: "01", title: "Definimos qué vigilar", text: "Dominio, marca, correos, ejecutivos, sistemas y términos sensibles." },
+    { n: "02", title: "Monitoreamos fuentes de riesgo", text: "Automatizaciones propias buscan señales relevantes de forma continua." },
+    { n: "03", title: "Validamos hallazgos", text: "Descartamos falsos positivos y priorizamos por impacto en tu operación." },
+    { n: "04", title: "Alertamos y recomendamos", text: "Recibes evidencia clara, nivel de riesgo y acciones sugeridas." },
+    { n: "05", title: "Reportamos cada mes", text: "Resumen ejecutivo con tendencias, hallazgos y pendientes." },
   ],
   plansLabel: "Niveles de DOGUI Threat Exposure Monitoring",
   plans: [
@@ -250,8 +255,8 @@ export const exposicion = {
       text: "Para empresas con mayor exposición, clientes corporativos o riesgos de fraude dirigido.",
       items: [
         "Todo lo anterior",
-        "Menciones en fuentes dark/deep web",
-        "Ransomware leak sites",
+        "Menciones en deep web y dark web",
+        "Sitios de filtración de ransomware",
         "Ejecutivos clave y palabras sensibles",
         "Seguimiento de hallazgos",
         "Reporte ejecutivo y técnico",
@@ -266,11 +271,11 @@ export const pyme = {
   id: "pyme",
   kicker: "PyME | Paquetes de seguridad accionables",
   title: "Ciberseguridad entendible, medible y lista para operar sin un SOC interno.",
-  text: "DOGUI empaqueta servicios ligeros para pequeñas y medianas empresas: reportes por WhatsApp, análisis de links y archivos, simulaciones de phishing, monitoreo de credenciales, exposición externa, protección de marca, correo seguro, ransomware readiness, compliance y defensa contra fraude con IA.",
+  text: "DOGUI empaqueta servicios ligeros para pequeñas y medianas empresas: reportes por WhatsApp, análisis de links y archivos, simulaciones de phishing, monitoreo de credenciales, exposición externa, protección de marca, correo seguro, preparación ante ransomware, cumplimiento y defensa contra fraudes hechos con IA.",
   heroCard: {
     label: "Producto estrella",
     title: "DOGUI WhatsApp Security Assistant",
-    text: "Tus empleados ya usan WhatsApp. DOGUI lo convierte en tu primera línea de defensa para reportar links, correos falsos, archivos raros, intentos de fraude, alertas internas y check-ins operativos.",
+    text: "Tus empleados ya usan WhatsApp. DOGUI lo convierte en tu primera línea de defensa: ahí reportan links, correos falsos, archivos raros e intentos de fraude, y reciben alertas internas.",
     items: [
       "Creación automática de tickets",
       "Respuestas automáticas de contención",
@@ -286,7 +291,7 @@ export const pyme = {
       items: [
         { icon: "message-warning", title: "WhatsApp Security Assistant", text: "Canal oficial para reportar links, correos, archivos, fraude, alertas internas y tickets.", strong: "Tus empleados ya usan WhatsApp. DOGUI lo convierte en tu primera línea de defensa." },
         { icon: "link", title: "Link & File Checker", text: "Analiza links, PDFs, Excel, Word, ZIPs o imágenes antes de abrirlos, por WhatsApp o panel web.", strong: "Antes de abrir un archivo raro, mándalo a DOGUI." },
-        { icon: "bug", title: "Phishing Simulator", text: "Campañas por correo, WhatsApp o SMS con métricas de clics, reportes, score y capacitación.", strong: "Medimos y reducimos el riesgo humano antes de que un fraude real ocurra." },
+        { icon: "bug", title: "Phishing Simulator", text: "Campañas por correo, WhatsApp o SMS con métricas de clics, reportes, puntaje y capacitación.", strong: "Medimos y reducimos el riesgo humano antes de que un fraude real ocurra." },
         { icon: "fingerprint", title: "Credential Exposure Monitor", text: "Detecta cuentas corporativas filtradas y prioriza usuarios críticos de dirección, finanzas, RH y TI.", strong: "Te avisamos cuando las cuentas de tu empresa aparecen expuestas." },
       ],
     },
@@ -309,7 +314,7 @@ export const pyme = {
         { icon: "mail-warning", title: "Email Security Check", text: "Revisa SPF, DKIM, DMARC, MX, spoofing posible, seguridad del dominio y verificación mensual.", strong: "Evita que manden correos falsos usando el nombre de tu empresa." },
         { icon: "siren", title: "Ransomware Readiness", text: "Evalúa backups, MFA, usuarios administradores, servicios expuestos, parches, segmentación y respuesta.", strong: "Revisamos si puedes recuperarte sin detener la operación." },
         { icon: "file-lock", title: "Compliance Lite", text: "Ordena ISO 27001 básico, matriz de riesgos, políticas, activos, responsables, evidencias y avance.", strong: "Prepara tu empresa para auditorías, clientes corporativos y mejores prácticas." },
-        { icon: "bot", title: "AI Fraud Defense", text: "Detecta mensajes sospechosos, solicitudes urgentes de pago, deepfake scams y fraude multicanal.", strong: "Protege finanzas y dirección contra fraudes generados con IA." },
+        { icon: "bot", title: "AI Fraud Defense", text: "Detecta mensajes sospechosos, solicitudes urgentes de pago, estafas con deepfakes y fraude multicanal.", strong: "Protege a finanzas y dirección contra fraudes generados con IA." },
       ],
     },
   ],
@@ -319,11 +324,11 @@ export const pyme = {
   },
   packagesLabel: "Paquetes comerciales PyME",
   packages: [
-    { title: "DOGUI Essential", text: "Para PyMEs pequeñas que necesitan protección inmediata.", items: ["WhatsApp Security Assistant", "Link checker", "Revisión de correos filtrados", "Reporte mensual"] },
-    { title: "DOGUI Awareness", text: "Para empresas preocupadas por el riesgo humano.", items: ["Phishing simulator", "Capacitaciones cortas", "Score por empleado", "Campañas por WhatsApp/correo"] },
-    { title: "DOGUI Exposure", text: "Para empresas con presencia digital y marca pública.", items: ["Exposure scan", "Dominios parecidos", "Email security check", "Brand protection básico"] },
-    { title: "DOGUI Resilience", text: "Para reducir riesgo operativo ante ransomware.", items: ["Ransomware readiness", "Backups checklist", "Usuarios críticos y MFA", "Plan de respuesta"] },
-    { title: "DOGUI Compliance Lite", text: "Para ordenarse ante clientes, auditorías y mejores prácticas.", items: ["ISO 27001 básico", "Matriz de riesgos", "Políticas y evidencias", "Reporte de avance"] },
+    { title: "DOGUI Essential", text: "Para empresas pequeñas que necesitan protección inmediata.", items: ["WhatsApp Security Assistant", "Link & File Checker", "Revisión de correos filtrados", "Reporte mensual"] },
+    { title: "DOGUI Awareness", text: "Para empresas preocupadas por el riesgo humano.", items: ["Phishing Simulator", "Capacitaciones cortas", "Puntaje por empleado", "Campañas por WhatsApp y correo"] },
+    { title: "DOGUI Exposure", text: "Para empresas con presencia digital y marca pública.", items: ["Exposure Scan", "Dominios parecidos", "Email Security Check", "Brand Protection básico"] },
+    { title: "DOGUI Resilience", text: "Para reducir riesgo operativo ante ransomware.", items: ["Ransomware Readiness", "Checklist de respaldos", "Usuarios críticos y MFA", "Plan de respuesta"] },
+    { title: "DOGUI Compliance Lite", text: "Para poner orden ante clientes, auditorías y mejores prácticas.", items: ["ISO 27001 básico", "Matriz de riesgos", "Políticas y evidencias", "Reporte de avance"] },
   ],
 };
 
@@ -345,7 +350,7 @@ export const awareness = {
   kicker: "DOGUI Awareness",
   title: "Programa de concientización en ciberseguridad para empresas.",
   text: [
-    "El factor humano sigue siendo uno de los principales puntos de entrada para incidentes de seguridad. DOGUI Awareness ayuda a capacitar a los colaboradores mediante cursos prácticos, microcapacitaciones, simulaciones de phishing, evaluaciones, constancias y reportes ejecutivos.",
+    "El factor humano sigue siendo una de las principales puertas de entrada de los incidentes de seguridad. DOGUI Awareness capacita a tus colaboradores con cursos prácticos, microcapacitaciones, simulaciones de phishing, evaluaciones, constancias y reportes ejecutivos.",
     "Capacita a tu equipo para detectar amenazas antes de que se conviertan en incidentes.",
   ],
   summary: [
@@ -392,7 +397,7 @@ export const awareness = {
       items: ["Curso inicial de ciberseguridad", "Evaluación final", "Constancias", "Reporte ejecutivo", "Material descargable"],
     },
     {
-      tier: "Más vendible",
+      tier: "Recomendado",
       title: "DOGUI Awareness Plus",
       text: "Para empresas que quieren seguimiento mensual y medición recurrente.",
       items: ["Curso inicial", "Microcurso mensual", "Evaluación mensual", "Simulación de phishing trimestral", "Reporte ejecutivo mensual", "Recomendaciones por área"],
@@ -406,8 +411,8 @@ export const awareness = {
         "Todo lo de Plus",
         "Cursos por área",
         "Simulaciones de phishing mensuales",
-        "Campañas por WhatsApp/correo",
-        "Score individual y por departamento",
+        "Campañas por WhatsApp y correo",
+        "Puntaje individual y por departamento",
         "Dashboard",
         "Plan de mejora",
         "Sesión ejecutiva trimestral",
@@ -416,7 +421,7 @@ export const awareness = {
   ],
   whatsapp: {
     title: "Awareness conectado al canal que tus empleados ya usan.",
-    text: "DOGUI Awareness se integra con WhatsApp para reforzar la capacitación, enviar recordatorios, aplicar mini evaluaciones y permitir que los empleados reporten amenazas desde el mismo canal. Esto lo hace diferente a un curso común.",
+    text: "DOGUI Awareness se integra con WhatsApp para reforzar la capacitación, enviar recordatorios, aplicar minievaluaciones y permitir que los empleados reporten amenazas desde el mismo canal. Eso lo distingue de un curso común.",
   },
   coursesLabel: "Catálogo de cursos DOGUI Awareness",
   coursesTitle: "Cursos prácticos para reducir riesgo humano por rol y por amenaza.",
@@ -454,7 +459,7 @@ export const servicios = {
       icon: "shield-check",
       kicker: "Defensa gestionada",
       title: "SOC / MDR administrado",
-      text: "Monitoreo, triage, investigación y respuesta coordinada para endpoints, nube, correo, identidad y red.",
+      text: "Monitoreo, clasificación, investigación y respuesta coordinada para equipos, nube, correo, identidad y red.",
       items: ["Detección y contención de amenazas", "Playbooks de respuesta a incidentes", "Reportes ejecutivos y técnicos"],
     },
     {
@@ -462,14 +467,14 @@ export const servicios = {
       kicker: "Ofensiva",
       title: "Pentesting y Red Team",
       text: "Pruebas controladas para encontrar rutas reales de ataque antes de que alguien más las use.",
-      items: ["Web, API, mobile, nube y red interna", "Ingeniería social y phishing controlado", "Explotación, evidencia y remediación"],
+      items: ["Web, API, apps móviles, nube y red interna", "Ingeniería social y phishing controlado", "Explotación, evidencia y remediación"],
     },
     {
       icon: "hard-drive",
       kicker: "Defensiva",
       title: "Blue Team y hardening",
-      text: "Mejora de configuraciones, telemetría, baselines y reglas de detección para ambientes críticos.",
-      items: ["Windows, Linux, Active Directory y cloud", "Fortalecimiento de identidad y correo", "Validación con ejercicios Purple Team"],
+      text: "Mejora de configuraciones, telemetría, líneas base y reglas de detección para ambientes críticos.",
+      items: ["Windows, Linux, Active Directory y nube", "Fortalecimiento de identidad y correo", "Validación con ejercicios Purple Team"],
     },
     {
       icon: "siren",
@@ -482,7 +487,7 @@ export const servicios = {
       icon: "file-lock",
       kicker: "Cumplimiento",
       title: "GRC, PCI DSS e ISO 27001",
-      text: "Mapeo de controles, evidencias y planes de acción para mejorar postura sin frenar la operación.",
+      text: "Mapeo de controles, evidencias y planes de acción para mejorar tu postura de seguridad sin frenar la operación.",
       items: ["Diagnóstico de madurez", "Políticas y procedimientos", "Acompañamiento a auditorías"],
     },
     {
@@ -512,7 +517,7 @@ export const servicios = {
 export const metodo = {
   id: "metodo",
   kicker: "Método",
-  title: "Un camino claro desde diagnóstico hasta operación continua.",
+  title: "Un camino claro, del diagnóstico a la operación continua.",
   steps: [
     { n: "01", title: "Evaluamos", text: "Revisamos superficie de ataque, controles, procesos, herramientas y riesgos prioritarios." },
     { n: "02", title: "Priorizamos", text: "Separamos lo urgente de lo importante con un plan por impacto, costo y esfuerzo." },
@@ -532,7 +537,7 @@ export const vciso = {
   aside: {
     label: "Liderazgo bajo demanda",
     title: "Tu CISO externo, sin contratar uno de tiempo completo.",
-    text: "Ten un responsable de ciberseguridad externo que te diga qué hacer, qué priorizar y cómo reducir riesgos mes a mes.",
+    text: "Un responsable externo de ciberseguridad que te dice qué hacer, qué priorizar y cómo reducir riesgos mes a mes.",
   },
   problem: {
     title: "Muchas empresas tienen herramientas, pero no una estrategia clara de seguridad.",
@@ -563,8 +568,8 @@ export const vciso = {
     {
       tier: "Starter",
       title: "DOGUI vCISO Starter",
-      text: "Para PyMEs pequeñas de 10 a 50 empleados.",
-      items: ["Diagnóstico inicial", "Roadmap de 90 días", "1 reunión mensual", "Matriz básica de riesgos", "3 políticas base", "Reporte ejecutivo mensual", "Soporte por correo/WhatsApp para dudas críticas"],
+      text: "Para empresas de 10 a 50 empleados.",
+      items: ["Diagnóstico inicial", "Roadmap de 90 días", "1 reunión mensual", "Matriz básica de riesgos", "3 políticas base", "Reporte ejecutivo mensual", "Soporte por correo y WhatsApp para dudas críticas"],
     },
     {
       tier: "Crecimiento",
@@ -595,9 +600,9 @@ export const vciso = {
         "Preparación ISO 27001",
         "Gestión formal de riesgos",
         "Plan de respuesta a incidentes",
-        "Ejercicios de tabletop",
+        "Ejercicios de simulación (tabletop)",
         "KPIs, KRIs y KCIs",
-        "Supervisión de SOC/MDR/SIEM/proveedores",
+        "Supervisión de SOC, MDR, SIEM y proveedores",
         "Reporte trimestral para consejo o dirección",
       ],
     },
@@ -637,7 +642,7 @@ export const spei = {
   id: "spei-spid",
   kicker: "SPEI/SPID",
   title: "SPEI/SPID con controles, trazabilidad y respuesta operativa.",
-  text: "Apoyamos a instituciones y proveedores que participan en flujos de pagos a fortalecer seguridad, evidencia, continuidad y monitoreo. El objetivo: operar con menor riesgo y mejor capacidad de reacción.",
+  text: "Ayudamos a instituciones y proveedores que participan en flujos de pagos a fortalecer su seguridad, evidencia, continuidad y monitoreo. El objetivo: operar con menor riesgo y mejor capacidad de reacción.",
   label: "Servicios SPEI y SPID",
   items: [
     { icon: "scan", title: "Diagnóstico de controles", text: "Revisión de arquitectura, accesos, bitácoras, segregación de funciones y procesos sensibles." },
@@ -752,7 +757,7 @@ export const automation = {
   id: "automatizacion",
   kicker: "SOAR",
   title: "Menos trabajo repetitivo. Más respuesta medible.",
-  text: "DOGUI crea automatizaciones para enriquecer alertas, bloquear indicadores, generar tickets, notificar responsables y documentar evidencias sin depender de procesos manuales frágiles.",
+  text: "DOGUI crea automatizaciones que enriquecen alertas, bloquean indicadores, generan tickets, avisan a los responsables y documentan la evidencia, sin depender de procesos manuales frágiles.",
   steps: [
     { title: "Entrada", text: "Alerta, IOC, ticket o evento crítico" },
     { title: "Playbook", text: "Enriquecimiento, validación y decisión" },
@@ -766,8 +771,8 @@ export const productos = {
   title: "Tecnología para visibilidad, control y velocidad.",
   items: [
     { icon: "radar", tag: "CTI", title: "Inteligencia de amenazas", text: "Vigilancia de actores, dominios, credenciales expuestas, infraestructura sospechosa y campañas activas." },
-    { icon: "hard-drive", tag: "EDR", title: "Endpoint y antimalware", text: "Protección, telemetría y contención de equipos con seguimiento operativo y recomendaciones accionables." },
-    { icon: "chart", tag: "SIEM", title: "Correlación y monitoreo", text: "Centralización de logs, reglas de detección, dashboards y alertamiento para equipos de seguridad." },
+    { icon: "hard-drive", tag: "EDR", title: "Endpoint y antimalware", text: "Protección, telemetría y contención de equipos, con seguimiento operativo y recomendaciones concretas." },
+    { icon: "chart", tag: "SIEM", title: "Correlación y monitoreo", text: "Centralización de registros, reglas de detección, tableros y alertas para equipos de seguridad." },
     { icon: "eye", tag: "TEM", title: "DOGUI Threat Exposure Monitoring", text: "Monitoreo de filtraciones, dark web, deep web, Telegram y exposición digital.", ref: "#exposicion" },
     { icon: "file-lock", tag: "GRC", title: "Gestión de riesgos", text: "Inventario de controles, matriz de riesgos, evidencias, hallazgos y seguimiento de remediación." },
     { icon: "workflow", tag: "SOAR", title: "Automatización de seguridad", text: "Playbooks, integraciones y asistentes para bajar tiempos de respuesta y reducir tareas manuales repetitivas." },
@@ -780,7 +785,8 @@ export const sgsi = {
   title: "CIDSI convierte la seguridad de la información en un sistema gestionable.",
   text: "DOGUI integra su propio software CIDSI para ayudar a organizaciones a operar un Sistema de Gestión de Seguridad de la Información con control, evidencias, seguimiento y mejora continua. La plataforma organiza el trabajo del SGSI bajo una visión práctica: planear, ejecutar controles, supervisar, medir y corregir.",
   primary: { label: "Solicitar demo SGSI", href: "#contacto" },
-  secondary: { label: "Ver proyecto CIDSI", href: "https://www.dogui.net/proyecto", external: true },
+  // Página del proyecto CIDSI: al poner su URL aparece el botón «Ver proyecto CIDSI».
+  secondary: { label: "Ver proyecto CIDSI", href: "", external: true },
   console: {
     tag: "CIDSI",
     title: "SGSI operativo",
@@ -804,8 +810,8 @@ export const sgsi = {
 export const saas = {
   id: "saas",
   kicker: "Software DOGUI",
-  title: "Un stack completo de software, autoalojado y sin depender de terceros.",
-  text: "Trece productos propios que cubren seguridad, comunicación, inteligencia artificial y continuidad operativa. Corren en tu infraestructura o en la nuestra, nunca en la nube de un tercero.",
+  title: "Un stack completo de software propio, autoalojado.",
+  text: "Trece productos propios que cubren seguridad, comunicación, inteligencia artificial y continuidad operativa. Corren en tu infraestructura o en la nuestra, con tus datos bajo tu control.",
   counters: [
     { value: "13", label: "productos propios" },
     { value: "30+", label: "módulos OSINT" },
@@ -818,8 +824,8 @@ export const saas = {
       items: [
         { icon: "radar", title: "Ciberpatrullaje", text: "Más de 30 módulos de inteligencia OSINT que vigilan GitHub, buckets en la nube, Pastebin y dark web indexada en busca de datos expuestos de tu empresa.", strong: "Detecta secretos filtrados antes de que alguien más los encuentre." },
         { icon: "bug", title: "Pentest autónomo", text: "Un agente de IA planea y ejecuta pruebas de seguridad dentro de contenedores aislados, con más de 20 herramientas profesionales integradas.", strong: "Memoria de hallazgos reutilizable y reportes de vulnerabilidades automáticos." },
-        { icon: "bot", title: "Cronos", text: "Asistente de ciberseguridad por voz que ejecuta escaneos de red reales y narra en vivo lo que va encontrando.", strong: "Alcance auditado: bloquea comandos fuera del scope autorizado." },
-        { icon: "graduation-cap", title: "Awareness", text: "Plataforma de concientización con 11 cursos, video obligatorio por lección y simulaciones de phishing por plan.", strong: "Reporte ejecutivo mensual y creador de cursos propios sin tocar código." },
+        { icon: "bot", title: "Cronos", text: "Asistente de ciberseguridad por voz que ejecuta escaneos de red reales y narra en vivo lo que va encontrando.", strong: "Alcance auditado: bloquea comandos fuera del alcance autorizado." },
+        { icon: "graduation-cap", title: "Awareness", text: "Plataforma de concientización con cursos en video, avance verificado por lección y simulaciones de phishing según el plan.", strong: "Reporte ejecutivo mensual y creador de cursos propios sin tocar código." },
       ],
     },
     {
@@ -837,7 +843,7 @@ export const saas = {
       count: "3 productos",
       label: "Software DOGUI de productividad",
       items: [
-        { icon: "user-check", title: "CRM", text: "Contactos, empresas, oportunidades y workflows en un solo lugar, con API GraphQL y REST abiertas para integrar con el resto de tu operación.", strong: "Listo para conectarse con EVA, el asistente propio de DOGUI." },
+        { icon: "user-check", title: "CRM", text: "Contactos, empresas, oportunidades y flujos de trabajo en un solo lugar, con API GraphQL y REST abiertas para integrarlo con el resto de tu operación.", strong: "Listo para conectarse con EVA, el asistente propio de DOGUI." },
         { icon: "file-lock", title: "PDF Toolkit", text: "Más de 50 herramientas para fusionar, firmar, convertir y hacer OCR a tus documentos, sin que un solo archivo salga de tu infraestructura.", strong: "API REST documentada para automatizar flujos completos." },
         { icon: "scan", title: "Whisper", text: "Dictado de voz a texto y transcripción de reuniones con privacidad total: el audio puede procesarse localmente y nunca salir del equipo.", strong: "Diarización de hablantes y agente de IA controlable por voz." },
       ],
@@ -865,7 +871,7 @@ export const paquetes = {
     {
       icon: "scan",
       title: "Diagnóstico",
-      text: "Ideal para saber dónde estás parado y qué resolver primero.",
+      text: "Para saber dónde estás parado y qué resolver primero.",
       items: ["Revisión ejecutiva de postura", "Mapa de riesgos prioritarios", "Plan de 30, 60 y 90 días"],
       cta: "Solicitar alcance",
     },
@@ -873,7 +879,7 @@ export const paquetes = {
       icon: "shield-check",
       title: "Operación protegida",
       text: "Para empresas que necesitan monitoreo, respuesta y reportes continuos.",
-      items: ["SOC/MDR y casos de uso", "Inteligencia y monitoreo dark web", "Automatizaciones de respuesta"],
+      items: ["SOC/MDR y casos de uso", "Inteligencia y monitoreo de dark web", "Automatizaciones de respuesta"],
       cta: "Cotizar servicio",
       highlight: true,
       badge: "Recomendado",
@@ -904,7 +910,7 @@ export const contacto = {
   id: "contacto",
   kicker: "Contacto",
   title: "Cuéntanos qué quieres proteger y armamos el primer alcance.",
-  text: "Agenda una llamada para revisar riesgos, prioridades y el tipo de servicio que conviene activar primero. DOGUI puede iniciar con diagnóstico, proyecto puntual u operación continua.",
+  text: "Agenda una llamada para revisar riesgos, prioridades y el servicio que conviene activar primero. Podemos empezar con un diagnóstico, un proyecto puntual o una operación continua.",
   form: {
     honeypot: "Sitio web",
     name: "Nombre",
@@ -935,7 +941,7 @@ export const contacto = {
     privacyMore: "Aviso de privacidad integral",
     submit: "Enviar solicitud",
     note: "Te contactamos para entender tu caso y preparar tu cotización: cada propuesta se arma según el alcance de tu empresa.",
-    sending: "Enviando solicitud...",
+    sending: "Enviando solicitud…",
     success: "Listo: recibimos tu solicitud y DOGUI te contactará.",
     fallback: "No pudimos enviar el formulario desde el sitio; abrimos tu correo con los datos listos para que nos escribas.",
     booking: "Agendar llamada de 30 min",

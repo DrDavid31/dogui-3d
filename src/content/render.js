@@ -525,7 +525,7 @@ export function renderApp({ base = "/" } = {}) {
         ${label("03", SG.kicker)}
         <h3 class="h-section" id="${SG.id}-title">${esc(SG.title)}</h3>
         <p class="lede">${esc(SG.text)}</p>
-        <div class="actions">${btn(SG.primary, "primary")}${btn(SG.secondary, "ghost")}</div>
+        <div class="actions">${btn(SG.primary, "primary")}${SG.secondary.href ? btn(SG.secondary, "ghost") : ""}</div>
       </div>
       <div class="cidsi" data-o="sgsi-console" aria-label="${esc(SG.console.label)}">
         <div class="cidsi__head"><span>${esc(SG.console.tag)}</span><strong>${mark()}${esc(SG.console.title)}</strong></div>

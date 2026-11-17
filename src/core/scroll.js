@@ -65,6 +65,17 @@ export class Scroll {
     return st ? this.pace.toTime(st.progress * this.pace.length) : 0;
   }
 
+  /** Tiempo al que va el scroll (si hay un salto o una inercia en curso, su destino). */
+  get targetTime() {
+    const top = this.track.offsetTop;
+    const range = this.track.offsetHeight - window.innerHeight;
+    // En un salto programado Lenis mueve targetScroll junto con la animación: el destino
+    // real se guarda en dest mientras dura.
+    const y = this.dest ?? this.lenis.targetScroll;
+    const k = Math.min(1, Math.max(0, (y - top) / range));
+    return this.pace.toTime(k * this.pace.length);
+  }
+
   yForTime(t) {
     const top = this.track.offsetTop;
     const range = this.track.offsetHeight - window.innerHeight;
@@ -82,6 +93,7 @@ export class Scroll {
     if (event.type !== "wheel" || !deltaY || event.ctrlKey || this.lenis.isStopped) return true;
     const el = event.target instanceof Element ? event.target : null;
     if (el?.closest("[data-lenis-prevent]")) return true;
+    this.dest = null; // La rueda interrumpe cualquier salto en curso.
     // Un panel con scroll propio lo usa mientras pueda; en su borde sigue la página, con
     // el mismo Lenis (si siguiera el scroll nativo, los dos se pelean y la página brinca).
     const inner = el?.closest("[data-inner-scroll]");
@@ -126,7 +138,8 @@ export class Scroll {
     const next = this.nextStopY(y, this.lastDir);
     if (next == null) return;
     this.held = { dir: this.lastDir, at: performance.now() };
-    lenis.scrollTo(next, { duration: 0.7, easing: easeInOut });
+    this.dest = next;
+    lenis.scrollTo(next, { duration: 0.7, easing: easeInOut, onComplete: () => (this.dest = null) });
   }
 
   scrollToTime(t, { immediate = false, duration } = {}) {
@@ -134,11 +147,13 @@ export class Scroll {
     clearTimeout(this.settleTimer);
     const y = this.yForTime(t);
     const dist = Math.abs(y - window.scrollY) / window.innerHeight;
+    this.dest = immediate ? null : y;
     this.lenis.scrollTo(y, {
       immediate,
       duration: duration ?? Math.min(2.2, 0.8 + dist * 0.06),
       easing: easeInOut,
       force: true,
+      onComplete: () => (this.dest = null),
     });
     if (immediate) {
       ScrollTrigger.update();

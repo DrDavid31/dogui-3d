@@ -195,7 +195,7 @@ html[data-tone="dark"] {
 .is-world .hud--hero {
   left: var(--gutter);
   top: 50%;
-  width: min(44vw, 640px);
+  width: min(44vw, 780px);
   translate: 0 -44%;
 }
 
@@ -208,12 +208,12 @@ html[data-tone="dark"] {
 .is-world .hud--left {
   left: var(--gutter);
   top: 52%;
-  width: min(32vw, 460px);
+  width: min(32vw, 560px);
   translate: 0 -50%;
 }
 
 .is-world .hud--narrow {
-  width: min(30vw, 420px);
+  width: min(30vw, 500px);
 }
 
 .is-world .hud--caption {
@@ -232,7 +232,18 @@ html[data-tone="dark"] {
 .is-world .hud--top {
   left: var(--gutter);
   top: 14vh;
-  width: min(40vw, 560px);
+  width: min(40vw, 700px);
+}
+
+/* Títulos de capítulo sobre fondo oscuro con destellos (hiperespacio): el subtítulo en
+   claro y con un halo oscuro, para que se lea aunque pase una línea de luz por detrás. */
+.is-world .chapter[data-tone="dark"] .hud--chapter {
+  text-shadow: 0 0 22px rgb(10 10 10 / 0.9), 0 0 6px rgb(10 10 10 / 0.7);
+}
+
+.is-world .chapter[data-tone="dark"] .hud--chapter .sub,
+.is-world .chapter[data-tone="dark"] .hud--chapter .label__t {
+  color: var(--g-150);
 }
 
 .is-world .hud--statement {
@@ -340,7 +351,7 @@ html[data-tone="dark"] {
 
 .is-world .is-world-ch .card--service {
   width: 330px;
-  min-height: 420px;
+  min-height: 366px;
   border-color: rgb(255 107 0 / 0.55);
   box-shadow:
     0 0 0 1px rgb(255 107 0 / 0.12),
@@ -463,7 +474,7 @@ html[data-tone="dark"] {
 
 .is-world .chip--ring {
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .is-world .is-world-ch .card--pkg {
@@ -528,8 +539,8 @@ html[data-tone="dark"] {
 }
 
 .is-world .is-world-ch .contact-panel .lead-form {
-  padding: 24px;
-  gap: 12px;
+  padding: 22px 24px;
+  gap: 10px;
 }
 
 .is-world .is-world-ch .contact-panel .lead-form input:not([type="checkbox"]),
@@ -543,9 +554,16 @@ html[data-tone="dark"] {
    borde el scroll sigue a la página. No usar overscroll-behavior: contain aquí: con el
    cursor sobre el formulario, la página se queda atascada y no se llega a lo que sigue. */
 .is-world .is-world-ch .contact-panel .lead-form {
-  max-height: calc(100svh - 168px);
+  max-height: calc(100svh - 150px);
   overflow-y: auto;
   scrollbar-width: thin;
+  /* Sombra en el borde inferior o superior solo cuando queda contenido por ver. */
+  background:
+    linear-gradient(var(--surface-2) 30%, transparent) top / 100% 36px no-repeat local,
+    linear-gradient(transparent, var(--surface-2) 70%) bottom / 100% 36px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgb(10 10 10 / 0.16), transparent) top / 100% 12px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgb(10 10 10 / 0.16), transparent) bottom / 100% 12px no-repeat scroll,
+    var(--surface-2);
 }
 
 .is-world .is-world-ch .contact-panel .lead-form label:not(.check) {
@@ -554,8 +572,8 @@ html[data-tone="dark"] {
 }
 
 .is-world .is-world-ch .contact-panel .lead-form textarea {
-  min-height: 72px;
-  height: 72px;
+  min-height: 64px;
+  height: 64px;
 }
 
 .is-world .is-world-ch .contact-panel .incident {
@@ -563,10 +581,15 @@ html[data-tone="dark"] {
   padding: 14px 16px;
 }
 
-@media (max-height: 760px) {
+@media (max-height: 800px) {
   .is-world .is-world-ch .contact-panel .lead-form textarea {
-    rows: 3;
-    min-height: 84px;
-    height: 84px;
+    min-height: 52px;
+    height: 52px;
+  }
+
+  .is-world .is-world-ch .contact-panel .lead-form input:not([type="checkbox"]),
+  .is-world .is-world-ch .contact-panel .lead-form select {
+    min-height: 38px;
+    padding-block: 7px;
   }
 }

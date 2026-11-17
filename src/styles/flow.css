@@ -357,6 +357,11 @@
     padding-top: 64px;
   }
 
+  /* El hero libra la barra superior fija (antes tapaba su primera línea). */
+  .sec--hero {
+    padding-top: 96px;
+  }
+
   .hud--statement {
     padding-block: 44px;
   }

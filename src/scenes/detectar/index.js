@@ -170,7 +170,8 @@ export const detectar = {
     for (let i = 0; i < 5; i++) {
       dom.add(q(`[data-o="tem-step-${i}"]`), {
         anchor: ff,
-        pose: { x: -500 + i * 292, y: 30 - i * 10, z: -160 + i * 150, ry: -22 },
+        // Casi a la misma profundidad: antes la 4 y la 5 se encimaban y se leían chicas.
+        pose: { x: -580 + i * 290, y: 26 - i * 8, z: -30 + i * 34, ry: -12, s: 1.06 },
         show: [wf[0] + i * 7, wf[1] + i * 7, wf[2] + i * 3, wf[3] + i * 3],
         from: { y: -260, z: 300, rx: -30, o: 0 },
       });

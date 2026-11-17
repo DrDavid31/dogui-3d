@@ -1,7 +1,7 @@
 import { contacto, site } from "../content/content.js";
 
-// Mismo comportamiento que el sitio actual: POST /api/leads y, si no hay backend,
-// abre el correo con los datos como respaldo.
+// POST <site.api>/api/leads (la API del repositorio doguiweb) y, si no hay API
+// configurada o no responde, abre el correo con los datos como respaldo.
 export function initLeadForm() {
   const form = document.querySelector("[data-lead-form]");
   const note = document.querySelector("[data-form-note]");
@@ -77,11 +77,21 @@ export function initLeadForm() {
     if (note) note.textContent = T.sending;
     button?.setAttribute("disabled", "true");
     try {
-      if (window.DOGUIApiAvailable === false) throw new Error("lead_api_unavailable");
-      const res = await fetch("/api/leads", {
+      if (window.DOGUIApiAvailable !== true) throw new Error("lead_api_unavailable");
+      // La API guarda nombre, empresa, correo, servicio y mensaje: el resto de los datos
+      // (teléfono, tamaño, urgencia, permiso de comunicaciones) viaja también en el mensaje
+      // para que no se pierda.
+      const extra = [
+        lead.phone && `Teléfono/WhatsApp: ${lead.phone}`,
+        lead.size && `Tamaño: ${lead.size}`,
+        lead.urgency && `Urgencia: ${lead.urgency}`,
+        `Acepta comunicaciones: ${lead.marketing ? "sí" : "no"}`,
+      ].filter(Boolean);
+      const body = { ...lead, message: [lead.message, "", ...extra].join("\n").trim() };
+      const res = await fetch(`${window.DOGUIApiBase || ""}/api/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lead),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("lead_api_unavailable");
       if (note) note.textContent = T.success;

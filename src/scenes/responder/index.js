@@ -151,9 +151,9 @@ export const responder = {
       card(`vciso-d-${i}`, id, { x: row4[k] * 0.98, y: k % 2 ? -12 : 12, z: k % 2 ? 80 : 0, ry: (1.5 - k) * 4, s: 0.92 }, k * 6);
     });
     [
-      { x: -380, y: 0, z: 150, ry: 12, s: 0.9 },
-      { x: 0, y: 10, z: -60, ry: 0, s: 0.9 },
-      { x: 380, y: 0, z: 150, ry: -12, s: 0.9 },
+      { x: -400, y: 0, z: 40, ry: 10, s: 1 },
+      { x: 0, y: 10, z: -70, ry: 0, s: 1 },
+      { x: 400, y: 0, z: 40, ry: -10, s: 1 },
     ].forEach((pose, i) => card(`vciso-plan-${i}`, "c2-vciso-plans", pose, i * 8, { y: -200, z: 500, rx: -20, o: 0 }));
     card("vciso-eco", "c2-vciso-eco", { x: 0, y: 0, z: 0, s: 1 }, 0, { z: 500, o: 0 });
 

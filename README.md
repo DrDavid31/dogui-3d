@@ -11,9 +11,10 @@ vertical con "ventanas" 3D por capítulo; con `prefers-reduced-motion`, sin WebG
 JS se muestra la versión estática completa, con una imagen fija de la escena 3D de cada
 capítulo (`public/renders/`).
 
-Lighthouse sobre el sitio publicado (2026-10-30): rendimiento 95 en móvil y 95 en
-escritorio; accesibilidad, buenas prácticas y SEO 100; CLS 0. (En `vite preview` local
-buenas prácticas marca 96 por el 404 de `/api/health`, que en github.io no se consulta.)
+Lighthouse sobre el build para servidor (2026-11-17, local): accesibilidad, buenas
+prácticas y SEO 100; CLS 0; rendimiento 91–99 en escritorio y 82–95 en móvil, medido con
+la máquina ocupada por otros procesos (el 14-11, sin esa carga, fue 95 y 97–98).
+Pruebas de punta a punta: `node scripts/qa.mjs <url> [scroll]` (Chrome instalado).
 
 Modelos 3D (todos de ciberseguridad, en `src/scenes/shared/`): radar de detección,
 globo de amenazas con arcos, escudo hexagonal, evidencias (correo, documento filtrado,
@@ -55,6 +56,49 @@ tarjetas HTML visibles). Regenéralas si cambia el modelado o la iluminación.
 
 En `dev`, `window.__dogui` expone el escenario, el director de cámara y el scroll
 (p. ej. `__dogui.scroll.jumpToTime(585)`).
+
+## Subir a un servidor propio
+
+```bash
+npm run build:server                                  # para https://dogui.mx/
+SITE_URL=https://www.otro-dominio.mx/ npm run build:server
+```
+
+Genera el sitio para la raíz del dominio en `dist/` y un zip listo en
+`entregable/dogui-web-<dominio>.zip`. Se sube **el contenido** del zip a la carpeta
+pública del dominio (`public_html`, `www` o `htdocs`). Incluye:
+
+- `.htaccess` para Apache (cPanel y casi todo el hosting compartido): compresión,
+  cabeceras de seguridad, caché (páginas sin caché, archivos con huella un año, el resto
+  una semana) y la página 404. Trae comentadas la redirección a HTTPS y HSTS: actívalas
+  cuando el certificado SSL ya funcione.
+- `404.html` propia, `robots.txt`, `sitemap.xml` y `.well-known/security.txt` con la URL
+  del dominio, y sin mapas de código fuente (pesa menos).
+
+Con **Nginx**, el equivalente del `.htaccess`:
+
+```nginx
+root /var/www/dogui;
+index index.html;
+error_page 404 /404.html;
+gzip on;
+gzip_types text/css text/javascript application/javascript application/json image/svg+xml application/manifest+json;
+add_header X-Content-Type-Options nosniff always;
+add_header Referrer-Policy strict-origin-when-cross-origin always;
+add_header X-Frame-Options SAMEORIGIN always;
+location ~* "-[A-Za-z0-9_-]{8}\.(js|css|woff2?)$" { add_header Cache-Control "public, max-age=31536000, immutable"; }
+location ~* \.(svg|png|ico|webp|json|webmanifest)$ { add_header Cache-Control "public, max-age=604800"; }
+location / { try_files $uri $uri/ =404; add_header Cache-Control "no-cache"; }
+```
+
+**Formulario de contacto.** Sin API, el botón *Enviar* abre el correo del visitante con
+todos los datos listos para `site.email`. Para recibir las solicitudes directo, publica la
+API del repositorio `doguiweb` (`api/leads.js`: Supabase + aviso por Resend) y pon su
+dirección en `site.api` (`src/content/content.js`): `"/"` si vive en el mismo dominio, o
+`"https://api.ejemplo.mx"` (agrega el dominio del sitio a `ALLOWED_ORIGINS` de esa API).
+Esa API guarda nombre, empresa, correo, servicio y mensaje; el teléfono, el tamaño, la
+urgencia y el permiso de comunicaciones viajan dentro del mensaje para no perderse. Sin
+`site.api` el sitio no hace ninguna llamada a `/api/*`.
 
 ## Build y despliegue en GitHub Pages
 
@@ -182,6 +226,8 @@ el servidor y recarga el HTML.
 | Agenda en línea | `site.bookingUrl` | Botón «Agendar llamada de 30 min» en contacto |
 | Razón social y domicilio | `legal.owner` y `legal.address` en `src/content/legal.js` | Responsable en el aviso de privacidad (art. 15, fr. I LFPDPPP), aviso corto del formulario, términos y pie |
 | Correo de privacidad | `legal.privacyEmail` | Derechos ARCO, revocación y reporte de vulnerabilidades |
+| API del formulario | `site.api` | El formulario envía directo a la API en vez de abrir el correo (ver *Subir a un servidor propio*) |
+| Página del proyecto CIDSI | `sgsi.secondary.href` | Botón «Ver proyecto CIDSI» (se quitó porque `dogui.net` no existe en DNS) |
 
 Mientras un dato esté vacío no se muestra (no hay números de ejemplo en el sitio).
 

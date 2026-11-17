@@ -1,13 +1,16 @@
 (function () {
-  const endpoint = "/api/events";
+  // Dirección de la API (site.api en src/content/content.js). Sin API configurada no se
+  // consulta nada: el formulario abre el correo y no hay medición.
+  const meta = document.querySelector('meta[name="dogui-api"]');
+  const configured = meta ? meta.content.trim() : "";
+  const apiBase = configured === "/" ? "" : configured.replace(/\/+$/, "");
+  const endpoint = `${apiBase}/api/events`;
   const storageKey = "dogui_distinct_id";
   window.DOGUIApiAvailable = false;
+  window.DOGUIApiBase = apiBase;
 
   const shouldProbeApi = () => {
-    const host = window.location.hostname;
-    const port = window.location.port;
-    if (host.endsWith("github.io")) return false;
-    if ((host === "127.0.0.1" || host === "localhost") && port === "8931") return false;
+    if (!configured) return false;
     if (window.location.protocol === "file:") return false;
     return true;
   };
@@ -28,7 +31,7 @@
     if (!shouldProbeApi()) return false;
 
     try {
-      const response = await fetch("/api/health", {
+      const response = await fetch(`${apiBase}/api/health`, {
         method: "GET",
         headers: { Accept: "application/json" },
         cache: "no-store",

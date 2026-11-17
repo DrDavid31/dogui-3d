@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import { renderApp, renderChrome, renderLegal, renderChecklist } from "./src/content/render.js";
 import { site } from "./src/content/content.js";
+import { notFoundPage, htaccess } from "./scripts/server-files.mjs";
 
 // Páginas además del inicio (cada una con su index.html).
 const PAGES = { privacidad: "privacy", terminos: "terms", checklist: "checklist" };
@@ -20,7 +21,10 @@ function contentHtml() {
     enforce: "pre",
     transformIndexHtml(html, ctx) {
       // Teléfono en los datos para buscadores solo cuando está configurado.
-      html = html.replaceAll("__SITE_URL__", siteUrl).replace("__TELEPHONE__", site.phone ? `"telephone": ${JSON.stringify(site.phone)},` : "");
+      html = html
+        .replaceAll("__SITE_URL__", siteUrl)
+        .replace("__API__", site.api || "")
+        .replace("__TELEPHONE__", site.phone ? `"telephone": ${JSON.stringify(site.phone)},` : "");
       const page = Object.keys(PAGES).find((p) => ctx.filename.replace(/\\/g, "/").includes(`/${p}/`));
       if (page) {
         const kind = PAGES[page];
@@ -58,6 +62,10 @@ ${urls.map((u) => `  <url>\n    <loc>${siteUrl}${u}</loc>\n    <lastmod>${today}
 </urlset>
 `,
       });
+      // Página 404 propia (GitHub Pages y Apache la usan solas).
+      this.emitFile({ type: "asset", fileName: "404.html", source: notFoundPage({ base, siteUrl, email: site.email }) });
+      // Servidor Apache (hosting compartido): caché, compresión y cabeceras de seguridad.
+      if (process.env.SERVER === "1") this.emitFile({ type: "asset", fileName: ".htaccess", source: htaccess({ base }) });
       // Contacto para reportar vulnerabilidades (RFC 9116).
       this.emitFile({
         type: "asset",
@@ -114,7 +122,8 @@ export default defineConfig({
       },
     },
     // Mapas de fuente publicados (el repositorio es público): depuración en producción.
-    sourcemap: true,
+    // El paquete para servidor propio va sin ellos (SOURCEMAP=0): pesa menos.
+    sourcemap: process.env.SOURCEMAP !== "0",
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 900,
   },

@@ -228,10 +228,13 @@ export async function buildDetectar(ctx, scene) {
     const [X, Y] = spots[i % spots.length];
     const z = 1500 + rand() * 1100;
     o.position.copy(at(s.frame, { x: (X * (D1 + z)) / D1, y: (Y * (D1 + z)) / D1, z }));
-    o.scale.setScalar(1.6 + rand() * 0.6);
+    o.userData.size = 1.6 + rand() * 0.6;
+    o.scale.setScalar(o.userData.size);
     o.rotation.set(rand() * 0.8 - 0.4, rand() * 6, rand() * 0.6 - 0.3);
     o.userData.spin = (rand() - 0.5) * 0.35;
-    o.userData.on = [s.t - 150, s.end + 110];
+    // Solo alrededor de su parada: desde las paradas vecinas la cámara lo ve en otro punto
+    // de la pantalla y puede cruzarse con un título.
+    o.userData.on = [s.t - 62, s.end + 44];
     group.add(o);
     drifting.push(o);
   });
@@ -292,9 +295,13 @@ export async function buildDetectar(ctx, scene) {
         if (on && p.update) p.update(t, clock, dt);
       }
       for (const o of drifting) {
-        const on = t > o.userData.on[0] && t < o.userData.on[1];
+        const [a, b] = o.userData.on;
+        const on = t > a && t < b;
         o.visible = on;
-        if (on) o.rotation.y += o.userData.spin * dt;
+        if (!on) continue;
+        o.rotation.y += o.userData.spin * dt;
+        // Crece al entrar y se encoge al salir (sin aparecer de golpe).
+        o.scale.setScalar(o.userData.size * ramp(t, a, a + 26) * (1 - ramp(t, b - 22, b)));
       }
       for (const b of bubbles) {
         const on = t >= b.t;
