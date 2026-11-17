@@ -31,7 +31,17 @@ async function open(ctxOpts = {}, path = "", { init, wait = "load" } = {}) {
   await page.goto(URL + path, { waitUntil: wait });
   return { ctx, page };
 }
-const ready = (page) => page.waitForFunction(() => !document.documentElement.classList.contains("is-loading"), null, { timeout: 40000, polling: 100 });
+// Listo: el mundo 3D ya terminó el loader, o el sitio eligió la versión en flujo. (El módulo
+// 3D se carga aparte: justo después de "load" todavía no hay ninguna de las dos clases.)
+const ready = (page) =>
+  page.waitForFunction(
+    () => {
+      const c = document.documentElement.classList;
+      return (c.contains("is-world") && !c.contains("is-loading")) || c.contains("is-flow");
+    },
+    null,
+    { timeout: 40000, polling: 100 },
+  );
 const opacity = (page, sel) => page.evaluate((s) => parseFloat(getComputedStyle(document.querySelector(s)).opacity), sel);
 
 // ── Escritorio: loader, menú, saltos, teclado, formulario ────────────────
